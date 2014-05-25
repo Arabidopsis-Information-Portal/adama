@@ -1,0 +1,117 @@
+POLYMORPH_HDR_by_locus
+======================
+
+Service Metadata
+----------------
+# URL-compatible, globally unique
+ServiceID: "polymorph_hdr_by_locus"
+# Max 64
+ServiceName: "POLYMORPH Highly Dynamic Regions by locus"
+# Max 255 char
+Description: "Find Highly Dynamic Regions across the 1001 genomes data by locus"
+# Restricted to a controlled list of references. For now, TAIR10 is the only member of the list
+Reference: "TAIR10"
+# Future features
+# Will we cache the JSON document
+Cache: True
+# Do we send any successful results to our Search interface
+IndexForSearch: True
+# For creating human-readable interpretation of search results
+SearchHitTemplate: "$locus contains a $type in $attributes.$accession according to $ServiceName"
+# Queries per minute allowable. We won't enforce this in the local API manager but 
+# may want to use it to select a wso2 service tier when we enroll there
+MaximumQueryRate: 30
+URI: "http://polymorph.weigelworld.org/cgi-bin/webapp.cgi?page=generic_region_search;plugin=retrieve_hdr;project=MPICao2010"
+
+Remote Service Description
+--------------------------
+
+*Example GET based form. POST is not supported*
+http://polymorph.weigelworld.org/cgi-bin/webapp.cgi?page=generic_region_search&plugin=retrieve_hdr&project=MPICao2010&rm=compute&accessions_list1=Agu-1&accessions_list1=Bak-2&accessions_list1=Bak-7&accessions_list1=Cdm-0&accessions_list1=Del-10&accessions_list1=Dog-4&accessions_list1=Don-0&accessions_list1=Ey15-2&accessions_list1=Fei-0&accessions_list1=HKT2.4&accessions_list1=ICE1&accessions_list1=ICE102&accessions_list1=ICE104&accessions_list1=ICE106&tair_id=At4g25530&download=csv
+
+Query parameters:
+#param	attributes
+page	type=string;visible=false;required=true;default="generic_region_search"
+plugin	retrieve_hdr	type=string;visible=false;required=true;default="retrieve_hdr"
+rm	type=string;visible=false;required=true;default="compute"
+project	type=string;visible=false;required=true;default="MPICao2010"
+download	type="string";visible=false;required=true;default="csv"
+tair_id	type=string;visible=true;required=true;multiple=false;mapping="locus"
+accessions_list1	type=enum;visible=true;required=true;multiple=true;mapping="accession"
+
+*Query JSON might look like this*
+
+{
+    "locus": "At4g25530",
+    "accession": [
+        "Agu-1",
+        "Bak-2",
+        "Bak-7",
+        "Cdm-0",
+        "Del-10",
+        "Dog-4",
+        "Don-0",
+        "Ey15-2",
+        "Fei-0",
+        "HKT2.4",
+        "ICE1",
+        "IC102",
+        "ICE104",
+        "ICE106"
+    ]
+}
+
+Note: Full list to build the enum can be found at http://polymorph.weigelworld.org/cgi-bin/webapp.cgi?page=generic_region_search;plugin=retrieve_hdr;project=MPICao2010
+
+*Example native output (CSV)*
+"STRAIN","CHROMOSOME","START POSITION","END POSITION","LENGTH","#N","GC CONTENT","MAX GC CONTENT","# REPETITIVE POSITIONS","EXPECTED COVERAGE"
+"Agu-1","4","13041044","13041081","38","","0","","",""
+"Bak-2","4","13041041","13041076","36","","0","","",""
+"Dog-4","4","13039130","13039144","15","","0","","",""
+"Dog-4","4","13041041","13041081","41","","0","","",""
+"Don-0","4","13038811","13038819","9","","0","","",""
+"Ey15-2","4","13041036","13041081","46","","0","","",""
+"HKT2.4","4","13041070","13041076","7","","0","","",""
+
+*Ideal JSON transformed output*
+
+The service will return a 3-stanza Agave response, where "result" is an array 
+of sequence_feature JSON documents. The sequence_feature type is modeled after, 
+and designed to be transformable with GFF3 <http://www.sequenceontology.org/gff3.shtml>.
+The idea here is to always return one of more JSON documents, which can then be easily
+indexed using something like ElasticSearch
+
+{"status":"success",
+ "message":"",
+ "result":[ sequence_feature,sequence_feature,sequence_feature,sequence_feature ]
+}
+
+Here is an example sequence_feature object based on one of the returned records. 
+
+{"class":"sequence_feature",
+ "reference":"TAIR10",
+ "locus":"At4g25530",
+ "chromosome":4,
+ "start":13041070,
+ "end":13041076,
+ "type":"region",
+ "source":"polymorph.hdr.bylocus",
+ "attributes":[
+    {"parent":"At4g25530"},
+    {"accession":"HKT2.4"},
+    {"length":7},
+    {"gc_content":""},
+    {"num_n":""},
+    {"max_gc_content":""},
+    {"num_repetive_positions":""},
+    {"expected_coverage":""}]}
+
+*Notes*
+* I propagate "locus" from the query into each result. Once, at the top level of the object and again as the "parent" attribute. 
+* I propagate "reference" from the service's metadata
+* I propagate "source" from the service's metadata
+* I replace STRAIN with "accession". I guess this is an example of an output mapping
+* Attributes are returned even if empty. We may want to have that as a specifiable behavior to keep the size of the responses minimal
+* The "type" field has to be specified somewhere. For sequence_feature objects, it is constrained to the SOFA controlled vocabulary http://www.sequenceontology.org/index.html
+* We may also wish to include a _links section (and other requisite metadata) like other Agave services do to make the system more self-documenting
+

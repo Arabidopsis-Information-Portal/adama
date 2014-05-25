@@ -1,0 +1,101 @@
+Expressologs_by_locus
+=====================
+
+Service Metadata
+----------------
+# URL-compatible, globally unique
+ServiceID: "expressologs_by_locus"
+# Max 64 char
+ServiceName: "BAR expressologs by locus"
+# Max 255 char
+Description: "Find homologous genes that exhibit similar expression patterns in equivalent tissues in other plant species"
+# Restricted to a controlled list of references. For now, TAIR10 is the only member of the list
+Reference: "TAIR10"
+# Future features
+# Will we cache the JSON document
+Cache: True
+# Do we send any successful results to our Search interface
+IndexForSearch: True
+# For creating human-readable interpretation of search results
+SearchHitTemplate: "$locus relates to $related_entity via $type according to $ServiceName"
+# Queries per minute allowable. We won't enforce this in the local API manager but 
+# may want to use it to select a wso2 service tier when we enroll there
+MaximumQueryRate: 30
+URI: "http://bar.utoronto.ca/webservices/get_expressologs.php"
+
+Remote Service Description
+--------------------------
+
+*Example GET based form. POST is not supported*
+http://bar.utoronto.ca/webservices/get_expressologs.php?request=[{%22gene%22:%22At2g26230%22}]
+
+Query parameters:
+#param	attributes
+request	type=string;visible=true;required=true;multiple=false;mapping="locus"
+
+*Query JSON might look like this*
+
+{ "locus":"At2g26230" }
+
+*Example native output (JSON)*
+
+{"At2g26230":[
+    {"probeset_A":"267374_at",
+     "gene_B":"Glyma20g17440",
+     "probeset_B":"Glyma20g17440",
+     "correlation_coefficient":"0.5264",
+     "seq_similarity":"67",
+     "efp_link":"http://bar.utoronto.ca/efp_soybean/cgi-bin/efpWeb.cgi?dataSource=soybean&primaryGene=Glyma20g17440&modeInput=Absolute"},
+    {"probeset_A":"267374_at",
+     "gene_B":"Solyc11g006550",
+     "probeset_B":"Solyc11g006550",
+     "correlation_coefficient":"0.1768",
+     "seq_similarity":"68",
+     "efp_link":"http://bar.utoronto.ca/efp_tomato/cgi-bin/efpWeb.cgi?dataSource=tomato&primaryGene=Solyc11g006550&modeInput=Absolute"}]}
+
+*Example transformed output (JSON)*
+
+{"status":"success",
+ "message":"",
+ "result":[
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"At2g26230",
+     "type":"coexpression",
+     "related_entity":"Solyc11g006550",
+     "direction":"undirected",
+     "score":[
+        {"correlation_coefficient":0.1768}],
+     "source":"tomato"},
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"At2g26230",
+     "type":"similarity",
+     "related_entity":"Solyc11g006550",
+     "direction":"undirected",
+     "score":[
+        {"similarity_percentage":68}],
+     "source":"tomato"},
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"At2g26230",
+     "type":"coexpression",
+     "related_entity":"Glyma20g17440",
+     "direction":"undirected",
+     "score":[
+        {"correlation_coefficient":0.5264}],
+     "source":"soybean"},
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"At2g26230",
+     "type":"similarity",
+     "related_entity":"Glyma20g17440",
+     "direction":"undirected",
+     "weight":[
+        {"similarity_percentage":67}],
+     "score":"soybean"}]}
+
+*Notes*
+* Current list of types for this JSON document class are similarity, coexpression, colocation, physical_interaction, genetic_interaction, predicted_interaction
+* Valid values for direction: undirected, a_to_b, b_to_a
+* score is an array of 1+ JSON objects; valid keys are similarity_percentage, correlation_coefficient, confidence_score, p_value, z_score, e_value
