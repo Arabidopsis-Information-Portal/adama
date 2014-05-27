@@ -2,14 +2,16 @@
 Araport API manager
 ===================
 
-.. image:: https://badge.fury.io/py/apim.png
-    :target: http://badge.fury.io/py/apim
+.. image:: https://badge.fury.io/gh/waltermoreira%2Fapim.svg
+    :target: http://badge.fury.io/gh/waltermoreira%2Fapim
 
-.. image:: https://travis-ci.org/waltermoreira/apim.png?branch=master
-        :target: https://travis-ci.org/waltermoreira/apim
+..
+   .. image:: https://travis-ci.org/waltermoreira/apim.png?branch=master
+           :target: https://travis-ci.org/waltermoreira/apim
 
-.. image:: https://pypip.in/d/apim/badge.png
-        :target: https://pypi.python.org/pypi/apim
+..
+   .. image:: https://pypip.in/d/apim/badge.png
+           :target: https://pypi.python.org/pypi/apim
 
 
 These are very preliminary experiments with the tools to use for the API manager for the AIP project.
