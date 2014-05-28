@@ -93,9 +93,9 @@ request	type=string;visible=true;required=true;multiple=false;mapping="locus"
      "direction":"undirected",
      "weight":[
         {"similarity_percentage":67}],
-     "score":"soybean"}]}
+     "source":"soybean"}]}
 
 *Notes*
-* Current list of types for this JSON document class are similarity, coexpression, colocation, physical_interaction, genetic_interaction, predicted_interaction
-* Valid values for direction: undirected, a_to_b, b_to_a
+* Current list of types for this JSON document class are similarity, coexpression, colocation, generic_interaction, physical_interaction, genetic_interaction, predicted_interaction
+* Valid values for direction: unknown, undirected, a_to_b, b_to_a
 * score is an array of 1+ JSON objects; valid keys are similarity_percentage, correlation_coefficient, confidence_score, p_value, z_score, e_value
