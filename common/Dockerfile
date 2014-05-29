@@ -1,0 +1,11 @@
+FROM phusion/baseimage
+ENV HOME /root
+RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
+CMD ["/sbin/my_init"]
+
+RUN apt-get update
+RUN apt-get install -y patch
+
+# install a patch to run syslog in the container
+ADD syslog-ng.patch /root/syslog-ng.patch
+RUN patch /etc/syslog-ng/syslog-ng.conf /root/syslog-ng.patch
