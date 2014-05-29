@@ -1,7 +1,7 @@
 FROM phusion/baseimage
 ENV HOME /root
 RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
-CMD ["/sbin/my_init"]
+#CMD ["/sbin/my_init"]
 
 RUN apt-get update
 RUN apt-get install -y patch
