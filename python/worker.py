@@ -4,8 +4,6 @@ logging.basicConfig()
 
 import argparse
 import os
-import sys
-import time
 
 import pika
 
@@ -13,9 +11,11 @@ import pika
 class Worker(object):
 
     QUEUE_NAME = 'tasks'
+    QUEUE_PORT = 5672
 
-    def __init__(self, queue_host, queue_name=None):
+    def __init__(self, queue_host, queue_port=None, queue_name=None):
         self.queue_host = queue_host
+        self.queue_port = queue_port or self.QUEUE_PORT
         self.queue_name = queue_name or self.QUEUE_NAME
         self.connect()
 
@@ -23,7 +23,8 @@ class Worker(object):
         """Establish a connection with the task queue."""
 
         connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=self.queue_host))
+            pika.ConnectionParameters(host=self.queue_host,
+                                      port=self.queue_port))
         self.channel = connection.channel()
         self.channel.queue_declare(queue=self.queue_name, durable=True)
 
@@ -46,17 +47,22 @@ def parse_args():
                                      epilog='--*--')
     parser.add_argument('--queue-host', metavar='HOST',
                         help='host where RabbitMQ is running')
+    parser.add_argument('--queue-port', metavar='PORT',
+                        type=int, default=5672,
+                        help='port where RabbitMQ is running')
     parser.add_argument('-i', '--interactive', action='store_true',
                         help='run interactive console')
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
     if args.interactive:
         os.execlp('ipython', 'ipython')
-    worker = Worker(args.queue_host)
+    worker = Worker(args.queue_host, args.queue_port)
     print('Worker starting')
     worker.run()
+
 
 if __name__ == '__main__':
     main()
