@@ -2,7 +2,7 @@
 
 .PHONY: clean
 
-build: Dockerfile ../common
+build: Dockerfile ../common *.py
 	docker build -t python .
 	touch build
 	touch .
