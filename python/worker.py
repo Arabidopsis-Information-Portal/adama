@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+import logging
+logging.basicConfig()
+
 import argparse
 import sys
 import time
