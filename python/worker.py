@@ -3,6 +3,7 @@ import logging
 logging.basicConfig()
 
 import argparse
+import os
 import sys
 import time
 
@@ -41,14 +42,19 @@ class Worker(object):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='A Python worker')
-    parser.add_argument('--queue-host', required=True, metavar='HOST',
+    parser = argparse.ArgumentParser(description='A Python worker',
+                                     epilog='--*--')
+    parser.add_argument('--queue-host', metavar='HOST',
                         help='host where RabbitMQ is running')
+    parser.add_argument('-i', '--interactive', action='store_true',
+                        help='run interactive console')
     return parser.parse_args()
 
 def main():
-    hostname = parse_args().queue_host
-    worker = Worker(hostname)
+    args = parse_args()
+    if args.interactive:
+        os.execlp('ipython', 'ipython')
+    worker = Worker(args.queue_host)
     print('Worker starting')
     worker.run()
 
