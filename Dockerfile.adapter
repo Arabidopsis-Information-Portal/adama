@@ -1,0 +1,6 @@
+FROM {{ language }}
+ENV HOME /root
+
+ADD user_code /root/user_code
+
+{{ requirement_cmds }}
