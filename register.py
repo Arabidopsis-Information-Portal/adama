@@ -45,7 +45,7 @@ def extract_code(language, file_type, contents, temp_dir):
     elif file_type == 'zip':
         with open(os.path.join(temp_dir, 'contents.zip'), 'w') as f:
             f.write(contents)
-        zip = zipfile.ZipFile('contents.zip')
+        zip = zipfile.ZipFile(os.path.join(temp_dir, 'contents.zip'))
         zip.extractall(user_code)
     elif file_type == 'package':
         raise Exception('package support not implemented yet')
