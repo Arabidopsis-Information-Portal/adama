@@ -3,6 +3,7 @@ import logging
 logging.basicConfig()
 
 import argparse
+import json
 import os
 
 import pika
@@ -36,9 +37,14 @@ class Worker(object):
     @staticmethod
     def callback(channel, method, properties, body):
         print('Received:', body)
+        try:
+            import main
+            result = main.process(json.loads(body))
+        except Exception as exc:
+            result = {'error': exc.message}
         channel.basic_publish(exchange='',
                               routing_key=properties.reply_to,
-                              body=body)
+                              body=json.dumps(result))
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
 
