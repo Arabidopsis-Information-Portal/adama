@@ -40,7 +40,7 @@ def extract_code(language, file_type, contents, temp_dir):
     elif file_type == 'tar.gz':
         with open(os.path.join(temp_dir, 'contents.tgz'), 'w') as f:
             f.write(contents)
-        tar = tarfile.open('contents.tgz')
+        tar = tarfile.open(os.path.join(temp_dir, 'contents.tgz'))
         tar.extractall(user_code)
     elif file_type == 'zip':
         with open(os.path.join(temp_dir, 'contents.zip'), 'w') as f:
