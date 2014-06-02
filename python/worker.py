@@ -8,6 +8,10 @@ import os
 
 import pika
 
+import sys
+here_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(here_dir, 'user_code'))
+
 
 class Worker(object):
 
