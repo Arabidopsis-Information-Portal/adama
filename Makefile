@@ -2,7 +2,8 @@
 
 CONTAINERS=common \
 	python \
-	ruby
+	ruby \
+	javascript
 
 .PHONY: build
 build:
