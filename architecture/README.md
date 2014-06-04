@@ -18,3 +18,5 @@
     declares at registration time whether it will handle it through
     the function `f`. Otherwise, APIM will handle pagination and count
     through caching.
+
+![architecture](https://github.com/Arabidopsis-Information-Portal/araport_data_api_design/raw/master/architecture/workers.png)
