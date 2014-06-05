@@ -35,26 +35,68 @@ class Worker(object):
 
     def run(self):
         self.channel.basic_qos(prefetch_count=1)
-        self.channel.basic_consume(self.callback, queue=self.queue_name)
+        self.channel.basic_consume(self.callback,
+                                   queue=self.queue_name,
+                                   no_ack=True)
         self.channel.start_consuming()
 
-    @staticmethod
-    def callback(channel, method, properties, body):
+    def callback(self, channel, method, properties, body):
         print('Received:', body)
+        reply = (channel, method, properties)
         try:
-            result = self.process(body)
+            self.process(body, reply=reply)
         except Exception as exc:
-            result = {'error': exc.message}
+            print 'Exception:', exc
+            with Results(reply):
+                print json.dumps({'error': exc.message})
+                print 'END'
+
+    def process(self, body, reply):
+        import main
+        metadata = json.load(open(os.path.join(here_dir, 'metadata.json')))
+        with Results(reply):
+            main.process(json.loads(body))
+
+
+class Results(object):
+
+    def __init__(self, reply):
+        self.reply = reply
+        self.current = []
+        self.lines = []
+
+    def __enter__(self):
+        self.old_stdout = sys.stdout
+        self.old_stdout.flush()
+        sys.stdout = self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        sys.stdout = self.old_stdout
+
+    def write(self, data):
+        if '\n' in data:
+            old, data = data.split('\n', 1)
+            self.current.append(old)
+            line = ' '.join(self.current).strip()
+            if (line == '---' or
+                (line == 'END' and self.lines)):
+                self.respond('\n'.join(self.lines))
+                self.lines = []
+            else:
+                self.lines.append(line)
+            if line == 'END':
+                self.respond(line)
+            self.current = []
+        self.current.append(data)
+
+    def respond(self, result):
+        print >>sys.stderr, 'Will respond:', result
+        channel, method, properties = self.reply
         channel.basic_publish(exchange='',
                               routing_key=properties.reply_to,
-                              body=json.dumps(result))
-        channel.basic_ack(delivery_tag=method.delivery_tag)
+                              body=result)
 
-    def process(self, body):
-        import main
-        metadata = json.load(open('metadata.json'))
-        result = main.process(json.loads(body))
-        return result
+
 
 
 def parse_args():
@@ -75,7 +117,7 @@ def main():
     if args.interactive:
         os.execlp('ipython', 'ipython')
     worker = Worker(args.queue_host, args.queue_port)
-    print('Worker starting')
+    print('Worker v0.1.2 starting')
     worker.run()
 
 
