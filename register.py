@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import tarfile
@@ -16,12 +17,13 @@ LANGUAGES = {
 }
 
 
-def register(language, file_type, requirements, contents):
+def register(metadata, contents):
     temp_dir = create_temp_dir()
     print('temp:', temp_dir)
-    extract_code(language, file_type, contents, temp_dir)
-    render_template(language, requirements, temp_dir)
-    iden = build_docker(temp_dir)
+    extract_code(metadata, contents, temp_dir)
+    render_template(metadata, temp_dir)
+    save_metadata(metadata, temp_dir)
+    iden = build_docker(metadata, temp_dir)
     return iden
 
 
@@ -29,7 +31,10 @@ def create_temp_dir():
     return tempfile.mkdtemp()
 
 
-def extract_code(language, file_type, contents, temp_dir):
+def extract_code(metadata, contents, temp_dir):
+    language = metadata['language']
+    file_type = metadata['fileType']
+
     user_code = os.path.join(temp_dir, 'user_code')
     os.mkdir(user_code)
     ext, _ = LANGUAGES[language]
@@ -51,7 +56,10 @@ def extract_code(language, file_type, contents, temp_dir):
         raise Exception('package support not implemented yet')
 
 
-def render_template(language, requirements, temp_dir):
+def render_template(metadata, temp_dir):
+    language = metadata['language']
+    requirements = metadata['requirements']
+
     dockerfile_template = jinja2.Template(open('Dockerfile.adapter').read())
     _, installer = LANGUAGES[language]
     requirement_cmds = '\n'.join(
@@ -63,7 +71,12 @@ def render_template(language, requirements, temp_dir):
         f.write(dockerfile)
 
 
-def build_docker(temp_dir):
+def save_metadata(metadata, temp_dir):
+    with open(os.path.join(temp_dir, 'metadata.json'), 'w') as f:
+        f.write(json.dumps(metadata))
+
+
+def build_docker(metadata, temp_dir):
     prev_cwd = os.getcwd()
     os.chdir(temp_dir)
     try:

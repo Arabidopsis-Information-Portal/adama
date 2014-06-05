@@ -42,14 +42,19 @@ class Worker(object):
     def callback(channel, method, properties, body):
         print('Received:', body)
         try:
-            import main
-            result = main.process(json.loads(body))
+            result = self.process(body)
         except Exception as exc:
             result = {'error': exc.message}
         channel.basic_publish(exchange='',
                               routing_key=properties.reply_to,
                               body=json.dumps(result))
         channel.basic_ack(delivery_tag=method.delivery_tag)
+
+    def process(self, body):
+        import main
+        metadata = json.load(open('metadata.json'))
+        result = main.process(json.loads(body))
+        return result
 
 
 def parse_args():
