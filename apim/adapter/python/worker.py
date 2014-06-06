@@ -107,6 +107,9 @@ def parse_args():
     parser.add_argument('--queue-port', metavar='PORT',
                         type=int, default=5672,
                         help='port where RabbitMQ is running')
+    parser.add_argument('--queue-name', metavar='NAME',
+                        help='name of the queue this worker will use',
+                        default=None)
     parser.add_argument('-i', '--interactive', action='store_true',
                         help='run interactive console')
     return parser.parse_args()
@@ -116,8 +119,9 @@ def main():
     args = parse_args()
     if args.interactive:
         os.execlp('ipython', 'ipython')
-    worker = Worker(args.queue_host, args.queue_port)
-    print('Worker v0.1.3 starting')
+    worker = Worker(args.queue_host, args.queue_port, args.queue_name)
+    print('Worker v0.1.4 starting')
+    print('Listening in queue {}'.format(args.queue_name))
     worker.run()
 
 
