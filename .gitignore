@@ -1,4 +1,9 @@
 build
+*~
+
+.ipynb_checkpoints/
+*.ipynb
+
 # Created by http://www.gitignore.io
 
 ### Python ###
