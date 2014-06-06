@@ -1,16 +1,16 @@
 #!/usr/bin/env python
-import logging
-logging.basicConfig()
-
 import argparse
 import json
+import logging
 import os
+import sys
+
+logging.basicConfig()
 
 import pika
 
-import sys
-here_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(here_dir, 'user_code'))
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, 'user_code'))
 
 
 class Worker(object):
@@ -53,7 +53,7 @@ class Worker(object):
 
     def process(self, body, reply):
         import main
-        metadata = json.load(open(os.path.join(here_dir, 'metadata.json')))
+        metadata = json.load(open(os.path.join(HERE, 'metadata.json')))
         with Results(reply):
             main.process(json.loads(body))
 
@@ -117,7 +117,7 @@ def main():
     if args.interactive:
         os.execlp('ipython', 'ipython')
     worker = Worker(args.queue_host, args.queue_port)
-    print('Worker v0.1.2 starting')
+    print('Worker v0.1.3 starting')
     worker.run()
 
 
