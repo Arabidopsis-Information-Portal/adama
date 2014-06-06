@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import sys
 import tarfile
 import tempfile
 import uuid
@@ -15,6 +16,9 @@ LANGUAGES = {
     'lua': ('lua', None),
     'java': ('jar', None)
 }
+
+
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def register(metadata, contents):
@@ -60,7 +64,8 @@ def render_template(metadata, temp_dir):
     language = metadata['language']
     requirements = metadata['requirements']
 
-    dockerfile_template = jinja2.Template(open('Dockerfile.adapter').read())
+    dockerfile_template = jinja2.Template(
+        open(os.path.join(HERE, 'Dockerfile.adapter')).read())
     _, installer = LANGUAGES[language]
     requirement_cmds = '\n'.join(
         'RUN '+installer.format(package=req) for req in requirements)
