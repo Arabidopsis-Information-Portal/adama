@@ -1,0 +1,6 @@
+FROM {{ language }}
+
+ADD user_code /root/user_code
+ADD metadata.json /root/metadata.json
+
+{{ requirement_cmds }}
