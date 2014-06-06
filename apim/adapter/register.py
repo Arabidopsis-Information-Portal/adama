@@ -104,10 +104,24 @@ def build_docker(metadata, temp_dir):
     try:
         iden = str(uuid.uuid4())
         print 'docker build -t {} .'.format(iden)
-        output = subprocess.check_output(
-            ('/usr/local/bin/docker -H tcp://127.0.0.1:4444 build -t {} .'.format(iden)).split(),
-            stderr=subprocess.STDOUT)
+        cmd = ('/usr/local/bin/docker -H tcp://127.0.0.1:4444 '
+               'build -t {} .').format(iden)
+        output = subprocess.check_output(cmd.split(),
+                                         stderr=subprocess.STDOUT)
         print(output)
     finally:
         os.chdir(prev_cwd)
     return iden
+
+
+def run_workers(identifier, n=1):
+    workers = []
+    for i in range(n):
+        cmd = ('/usr/local/bin/docker -H tcp://127.0.0.1:4444 '
+               'run -d {identifier} '
+               '--queue-host=192.168.3.1 '
+               '--queue-port=5555 '
+               '--queue-name {identifier}').format(identifier=identifier)
+        workers.append(
+            subprocess.check_output(cmd.split(), stderr=subprocess.STDOUT))
+    return workers
