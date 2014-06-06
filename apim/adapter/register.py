@@ -22,6 +22,23 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def register(metadata, contents):
+    """Register a user's module.
+
+    `metadata` has the form::
+
+        {'fileType': 'module'|'tar.gz'|'zip',
+         'language': ...,
+         'requirements': ...}
+
+    `requirements` is a comma separated list of packages which should
+    be installable with the standard package manager of `language`.
+
+    `contents` is a Python file or a compressed directory with a
+    `main` module.
+
+    On success, return an identifier for the new created container.
+
+    """
     temp_dir = create_temp_dir()
     print('temp:', temp_dir)
     extract_code(metadata, contents, temp_dir)
