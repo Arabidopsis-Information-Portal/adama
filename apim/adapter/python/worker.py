@@ -78,8 +78,7 @@ class Results(object):
             old, data = data.split('\n', 1)
             self.current.append(old)
             line = ' '.join(self.current).strip()
-            if (line == '---' or
-                (line == 'END' and self.lines)):
+            if line == '---' or (line == 'END' and self.lines):
                 self.respond('\n'.join(self.lines))
                 self.lines = []
             else:
