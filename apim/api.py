@@ -21,9 +21,11 @@ class Register(restful.Resource):
                     'message': 'no file provided'}
         try:
             iden = register(metadata, code.read())
+            workers = run_worker(iden)
             return {'status': 'success',
                     'result': {
-                        'identifier': iden
+                        'identifier': iden,
+                        'workers': len(workers)
                     }}
         except Exception as exc:
             return {'status': 'error',
