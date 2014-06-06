@@ -18,7 +18,7 @@ class Register(restful.Resource):
             code = request.files['code']
         except KeyError:
             return {'status': 'error',
-                    'message': 'no file provided'}
+                    'message': 'no file provided'}, 400
         try:
             iden = register(metadata, code.read())
             workers = run_worker(iden)
@@ -28,5 +28,6 @@ class Register(restful.Resource):
                         'workers': len(workers)
                     }}
         except Exception as exc:
+            print(exc)
             return {'status': 'error',
-                    'message': exc.message}
+                    'message': exc.message}, 500
