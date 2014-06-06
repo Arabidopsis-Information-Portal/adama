@@ -20,7 +20,7 @@ class Register(restful.Resource):
             return {'status': 'error',
                     'message': 'no file provided'}
         try:
-            iden = register(metadata, code)
+            iden = register(metadata, code.read())
             return {'status': 'success',
                     'result': {
                         'identifier': iden
