@@ -1,12 +1,28 @@
 from flask import request
 from flask.ext import restful
 
-from .adapter.register import register
+from .adapter.register import register, database, run_worker
+from .tasks import Client
 
 class Query(restful.Resource):
 
     def get(self):
         return {'hello': 'world'}
+
+    def post(self):
+        query = request.get_json(force=True)
+        service = query['serviceName']
+        queue = database[service]
+        client = Client(queue_host='192.168.3.1',
+                        queue_port=5555,
+                        queue_name=queue)
+        client.send({'query': query['query'],
+                     'count': False,
+                     'pageSize': 100,
+                     'page': 1})
+        results = client.receive()
+        return {'status': 'success',
+                'result': results}
 
 
 
