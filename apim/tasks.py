@@ -1,3 +1,5 @@
+import json
+
 import pika
 
 
@@ -27,7 +29,7 @@ class Client(object):
         Return immediately. Use `receive` to get the result.
 
         """
-        self.response = None
+        serialized_msg = json.dumps(message)
         result = self.channel.queue_declare(exclusive=True)
         result_queue = result.method.queue
         self.channel.basic_consume(self.on_response,
@@ -35,7 +37,7 @@ class Client(object):
                                    no_ack=True)
         self.channel.basic_publish(exchange='',
                                    routing_key='tasks',
-                                   body=message,
+                                   body=serialized_msg,
                                    properties=pika.BasicProperties(
                                        # make message persistent
                                        delivery_mode=2,
@@ -48,9 +50,14 @@ class Client(object):
         It will block if there is no result yet.
 
         """
-        while self.response is None:
+        self.done = False
+        self.response = []
+        while not self.done:
             self.connection.process_data_events()
         return self.response
 
     def on_response(self, ch, method, props, body):
-        self.response = body
+        if body == 'END':
+            self.done = True
+        else:
+            self.response.append(json.loads(body))
