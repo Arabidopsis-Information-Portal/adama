@@ -12,11 +12,19 @@ class Query(restful.Resource):
 
 class Register(restful.Resource):
 
-    pass
-
-
-api.add_resource(Query, '/query')
-api.add_resource(Register, '/register')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    def post(self):
+        metadata = request.form
+        try:
+            code = request.files['code']
+        except KeyError:
+            return {'status': 'error',
+                    'message': 'no file provided'}
+        try:
+            iden = register(metadata, code)
+            return {'status': 'success',
+                    'result': {
+                        'identifier': iden
+                    }}
+        except Exception as exc:
+            return {'status': 'error',
+                    'message': exc.message}
