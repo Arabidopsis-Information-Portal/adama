@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build docs clean
+.PHONY: clean-pyc clean-build docs clean adapters
 
 help:
 	@echo "clean-build - remove build artifacts"
@@ -10,6 +10,7 @@ help:
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "release - package and upload a release"
 	@echo "dist - package"
+	@echo "adapter - make adapters for all languages"
 
 clean: clean-build clean-pyc
 	rm -fr htmlcov/
@@ -55,3 +56,7 @@ dist: clean
 	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist
+
+adapters:
+	$(MAKE) --directory=apim/adapter
+
