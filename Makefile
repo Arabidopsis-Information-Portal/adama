@@ -1,3 +1,6 @@
+NO_CACHE?=false
+export NO_CACHE
+
 .PHONY: clean-pyc clean-build docs clean adapters
 
 help:
@@ -10,7 +13,7 @@ help:
 	@echo "docs - generate Sphinx HTML documentation, including API docs"
 	@echo "release - package and upload a release"
 	@echo "dist - package"
-	@echo "adapter - make adapters for all languages"
+	@echo "adapters - make adapters for all languages"
 
 clean: clean-build clean-pyc
 	rm -fr htmlcov/
@@ -59,4 +62,3 @@ dist: clean
 
 adapters:
 	$(MAKE) --directory=apim/adapter
-

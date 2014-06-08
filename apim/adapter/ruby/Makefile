@@ -3,7 +3,7 @@
 .PHONY: clean
 
 build: Dockerfile ../common *.rb
-	docker build -t ruby .
+	docker build --no-cache=$(NO_CACHE) -t ruby .
 	touch build
 	touch .
 

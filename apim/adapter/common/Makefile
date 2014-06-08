@@ -3,7 +3,7 @@
 .PHONY: clean
 
 build: Dockerfile
-	docker build -t common .
+	docker build --no-cache=$(NO_CACHE) -t common .
 	touch build
 	touch .
 
