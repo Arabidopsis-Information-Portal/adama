@@ -37,7 +37,7 @@ class Register(restful.Resource):
                     'message': 'no file provided'}, 400
         try:
             iden = register(metadata, code.read())
-            workers = run_workers(iden)
+            workers = run_workers(iden, n=3)
             return {'status': 'success',
                     'result': {
                         'identifier': iden,
