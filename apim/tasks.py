@@ -30,18 +30,18 @@ class Client(object):
 
         """
         serialized_msg = json.dumps(message)
-        result = self.channel.queue_declare(exclusive=True)
-        result_queue = result.method.queue
+        self.result = self.channel.queue_declare(exclusive=True)
+        self.result_queue = self.result.method.queue
         self.channel.basic_consume(self.on_response,
-                                   queue=result_queue,
+                                   queue=self.result_queue,
                                    no_ack=True)
         self.channel.basic_publish(exchange='',
-                                   routing_key='tasks',
+                                   routing_key=self.queue_name,
                                    body=serialized_msg,
                                    properties=pika.BasicProperties(
                                        # make message persistent
                                        delivery_mode=2,
-                                       reply_to=result_queue))
+                                       reply_to=self.result_queue))
         print("Sent:", message)
 
     def receive(self):
