@@ -123,5 +123,6 @@ def run_workers(identifier, n=1):
                '--queue-port=5555 '
                '--queue-name {identifier}').format(identifier=identifier)
         workers.append(
-            subprocess.check_output(cmd.split(), stderr=subprocess.STDOUT))
+            subprocess.check_output(
+                cmd.split(), stderr=subprocess.STDOUT).strip())
     return workers
