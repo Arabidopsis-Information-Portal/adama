@@ -37,11 +37,11 @@ class Register(restful.Resource):
                     'message': 'no file provided'}, 400
         try:
             iden = register(metadata, code.read())
-            workers = run_worker(iden)
+            workers = run_workers(iden)
             return {'status': 'success',
                     'result': {
                         'identifier': iden,
-                        'workers': len(workers)
+                        'workers': workers,
                     }}
         except Exception as exc:
             return {'status': 'error',
