@@ -1,7 +1,7 @@
 from flask import request
 from flask.ext import restful
 
-from .adapter.register import register, database, run_worker
+from .adapter.register import register, run_workers
 from .tasks import Client
 
 class Query(restful.Resource):
@@ -12,7 +12,7 @@ class Query(restful.Resource):
     def post(self):
         query = request.get_json(force=True)
         service = query['serviceName']
-        queue = database[service]
+        queue = service
         client = Client(queue_host='192.168.3.1',
                         queue_port=5555,
                         queue_name=queue)
