@@ -55,6 +55,9 @@ class Worker(object):
         import main
         metadata = json.load(open(os.path.join(HERE, 'metadata.json')))
         with Results(reply):
+            d = json.loads(body)
+            d['worker'] = os.uname()[1]
+            body = json.dumps(d)
             main.process(json.loads(body))
 
 
@@ -119,7 +122,7 @@ def main():
     if args.interactive:
         os.execlp('ipython', 'ipython')
     worker = Worker(args.queue_host, args.queue_port, args.queue_name)
-    print('Worker v0.1.4 starting')
+    print('Worker v0.1.5 starting')
     print('Listening in queue {}'.format(args.queue_name))
     worker.run()
 
