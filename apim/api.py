@@ -44,6 +44,6 @@ class Register(restful.Resource):
                         'workers': len(workers)
                     }}
         except Exception as exc:
-            print(exc)
             return {'status': 'error',
-                    'message': exc.message}, 500
+                    'command': ' '.join(exc.cmd),
+                    'message': exc.output}, 500
