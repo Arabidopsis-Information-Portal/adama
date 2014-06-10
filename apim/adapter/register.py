@@ -84,8 +84,7 @@ def render_template(metadata, temp_dir):
     dockerfile_template = jinja2.Template(
         open(os.path.join(HERE, 'Dockerfile.adapter')).read())
     _, installer = LANGUAGES[language]
-    requirement_cmds = '\n'.join(
-        'RUN '+installer.format(package=req) for req in requirements)
+    requirement_cmds = 'RUN ' + installer.format(package=requirements)
 
     dockerfile = dockerfile_template.render(language=language,
                                             requirement_cmds=requirement_cmds)
