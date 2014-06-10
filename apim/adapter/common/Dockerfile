@@ -10,3 +10,7 @@ RUN apt-get install -y build-essential patch
 # install a patch to run syslog in the container
 ADD syslog-ng.patch /root/syslog-ng.patch
 RUN patch /etc/syslog-ng/syslog-ng.conf /root/syslog-ng.patch
+
+# install ssh key
+ADD id_rsa.pub /tmp/id_rsa.pub
+RUN cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys && rm /tmp/id_rsa.pub
