@@ -1,3 +1,5 @@
+import subprocess
+
 from flask import request
 from flask.ext import restful
 
@@ -43,7 +45,10 @@ class Register(restful.Resource):
                         'identifier': iden,
                         'workers': workers,
                     }}
-        except Exception as exc:
+        except subprocess.CalledProcessError as exc:
             return {'status': 'error',
                     'command': ' '.join(exc.cmd),
                     'message': exc.output}, 500
+        except Exception as exc:
+            return {'status': 'error',
+                    'message': exc.message}, 500
