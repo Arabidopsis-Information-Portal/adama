@@ -51,13 +51,15 @@ class Client(object):
 
         """
         self.done = False
-        self.response = []
+        self.response = None
         while not self.done:
             self.connection.process_data_events()
-        return self.response
+            if self.response is not None:
+                yield self.response
+                self.response = None
 
     def on_response(self, ch, method, props, body):
         if body == 'END':
             self.done = True
         else:
-            self.response.append(json.loads(body))
+            self.response = json.loads(body)

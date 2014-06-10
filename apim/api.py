@@ -1,6 +1,7 @@
+import json
 import subprocess
 
-from flask import request
+from flask import request, Response
 from flask.ext import restful
 
 from .adapter.register import register, run_workers
@@ -22,10 +23,13 @@ class Query(restful.Resource):
                      'count': False,
                      'pageSize': 100,
                      'page': 1})
-        results = client.receive()
-        return {'status': 'success',
-                'result': results}
-
+        def result_generator():
+            yield '{"result": [\n'
+            for line in client.receive():
+                yield json.dumps(line) + ',\n'
+            yield '],\n'
+            yield '"status": "success"}\n'
+        return Response(result_generator(), mimetype='application/json')
 
 
 class Register(restful.Resource):
