@@ -45,9 +45,10 @@ class Client(object):
         print("Sent:", message)
 
     def receive(self):
-        """Receive a result from the queue.
+        """Receive results from the queue.
 
-        It will block if there is no result yet.
+        A generator returning lines from the queue. It will block if
+        there are no lines yet.
 
         """
         self.done = False
