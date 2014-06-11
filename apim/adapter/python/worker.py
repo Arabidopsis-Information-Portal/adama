@@ -41,15 +41,13 @@ class Worker(object):
         self.channel.start_consuming()
 
     def callback(self, channel, method, properties, body):
-        print('Received:', body)
         reply = (channel, method, properties)
         try:
             self.process(body, reply=reply)
         except Exception as exc:
-            print 'Exception:', exc
             with Results(reply):
-                print json.dumps({'error': exc.message})
-                print 'END'
+                print(json.dumps({'error': exc.message}))
+                print('END')
 
     def process(self, body, reply):
         import main
@@ -92,7 +90,6 @@ class Results(object):
         self.current.append(data)
 
     def respond(self, result):
-        print >>sys.stderr, 'Will respond:', result
         channel, method, properties = self.reply
         channel.basic_publish(exchange='',
                               routing_key=properties.reply_to,
