@@ -25,8 +25,10 @@ class Query(restful.Resource):
                      'page': 1})
         def result_generator():
             yield '{"result": [\n'
-            for line in client.receive():
-                yield json.dumps(line) + ',\n'
+            gen = client.receive()
+            yield json.dumps(next(gen)) + '\n'
+            for line in gen:
+                yield ', ' + json.dumps(line) + '\n'
             yield '],\n'
             yield '"status": "success"}\n'
         return Response(result_generator(), mimetype='application/json')
