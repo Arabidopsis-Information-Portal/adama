@@ -40,6 +40,7 @@ def process_one(hit, locus):
     efp_query = urlparse.urlparse(efp_link).query
     parsed_efp_query = urlparse.parse_qs(efp_query)
 
+    # Output coexpression result
     coexpression_result = {
         'class': 'locus_relationship',
         'reference': 'TAIR10',
@@ -53,6 +54,7 @@ def process_one(hit, locus):
     print(json.dumps(coexpression_result, indent=4))
     print('---')
 
+    # Output similarity result
     similarity_result = coexpression_result
     similarity_result.update(
         {'type': 'similarity',
