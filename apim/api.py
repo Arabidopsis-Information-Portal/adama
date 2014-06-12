@@ -1,4 +1,5 @@
 import json
+import itertools
 import subprocess
 
 from flask import request, Response
@@ -7,6 +8,14 @@ from flask_restful_swagger import swagger
 
 from .adapter.register import register, run_workers
 from .tasks import Client
+
+
+def interleave(a, b):
+    """ '+', [1,2,3] -> [1, '+', 2, '+', 3] """
+    yield next(b)
+    for x, y in itertools.izip(itertools.cycle(a), b):
+        yield x
+        yield y
 
 
 @swagger.model
@@ -80,13 +89,10 @@ class Query(restful.Resource):
                      'page': 1})
         def result_generator():
             yield '{"result": [\n'
-            gen = client.receive()
-            first_line = True
-            for line in gen:
-                if not first_line:
-                    yield ', '
-                yield json.dumps(line) + '\n'
-                first_line = False
+            gen = itertools.imap(lambda x: json.dumps(x) + '\n',
+                                 client.receive())
+            for line in interleave([', '], gen):
+                yield line
             yield '],\n'
             yield '"status": "success"}\n'
         return Response(result_generator(), mimetype='application/json')
