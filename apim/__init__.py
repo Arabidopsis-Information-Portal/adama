@@ -14,7 +14,7 @@ from .api import Query, Register
 app = Flask(__name__)
 api = swagger.docs(restful.Api(app),
                    apiVersion='0.1',
-                   basePath='http://localhost:5000',
+                   basePath='http://localhost:8000',
                    resourcePath='/',
                    produces=["application/json", "text/html"],
                    api_spec_url='/api/spec')
