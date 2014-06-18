@@ -1,0 +1,23 @@
+---
+
+- name: Update apt cache once a day
+  apt: update_cache=yes cache_valid_time=84600
+  sudo: yes
+
+- name: Add user apim
+  user: name=apim generate_ssh_key=yes state=present
+  sudo: yes
+
+- name: Add user apim to sudoers with no password
+  lineinfile:
+    dest: /etc/sudoers.d/99-apim-user
+    line: 'apim ALL=(ALL) NOPASSWD:ALL'
+    state: present
+    create: yes
+  sudo: yes
+
+- name: Ensure permissions on apim sudoers
+  file:
+    path: /etc/sudoers.d/99-apim-user
+    mode: 0440
+  sudo: yes

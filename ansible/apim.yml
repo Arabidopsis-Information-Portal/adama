@@ -1,0 +1,10 @@
+---
+
+- hosts: apim
+  roles:
+    - common
+#    - developer_station
+#    - rabbit_server
+#    - flask_server
+#    - docker
+
