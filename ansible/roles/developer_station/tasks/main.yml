@@ -1,0 +1,13 @@
+---
+
+- name: Ensure vim installation
+  apt: name=vim state=present
+  sudo: yes
+
+- name: Ensure Python 2.7 installation
+  apt: name={{ item }} state=present
+  sudo: yes
+  with_items:
+    - python
+    - python-dev
+    - python-pip
