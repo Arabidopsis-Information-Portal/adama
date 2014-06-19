@@ -3,3 +3,10 @@
 - name: Ensure Docker is installed
   apt: name=docker.io state=present
   sudo: yes
+
+- name: Add apim user to docker group
+  user:
+    name: apim
+    append: yes
+    groups: docker
+  sudo: yes
