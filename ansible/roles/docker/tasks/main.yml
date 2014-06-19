@@ -1,0 +1,5 @@
+---
+
+- name: Ensure Docker is installed
+  apt: name=docker.io state=present
+  sudo: yes
