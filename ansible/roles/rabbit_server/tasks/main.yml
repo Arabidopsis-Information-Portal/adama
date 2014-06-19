@@ -1,5 +1,12 @@
 ---
 
-- name: Ensure rabbit server
+- name: Ensure rabbitmq server is installed
   apt: name=rabbitmq-server state=present
+  sudo: yes
+
+- name: Ensure rabbitmq server is running
+  service:
+    name: rabbitmq-server
+    state: started
+    enabled: yes
   sudo: yes
