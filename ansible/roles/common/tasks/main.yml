@@ -27,5 +27,5 @@
   sudo: yes
 
 - name: Install libncurses
-  apt: name=libncurses-dev state=present
+  apt: name=libncurses5-dev state=present
   sudo: yes
