@@ -21,3 +21,7 @@
     path: /etc/sudoers.d/99-apim-user
     mode: 0440
   sudo: yes
+
+- name: Install git
+  apt: name=git state=present
+  sudo: yes
