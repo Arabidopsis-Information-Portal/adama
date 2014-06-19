@@ -1,0 +1,13 @@
+---
+
+- name: Get apim code
+  git:
+    repo: https://github.com/waltermoreira/apim
+    dest: /home/apim/apim
+    update: yes
+  sudo: yes
+  sudo_user: apim
+
+- name: Install all Python requirements
+  pip: requirements=/home/apim/apim/dev_requirements.txt
+  sudo: yes

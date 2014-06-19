@@ -5,5 +5,5 @@
     - common
     - developer_station
     - rabbit_server
-#    - flask_server
-#    - docker
+    - docker
+    - apim_server
