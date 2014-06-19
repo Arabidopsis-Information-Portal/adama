@@ -3,7 +3,7 @@
 .PHONY: clean
 
 build: Dockerfile ../common *.py
-	docker build --no-cache=$(NO_CACHE) -t python .
+	$(DOCKER) build --no-cache=$(NO_CACHE) -t python .
 	touch build
 	touch .
 

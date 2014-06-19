@@ -1,5 +1,8 @@
 NO_CACHE?=false
+DOCKER?=docker
+
 export NO_CACHE
+export DOCKER
 
 .PHONY: clean-pyc clean-build docs clean adapters
 
