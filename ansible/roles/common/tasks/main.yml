@@ -25,3 +25,7 @@
 - name: Install git
   apt: name=git state=present
   sudo: yes
+
+- name: Install libncurses
+  apt: name=libncurses-dev state=present
+  sudo: yes
