@@ -4,6 +4,6 @@
   roles:
     - common
     - developer_station
-#    - rabbit_server
+    - rabbit_server
 #    - flask_server
 #    - docker
