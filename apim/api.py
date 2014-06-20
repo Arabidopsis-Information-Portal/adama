@@ -153,7 +153,7 @@ class Register(restful.Resource):
                     'message': 'no file provided'}, 400
         try:
             iden = register(metadata, code.read())
-            num_instances = Config.get(
+            num_instances = Config.getint(
                 'workers',
                 '{}_instances'.format(metadata['language']))
             workers = run_workers(iden, n=num_instances)
