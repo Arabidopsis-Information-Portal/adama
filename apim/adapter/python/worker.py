@@ -123,8 +123,13 @@ def main():
     worker = Worker(args.queue_host, args.queue_port, args.queue_name)
     print('Worker v0.1.5 starting', file=sys.stderr)
     print('Listening in queue {}'.format(args.queue_name), file=sys.stderr)
+    print('*** WORKER STARTED', file=sys.stderr)
     worker.run()
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception:
+        print('*** WORKER ERROR', file=sys.stderr)
+        raise
