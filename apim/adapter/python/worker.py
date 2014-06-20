@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
 import argparse
 import json
 import logging
@@ -119,8 +121,8 @@ def main():
     if args.interactive:
         os.execlp('ipython', 'ipython')
     worker = Worker(args.queue_host, args.queue_port, args.queue_name)
-    print('Worker v0.1.5 starting')
-    print('Listening in queue {}'.format(args.queue_name))
+    print('Worker v0.1.5 starting', file=sys.stderr)
+    print('Listening in queue {}'.format(args.queue_name), file=sys.stderr)
     worker.run()
 
 
