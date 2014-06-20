@@ -8,6 +8,11 @@ import zipfile
 
 import jinja2
 
+from ..tools import location_of
+
+HERE = location_of(__file__)
+
+
 LANGUAGES = {
     'python': ('py', 'pip install {package}'),
     'ruby': ('rb', 'gem install {package}'),
@@ -15,9 +20,6 @@ LANGUAGES = {
     'lua': ('lua', None),
     'java': ('jar', None)
 }
-
-
-HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def register(metadata, contents):
