@@ -6,6 +6,7 @@ from flask import request, Response
 from flask.ext import restful
 from flask_restful_swagger import swagger
 
+from .config import Config
 from .adapter.register import register, run_workers
 from .tasks import Client
 
@@ -150,7 +151,10 @@ class Register(restful.Resource):
                     'message': 'no file provided'}, 400
         try:
             iden = register(metadata, code.read())
-            workers = run_workers(iden, n=3)
+            num_instances = Config.get(
+                'workers',
+                '{}_instances'.format(metadata['language']))
+            workers = run_workers(iden, n=num_instances)
             return {'status': 'success',
                     'result': {
                         'identifier': iden,
