@@ -8,5 +8,5 @@ RUN apt-get update
 RUN apt-get install -y build-essential software-properties-common python-software-properties
 
 # install ssh key
-ADD id_rsa.pub /tmp/id_rsa.pub
+ADD insecure_key.pub /tmp/id_rsa.pub
 RUN cat /tmp/id_rsa.pub >> /root/.ssh/authorized_keys && rm /tmp/id_rsa.pub
