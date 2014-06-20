@@ -88,6 +88,7 @@ class Query(restful.Resource):
                      'count': False,
                      'pageSize': 100,
                      'page': 1})
+
         def result_generator():
             yield '{"result": [\n'
             gen = itertools.imap(lambda x: json.dumps(x) + '\n',
@@ -96,6 +97,7 @@ class Query(restful.Resource):
                 yield line
             yield '],\n'
             yield '"status": "success"}\n'
+
         return Response(result_generator(), mimetype='application/json')
 
 
