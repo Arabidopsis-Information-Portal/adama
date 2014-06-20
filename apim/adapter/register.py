@@ -9,6 +9,7 @@ import zipfile
 import jinja2
 
 from ..tools import location_of
+from ..config import Config
 
 HERE = location_of(__file__)
 
@@ -41,7 +42,6 @@ def register(metadata, contents):
 
     """
     temp_dir = create_temp_dir()
-    print('temp:', temp_dir)
     extract_code(metadata, contents, temp_dir)
     render_template(metadata, temp_dir)
     save_metadata(metadata, temp_dir)
@@ -103,11 +103,11 @@ def build_docker(metadata, temp_dir):
     os.chdir(temp_dir)
     try:
         iden = str(uuid.uuid4())
-        print 'docker build -t {} .'.format(iden)
-        cmd = ('/usr/local/bin/docker -H tcp://127.0.0.1:4444 '
-               'build -t {} .').format(iden)
-        output = subprocess.check_output(cmd.split(),
-                                         stderr=subprocess.STDOUT)
+        cmd = [Config.get('docker', 'command'),
+               '-H',
+               Config.get('docker', 'host'),
+               'build', '-t', iden, '.']
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         print(output)
     finally:
         os.chdir(prev_cwd)
@@ -117,12 +117,17 @@ def build_docker(metadata, temp_dir):
 def run_workers(identifier, n=1):
     workers = []
     for i in range(n):
-        cmd = ('/usr/local/bin/docker -H tcp://127.0.0.1:4444 '
-               'run -d {identifier} '
-               '--queue-host=192.168.3.1 '
-               '--queue-port=5555 '
-               '--queue-name {identifier}').format(identifier=identifier)
+        cmd = [Config.get('docker', 'command'),
+               '-H',
+               Config.get('docker', 'host'),
+               'run', '-d', identifier,
+               '--queue-host=',
+               Config.get('queue', 'host'),
+               '--queue-port=',
+               Config.get('queue', 'port'),
+               '--queue-name',
+               identifier]
         workers.append(
             subprocess.check_output(
-                cmd.split(), stderr=subprocess.STDOUT).strip())
+                cmd, stderr=subprocess.STDOUT).strip())
     return workers
