@@ -1,6 +1,8 @@
 import json
 import itertools
 import subprocess
+import sys
+import traceback
 
 from flask import request, Response
 from flask.ext import restful
@@ -167,5 +169,9 @@ class Register(restful.Resource):
                     'command': ' '.join(exc.cmd),
                     'message': exc.output}, 500
         except Exception as exc:
+            _, _, tb = sys.exc_info()
+            trace = traceback.extract_tb(tb)
             return {'status': 'error',
+                    'file': trace[0][0],
+                    'lineno': trace[0][1],
                     'message': exc.message}, 500
