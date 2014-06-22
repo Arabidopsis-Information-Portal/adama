@@ -125,6 +125,8 @@ def main():
     print('Listening in queue {}'.format(args.queue_name), file=sys.stderr)
     print('*** WORKER STARTED', file=sys.stderr)
     worker.run()
+    # If worker stops consuming, it's because of an error
+    print('*** WORKER ERROR', file=sys.stderr)
 
 
 if __name__ == '__main__':
