@@ -41,13 +41,35 @@ values pointing to a Ubuntu linux (at least 14.04).  Then, run
 Building the base containers
 ============================
 
-To build the containers where the user code runs::
+To build the containers where the user code runs:
+
+.. code-block:: bash
 
     $ cd $APIM_SRC
     $ make adapters
     
 The first time may take a long time while pulling the base images from the network. Subsequent runs should
 be much faster.
+
+In case the building of the adapters raises an error similar to::
+
+    Err http://archive.ubuntu.com/ubuntu/ precise-security/main libdpkg-perl all 1.16.1.2ubuntu7.4  404  Not Found [IP: 91.189.92.200 80]
+    Err http://archive.ubuntu.com/ubuntu/ precise-security/main dpkg-dev all 1.16.1.2ubuntu7.4 404   Not Found [IP: 91.189.92.200 80]
+    Failed to fetch http://archive.ubuntu.com/ubuntu/pool/main/d/dpkg/libdpkg-perl_1.16.1.2ubuntu7.4_all.deb  404  Not Found [IP: 91.189.92.200 80]
+    Failed to fetch http://archive.ubuntu.com/ubuntu/pool/main/d/dpkg/dpkg-dev_1.16.1.2ubuntu7.4_all.deb  404  Not Found [IP: 91.189.92.200 80]
+    Fetched 43.3 MB in 8min 44s (82.5 kB/s)
+    E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+    2014/06/22 16:01:06 The command [/bin/sh -c apt-get install -y build-essential software-properties-common python-software-properties] returned a non-zero code: 100
+    make[2]: *** [build] Error 1
+    make[1]: *** [build] Error 2
+    make: *** [adapters] Error 2
+
+rebuild them with the option ``NO_CACHE=true`` (this is due to the package manager cache going out of sync inside the containers):
+
+.. code-block:: bash
+
+   $ make adapters NO_CACHE=true
+   
 
 License
 -------
