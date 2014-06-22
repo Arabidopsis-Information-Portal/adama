@@ -23,6 +23,14 @@ LANGUAGES = {
 }
 
 
+def docker(*args):
+    cmd = [Config.get('docker', 'command'),
+           '-H',
+           Config.get('docker', 'host')]
+    return subprocess.check_output(
+        cmd + list(args), stderr=subprocess.STDOUT).strip()
+
+
 def register(metadata, contents):
     """Register a user's module.
 
@@ -103,11 +111,7 @@ def build_docker(metadata, temp_dir):
     os.chdir(temp_dir)
     try:
         iden = str(uuid.uuid4())
-        cmd = [Config.get('docker', 'command'),
-               '-H',
-               Config.get('docker', 'host'),
-               'build', '-t', iden, '.']
-        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+        output = docker('build', '-t', iden, '.')
         print(output)
     finally:
         os.chdir(prev_cwd)
@@ -115,19 +119,13 @@ def build_docker(metadata, temp_dir):
 
 
 def run_workers(identifier, n=1):
-    workers = []
-    for i in range(n):
-        cmd = [Config.get('docker', 'command'),
-               '-H',
-               Config.get('docker', 'host'),
-               'run', '-d', identifier,
+    workers = [
+        docker('run', '-d', identifier,
                '--queue-host=',
                Config.get('queue', 'host'),
                '--queue-port=',
                Config.get('queue', 'port'),
                '--queue-name',
-               identifier]
-        workers.append(
-            subprocess.check_output(
-                cmd, stderr=subprocess.STDOUT).strip())
+               identifier)
+        for _ in range(n)]
     return workers
