@@ -24,9 +24,8 @@ LANGUAGES = {
 
 
 def docker(*args):
-    cmd = [Config.get('docker', 'command'),
-           '-H',
-           Config.get('docker', 'host')]
+    host = Config.get('docker', 'host')
+    cmd = [Config.get('docker', 'command')] + ['-H', host] if host else []
     return subprocess.check_output(
         cmd + list(args), stderr=subprocess.STDOUT).strip()
 
