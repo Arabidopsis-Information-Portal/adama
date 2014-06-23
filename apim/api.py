@@ -2,6 +2,7 @@ import json
 import itertools
 import subprocess
 import sys
+import textwrap
 import traceback
 
 from flask import request, Response
@@ -9,7 +10,8 @@ from flask.ext import restful
 from flask_restful_swagger import swagger
 
 from .config import Config
-from .adapter.register import register, run_workers
+from .adapter.register import (register, run_workers, RegisterException,
+                               check_health)
 from .tasks import Client
 
 
@@ -159,6 +161,7 @@ class Register(restful.Resource):
                 'workers',
                 '{}_instances'.format(metadata['language']))
             workers = run_workers(iden, n=num_instances)
+            check_health(workers)
             return {'status': 'success',
                     'result': {
                         'identifier': iden,
@@ -168,6 +171,17 @@ class Register(restful.Resource):
             return {'status': 'error',
                     'command': ' '.join(exc.cmd),
                     'message': exc.output}, 500
+        except RegisterException as exc:
+            all_logs = '---\n'.join(exc.logs)
+            return {'status': 'error',
+                    'message': textwrap.dedent(
+                        """
+                        Workers failed to start: {0} out of {1}.
+                        Logs follow:
+
+                        {2}""").format(exc.failed_count,
+                                       exc.total_workers,
+                                       all_logs)}, 500
         except Exception as exc:
             _, _, tb = sys.exc_info()
             trace = traceback.extract_tb(tb)
