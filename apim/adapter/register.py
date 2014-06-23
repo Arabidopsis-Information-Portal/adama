@@ -1,9 +1,11 @@
 import functools
 import json
 import os
+import Queue
 import subprocess
 import tarfile
 import tempfile
+import threading
 import time
 import uuid
 import zipfile
@@ -144,7 +146,25 @@ def check_health(workers):
     """Check that all workers started ok."""
 
     producer = functools.partial(lambda x: docker('logs', x))
-    logs = filter(None, [log_from(worker, producer) for worker in workers])
+    q = Queue.Queue()
+
+    def log(worker, q):
+        q.put(log_from(worker, producer))
+
+    # Ask for logs from workers. We do it in threads so we can poll
+    # for a little while the workers in parallel.
+    ts = []
+    for worker in workers:
+        t = threading.Thread(target=log, args=(worker, q))
+        t.start()
+        ts.append(t)
+    for t in ts:
+        t.join()
+    logs = []
+    while not q.empty():
+        x = q.get()
+        if x:
+            logs.append(x)
     if logs:
         raise RegisterException(len(workers), logs)
 
