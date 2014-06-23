@@ -132,9 +132,9 @@ def build_docker(metadata, temp_dir):
 def run_workers(identifier, n=1):
     workers = [
         docker('run', '-d', identifier,
-               '--queue-host=',
+               '--queue-host',
                Config.get('queue', 'host'),
-               '--queue-port=',
+               '--queue-port',
                Config.get('queue', 'port'),
                '--queue-name',
                identifier)
