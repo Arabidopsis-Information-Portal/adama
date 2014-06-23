@@ -1,7 +1,6 @@
 import json
 import itertools
 import subprocess
-import sys
 import textwrap
 import traceback
 
