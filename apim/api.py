@@ -172,7 +172,7 @@ class Register(restful.Resource):
                     'command': ' '.join(exc.cmd),
                     'message': exc.output}, 500
         except RegisterException as exc:
-            all_logs = '---\n'.join(exc.logs)
+            all_logs = '\n---\n'.join(exc.logs)
             return {'status': 'error',
                     'message': textwrap.dedent(
                         """
