@@ -183,12 +183,9 @@ class Register(restful.Resource):
                                        exc.total_workers,
                                        all_logs)}, 500
         except Exception as exc:
-            _, _, tb = sys.exc_info()
             child_tb = getattr(exc, 'child_traceback', None)
-            trace = traceback.extract_tb(tb)
+            trace = traceback.format_exc()
             return {'status': 'error',
-                    'file': trace[0][0],
-                    'lineno': trace[0][1],
                     'trace': trace,
-                    'child_trace': child_tb,
+                    'worker_trace': child_tb,
                     'message': exc.message}, 500
