@@ -1,8 +1,10 @@
+import functools
 import json
 import os
 import subprocess
 import tarfile
 import tempfile
+import time
 import uuid
 import zipfile
 
@@ -12,6 +14,14 @@ from ..tools import location_of
 from ..config import Config
 
 HERE = location_of(__file__)
+
+# Timeout to wait for output of containers at start up, before
+# declaring them dead
+TIMEOUT = 1  # second
+
+STARTED = 1
+ERROR = 2
+EMPTY = 3
 
 
 LANGUAGES = {
@@ -128,3 +138,46 @@ def run_workers(identifier, n=1):
                identifier)
         for _ in range(n)]
     return workers
+
+
+def check_health(workers):
+    """Check that all workers started ok."""
+
+    producer = functools.partial(lambda x: docker('logs', x))
+    logs = filter(None, [log_from(worker, producer) for worker in workers])
+    if logs:
+        raise RegisterException(len(workers), logs)
+
+
+def analyze(log):
+    for line in log.splitlines():
+        if line.startswith('*** WORKER ERROR'):
+            return ERROR
+        if line.startswith('*** WORKER STARTED'):
+            return STARTED
+    return EMPTY
+
+
+def log_from(worker, producer, retry=True):
+    """Return the logs from worker if start up failed."""
+
+    log = producer(worker)
+    state = analyze(log)
+    if state == ERROR:
+        return producer(worker)
+    if state == STARTED:
+        return None
+    if retry:
+        time.sleep(TIMEOUT)
+        return log_from(worker, producer, retry=False)
+    else:
+        return log
+
+
+class RegisterException(Exception):
+
+    def __init__(self, total_workers, logs):
+        super(Exception, self).__init__()
+        self.total_workers = total_workers
+        self.failed_count = len(logs)
+        self.logs = logs
