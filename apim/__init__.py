@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
+
 __author__ = 'Walter Moreira'
 __email__ = 'wmoreira@tacc.utexas.edu'
 __version__ = '0.1.0'
