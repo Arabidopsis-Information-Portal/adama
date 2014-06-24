@@ -48,6 +48,10 @@ class AbstractQueueConnection(object):
         """
         pass
 
+    def delete(self):
+        """Delete this queue."""
+        pass
+
 
 class QueueConnection(AbstractQueueConnection):
 
@@ -56,6 +60,9 @@ class QueueConnection(AbstractQueueConnection):
         self.queue_port = queue_port
         self.queue_name = queue_name
         self.connect()
+
+    def delete(self):
+        self.channel.queue_delete(self.queue_name)
 
     def connect(self):
         """Establish a connection with the task queue."""
