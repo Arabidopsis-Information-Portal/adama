@@ -2,6 +2,8 @@ from __future__ import print_function
 
 from functools import partial
 import json
+import sys
+from textwrap import dedent
 
 import pika
 
@@ -145,3 +147,28 @@ class Producer(QueueConnection):
                 g.send(True)
                 return
             yield json.loads(message)
+
+
+def check_queue(display=False):
+    """Check that we can establish a connection to the queue."""
+
+    from apim.config import Config
+
+    host = Config.get('queue', 'host')
+    port = Config.getint('queue', 'port')
+    try:
+        q = QueueConnection(queue_host=host,
+                            queue_port=port,
+                            queue_name='test')
+        q.delete()
+        return True
+    except Exception:
+        if display:
+            print(dedent(
+                """
+                Cannot connect to queue exchange at {0}:{1}
+                with dummy queue "test".
+                Please, check ~/.apim.conf
+                """.format(host, port)), file=sys.stderr)
+        raise
+        return False
