@@ -3,6 +3,7 @@ import subprocess
 import pika
 
 from apim.config import Config
+from apim.docker import check_docker
 
 
 def check_queue():
@@ -24,15 +25,6 @@ def check_queue():
         return True
     except pika.AMQPError:
         return False
-
-
-def check_docker():
-    """Check that the Docker daemon is running.
-
-    Use the info from the config file.
-
-    """
-    pass
 
 
 def run():
