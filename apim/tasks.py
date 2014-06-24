@@ -136,9 +136,3 @@ class Producer(QueueConnection):
                 g.send(True)
                 return
             yield json.loads(message)
-
-
-class Consumer(object):
-
-    def __init__(self, queue_host, queue_port, queue_name):
-        pass
