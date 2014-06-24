@@ -23,7 +23,9 @@ class AbstractQueueConnection(object):
     def receive(self):
         """Return multiple responses.
 
-        It should be a generator
+        It should be a generator that produces each response.  The
+        user is supposed to send `True` back to the generator when all
+        the responses are returned.
 
         """
         pass
