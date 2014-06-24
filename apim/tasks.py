@@ -1,17 +1,56 @@
+from functools import partial
 import json
 
 import pika
 
 
-class Client(object):
+class AbstractQueueConnection(object):
+    """A task queue.
 
-    QUEUE_NAME = 'tasks'
-    QUEUE_PORT = 5672
+    Implement this interface to provide a task queue for the
+    workers.
 
-    def __init__(self, queue_host, queue_port=None, queue_name=None):
+    """
+
+    def connect(self):
+        """Establish the connection."""
+        pass
+
+    def send(self, message):
+        """Send an asynchronous message."""
+        pass
+
+    def receive(self):
+        """Return multiple responses.
+
+        It should be a generator
+
+        """
+        pass
+
+    def consume_forever(self, callback):
+        """Consume and invoke `callback`.
+
+        `callback` has the signature::
+
+            f(message, responder)
+
+        where `responder` is a function with signature::
+
+            g(message)
+
+        that can be used to answer to the producer.
+
+        """
+        pass
+
+
+class QueueConnection(AbstractQueueConnection):
+
+    def __init__(self, queue_host, queue_port, queue_name):
         self.queue_host = queue_host
-        self.queue_port = queue_port or self.QUEUE_PORT
-        self.queue_name = queue_name or self.QUEUE_NAME
+        self.queue_port = queue_port
+        self.queue_name = queue_name
         self.connect()
 
     def connect(self):
@@ -29,38 +68,75 @@ class Client(object):
         Return immediately. Use `receive` to get the result.
 
         """
-        serialized_msg = json.dumps(message)
+        self.response = None
         self.result = self.channel.queue_declare(exclusive=True)
         self.result_queue = self.result.method.queue
-        self.channel.basic_consume(self.on_response,
-                                   queue=self.result_queue,
-                                   no_ack=True)
         self.channel.basic_publish(exchange='',
                                    routing_key=self.queue_name,
-                                   body=serialized_msg,
+                                   body=message,
                                    properties=pika.BasicProperties(
                                        # make message persistent
                                        delivery_mode=2,
                                        reply_to=self.result_queue))
-        print("Sent:", message)
 
     def receive(self):
         """Receive results from the queue.
 
-        A generator returning lines from the queue. It will block if
-        there are no lines yet.
+        A generator returning objects from the queue. It will block if
+        there are no objects yet.
+
+        The end of the stream is marked by sending `True` back to the
+        generator.
 
         """
-        self.done = False
-        self.response = None
-        while not self.done:
-            self.connection.process_data_events()
-            if self.response is not None:
-                yield self.response
-                self.response = None
+        while True:
+            (ok, props, message) = self.channel.basic_get(
+                self.result_queue, no_ack=True)
+            if ok is not None:
+                is_done = yield message
+                if is_done:
+                    return
 
-    def on_response(self, ch, method, props, body):
-        if body == 'END':
-            self.done = True
-        else:
-            self.response = json.loads(body)
+    def consume_forever(self, callback):
+        self.channel.basic_qos(prefetch_count=1)
+        self.channel.basic_consume(partial(self.on_consume, callback),
+                                   queue=self.queue_name,
+                                   no_ack=True)
+        self.channel.start_consuming()
+
+    def on_consume(self, callback, ch, method, props, body):
+
+        def responder(result):
+            ch.basic_publish(exchange='',
+                             routing_key=props.reply_to,
+                             body=result)
+
+        callback(body, responder)
+
+
+class Producer(QueueConnection):
+    """Send messages to the queue exchange and receive answers.
+
+    The `receive` method behaves as a generator, returning a stream of
+    messages.
+
+    """
+
+    def send(self, message):
+        super(Producer, self).send(json.dumps(message))
+
+    def receive(self):
+        """Receive messages until getting `END`."""
+
+        g = super(Producer, self).receive()
+        for message in g:
+            if message == 'END':
+                g.send(True)
+                return
+            yield json.loads(message)
+
+
+class Consumer(object):
+
+    def __init__(self, queue_host, queue_port, queue_name):
+        pass

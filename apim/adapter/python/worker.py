@@ -7,64 +7,40 @@ import logging
 import os
 import sys
 
-logging.basicConfig()
+from tasks import QueueConnection
 
-import pika
+logging.basicConfig()
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, 'user_code'))
 
 
-class Worker(object):
+class Worker(QueueConnection):
 
-    QUEUE_NAME = 'tasks'
-    QUEUE_PORT = 5672
-
-    def __init__(self, queue_host, queue_port=None, queue_name=None):
-        self.queue_host = queue_host
-        self.queue_port = queue_port or self.QUEUE_PORT
-        self.queue_name = queue_name or self.QUEUE_NAME
-        self.connect()
-
-    def connect(self):
-        """Establish a connection with the task queue."""
-
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=self.queue_host,
-                                      port=self.queue_port))
-        self.channel = connection.channel()
-        self.channel.queue_declare(queue=self.queue_name, durable=True)
-
-    def run(self):
-        self.channel.basic_qos(prefetch_count=1)
-        self.channel.basic_consume(self.callback,
-                                   queue=self.queue_name,
-                                   no_ack=True)
-        self.channel.start_consuming()
-
-    def callback(self, channel, method, properties, body):
-        reply = (channel, method, properties)
-        try:
-            self.process(body, reply=reply)
-        except Exception as exc:
-            with Results(reply):
+    def callback(self, message, responder):
+        with Results(responder):
+            try:
+                self.process(message)
+            except Exception as exc:
                 print(json.dumps({'error': exc.message}))
                 print('END')
 
-    def process(self, body, reply):
+    def process(self, body):
         import main
         metadata = json.load(open(os.path.join(HERE, 'metadata.json')))
-        with Results(reply):
-            d = json.loads(body)
-            d['worker'] = os.uname()[1]
-            body = json.dumps(d)
-            main.process(json.loads(body))
+        d = json.loads(body)
+        d['worker'] = os.uname()[1]
+        body = json.dumps(d)
+        main.process(json.loads(body))
+
+    def run(self):
+        self.consume_forever(self.callback)
 
 
 class Results(object):
 
-    def __init__(self, reply):
-        self.reply = reply
+    def __init__(self, responder):
+        self.responder = responder
         self.current = []
         self.lines = []
 
@@ -82,22 +58,14 @@ class Results(object):
             self.current.append(old)
             line = ' '.join(self.current).strip()
             if line == '---' or (line == 'END' and self.lines):
-                self.respond('\n'.join(self.lines))
+                self.responder('\n'.join(self.lines))
                 self.lines = []
             else:
                 self.lines.append(line)
             if line == 'END':
-                self.respond(line)
+                self.responder(line)
             self.current = []
         self.current.append(data)
-
-    def respond(self, result):
-        channel, method, properties = self.reply
-        channel.basic_publish(exchange='',
-                              routing_key=properties.reply_to,
-                              body=result)
-
-
 
 
 def parse_args():

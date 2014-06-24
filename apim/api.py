@@ -11,7 +11,7 @@ from flask_restful_swagger import swagger
 from .config import Config
 from .adapter.register import (register, run_workers, RegisterException,
                                check_health)
-from .tasks import Client
+from .tasks import Producer
 
 
 def interleave(a, b):
@@ -84,9 +84,9 @@ class Query(restful.Resource):
         query = request.get_json(force=True)
         service = query['serviceName']
         queue = service
-        client = Client(queue_host=Config.get('queue', 'host'),
-                        queue_port=Config.getint('queue', 'port'),
-                        queue_name=queue)
+        client = Producer(queue_host=Config.get('queue', 'host'),
+                          queue_port=Config.getint('queue', 'port'),
+                          queue_name=queue)
         client.send({'query': query['query'],
                      'count': False,
                      'pageSize': 100,
