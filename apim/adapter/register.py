@@ -2,7 +2,6 @@ import functools
 import json
 import os
 import Queue
-import subprocess
 import tarfile
 import tempfile
 import threading
@@ -14,6 +13,7 @@ import jinja2
 
 from ..tools import location_of
 from ..config import Config
+from ..docker import docker
 
 HERE = location_of(__file__)
 
@@ -33,13 +33,6 @@ LANGUAGES = {
     'lua': ('lua', None),
     'java': ('jar', None)
 }
-
-
-def docker(*args):
-    host = Config.get('docker', 'host')
-    cmd = [Config.get('docker', 'command')] + ['-H', host] if host else []
-    return subprocess.check_output(
-        cmd + list(args), stderr=subprocess.STDOUT).strip()
 
 
 def register(metadata, contents):
