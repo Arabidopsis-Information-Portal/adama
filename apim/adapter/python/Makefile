@@ -3,6 +3,7 @@
 .PHONY: clean
 
 build: Dockerfile ../common *.py
+	cp ../../tasks.py .
 	$(DOCKER) build --no-cache=$(NO_CACHE) -t python .
 	touch build
 	touch .
