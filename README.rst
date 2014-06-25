@@ -24,7 +24,7 @@ Setting up a development box
 ============================
 
 To build a system where to develop the Araport API manager, use the provided ansible_ playbook.
-You'll need to copy `$APIM_SRC/ansible/hosts.example` to `$APIM_SRC/ansible/hosts` and set up the proper
+You'll need to copy ``$APIM_SRC/ansible/hosts.example`` to ``$APIM_SRC/ansible/hosts`` and set up the proper
 values pointing to a Ubuntu linux (at least 14.04).  Then, run
 
 .. code-block:: bash
@@ -48,7 +48,7 @@ To build the containers where the user code runs:
     $ cd $APIM_SRC
     $ make adapters
     
-The first time may take a long time while pulling the base images from the network. Subsequent runs should
+The first build may take a long time while pulling the base images from the network. Subsequent builds should
 be much faster.
 
 In case the building of the adapters raises an error similar to::
