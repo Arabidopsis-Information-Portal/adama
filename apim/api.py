@@ -1,190 +1,49 @@
-import json
-import itertools
 import subprocess
 import textwrap
-import traceback
 
-from flask import request, Response
 from flask.ext import restful
-from flask_restful_swagger import swagger
+from werkzeug.exceptions import ClientDisconnected
 
-from .config import Config
-from .adapter.register import (register, run_workers, RegisterException,
-                               check_health)
-from .tasks import Producer
+from .adapter.register import RegisterException
 
 
-def interleave(a, b):
-    """ '+', [1,2,3] -> [1, '+', 2, '+', 3] """
-    yield next(b)
-    for x, y in itertools.izip(itertools.cycle(a), b):
-        yield x
-        yield y
+class APIException(Exception):
+
+    def __init__(self, message, code):
+        self.message = message
+        self.code = code
 
 
-@swagger.model
-class AIPQueryModel(object):
-    resource_fields = {
-        'locus': restful.fields.String
-    }
-    required = ['locus']
+class MyApi(restful.Api):
 
-
-@swagger.model
-class AdapterIdentifierModel(object):
-    resource_fields = {
-        'identifier': restful.fields.String,
-        'workers': restful.fields.List(restful.fields.String)
-    }
-
-
-@swagger.model
-@swagger.nested(
-    result=AdapterIdentifierModel.__name__
-)
-class AdapterModel(object):
-    resource_fields = {
-        'status': restful.fields.String(attribute='success or failure'),
-        'result': restful.fields.Nested(AdapterIdentifierModel.resource_fields)
-    }
-
-
-class Query(restful.Resource):
-
-    @swagger.operation(
-        notes='Greet people',
-        nickname='hello'
-    )
-    def get(self):
-        return {'hello': 'world'}
-
-    @swagger.operation(
-        notes='Query a data source',
-        nickname='query',
-        parameters=[
-            {
-                'name': 'serviceName',
-                'description': 'Identifier of the data source',
-                'required': True,
-                'allowMultiple': False,
-                'dataType': 'string',
-                'paramType': 'body'
-            },
-            {
-                'name': 'query',
-                'description': 'AIP formatted query',
-                'required': True,
-                'allowMultiple': False,
-                'dataType': AIPQueryModel.__name__,
-                'paramType': 'body'
-            }
-        ]
-    )
-    def post(self):
-        query = request.get_json(force=True)
-        service = query['serviceName']
-        queue = service
-        client = Producer(queue_host=Config.get('queue', 'host'),
-                          queue_port=Config.getint('queue', 'port'),
-                          queue_name=queue)
-        client.send({'query': query['query'],
-                     'count': False,
-                     'pageSize': 100,
-                     'page': 1})
-
-        def result_generator():
-            yield '{"result": [\n'
-            gen = itertools.imap(lambda x: json.dumps(x) + '\n',
-                                 client.receive())
-            for line in interleave([', '], gen):
-                yield line
-            yield '],\n'
-            yield '"status": "success"}\n'
-
-        return Response(result_generator(), mimetype='application/json')
-
-
-class Register(restful.Resource):
-
-    @swagger.operation(
-        notes='Register an adapter for a data source',
-        nickname='register',
-        responseClass=AdapterModel.__name__,
-        parameters=[
-            {
-                'name': 'language',
-                'description': 'Language in which the adapter is written',
-                'required': True,
-                'allowMultiple': False,
-                'dataType': 'string',
-                'paramType': 'form'
-            },
-            {
-                'name': 'fileType',
-                'description': ('Type of package: \n'
-                                ' module: a single file,\n'
-                                ' tar.gz: a compressed tarball'),
-                'required': True,
-                'allowMultiple': False,
-                'dataType': 'string',
-                'paramType': 'form'
-            },
-            {
-                'name': 'requirements',
-                'description': 'comma separated list of third party modules',
-                'required': False,
-                'allowMultiple': False,
-                'dataType': 'string',
-                'paramType': 'form'
-            },
-            {
-                'name': 'code',
-                'description': "user's code for the adapter",
-                'required': True,
-                'allowMultiple': False,
-                'dataType': 'File',
-                'paramType': 'form'
-            }
-        ]
-    )
-    def post(self):
-        metadata = request.form
+    def handle_error(self, e):
         try:
-            code = request.files['code']
-        except KeyError:
-            return {'status': 'error',
-                    'message': 'no file provided'}, 400
-        try:
-            iden = register(metadata, code.read())
-            num_instances = Config.getint(
-                'workers',
-                '{}_instances'.format(metadata['language']))
-            workers = run_workers(iden, n=num_instances)
-            check_health(workers)
-            return {'status': 'success',
-                    'result': {
-                        'identifier': iden,
-                        'workers': workers,
-                    }}
+            raise e
+        except APIException as exc:
+            return self.make_response(
+                {'status': 'error',
+                 'message': 'API error: {0}'.format(exc.message)}, exc.code)
         except subprocess.CalledProcessError as exc:
-            return {'status': 'error',
-                    'command': ' '.join(exc.cmd),
-                    'message': exc.output}, 500
+            return self.make_respons(
+                {'status': 'error',
+                 'command': ' '.join(exc.cmd),
+                 'message': exc.output}, 500)
         except RegisterException as exc:
             all_logs = '\n---\n'.join(exc.logs)
-            return {'status': 'error',
-                    'message': textwrap.dedent(
-                        """
-                        Workers failed to start: {0} out of {1}.
-                        Logs follow:
+            return self.make_response(
+                {'status': 'error',
+                 'message': textwrap.dedent(
+                     """
+                     Workers failed to start: {0} out of {1}.
+                     Logs follow:
 
-                        {2}""").format(exc.failed_count,
-                                       exc.total_workers,
-                                       all_logs)}, 500
-        except Exception as exc:
-            child_tb = getattr(exc, 'child_traceback', None)
-            trace = traceback.format_exc()
-            return {'status': 'error',
-                    'trace': trace,
-                    'worker_trace': child_tb,
-                    'message': exc.message}, 500
+                     {2}""").format(exc.failed_count,
+                                    exc.total_workers,
+                                    all_logs)}, 500)
+        # except Exception as exc:
+        #     child_tb = getattr(exc, 'child_traceback', None)
+        #     trace = traceback.format_exc()
+        #     return {'status': 'error',
+        #             'trace': trace,
+        #             'worker_trace': child_tb,
+        #             'message': exc.message}, 500

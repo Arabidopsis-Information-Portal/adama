@@ -8,13 +8,15 @@ __email__ = 'wmoreira@tacc.utexas.edu'
 __version__ = '0.1.0'
 
 from flask import Flask
-from flask.ext import restful
 from flask_restful_swagger import swagger
 
-from .api import Query, Register
+from .query import Query
+from .register import Register
+from .api import MyApi
+
 
 app = Flask(__name__)
-api = swagger.docs(restful.Api(app),
+api = swagger.docs(MyApi(app),
                    apiVersion='0.1',
                    basePath='http://localhost:8000',
                    resourcePath='/',
