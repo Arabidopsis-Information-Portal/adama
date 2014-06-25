@@ -170,5 +170,4 @@ def check_queue(display=False):
                 with dummy queue "test".
                 Please, check ~/.apim.conf
                 """.format(host, port)), file=sys.stderr)
-        raise
         return False
