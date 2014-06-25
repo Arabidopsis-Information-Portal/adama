@@ -15,8 +15,11 @@ HERE = location_of(__file__)
 
 def read_config():
     parser = ConfigParser.ConfigParser()
-    parser.read([os.path.join(HERE, '../apim.conf'),
-                 os.path.expanduser('~/.apim.conf')])
+    places = [os.path.abspath(os.path.join(HERE, '../apim.conf')),
+              os.path.expanduser('~/.apim.conf')]
+    if not parser.read(places):
+        raise RuntimeError("couldn't read config file from {0}"
+                           .format(', '.join(places)))
     return parser
 
 Config = read_config()
