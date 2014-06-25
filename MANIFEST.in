@@ -4,8 +4,13 @@ include HISTORY.rst
 include LICENSE
 include README.rst
 
+include apim.conf
+
+recursive-include apim *
 recursive-include tests *
+recursive-include ansible *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+recursive-exclude * *~
 
 recursive-include docs *.rst conf.py Makefile make.bat
