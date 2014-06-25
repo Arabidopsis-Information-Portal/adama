@@ -38,10 +38,12 @@ setup(
     url='https://github.com/waltermoreira/apim',
     packages=[
         'apim',
+        'apim.adapter'
     ],
-    package_dir={'apim':
-                 'apim'},
+    scripts=['bin/apim_server.py'],
+    package_dir={'apim': 'apim'},
     include_package_data=True,
+    data_files=[('', 'apim.conf')],
     install_requires=[
     ],
     license="MIT",
