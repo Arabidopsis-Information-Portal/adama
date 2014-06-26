@@ -1,11 +1,10 @@
-from flask import request
 from flask.ext import restful
 from flask.ext.restful import reqparse
 from flask_restful_swagger import swagger
 from werkzeug.exceptions import ClientDisconnected
 from werkzeug.datastructures import FileStorage
 
-from .adapter.register import register, run_workers, check_health
+from .adapter import register, run_workers, check_health
 from .config import Config
 from .api import APIException
 
@@ -118,3 +117,5 @@ class Register(restful.Resource):
             args = parser.parse_args()
         except ClientDisconnected as exc:
             raise APIException(exc.data['message'], 400)
+
+        return args

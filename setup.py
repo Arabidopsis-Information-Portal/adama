@@ -37,8 +37,7 @@ setup(
     author_email='wmoreira@tacc.utexas.edu',
     url='https://github.com/waltermoreira/apim',
     packages=[
-        'apim',
-        'apim.adapter'
+        'apim'
     ],
     scripts=['bin/apim_server.py'],
     package_dir={'apim': 'apim'},
