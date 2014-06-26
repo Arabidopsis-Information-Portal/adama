@@ -11,9 +11,9 @@ import zipfile
 
 import jinja2
 
-from ..tools import location_of
-from ..config import Config
-from ..docker import docker
+from .tools import location_of
+from .config import Config
+from .docker import docker
 
 HERE = location_of(__file__)
 

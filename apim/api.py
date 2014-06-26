@@ -3,7 +3,7 @@ import textwrap
 
 from flask.ext import restful
 
-from .adapter.register import RegisterException
+from .adapter import RegisterException
 
 
 class APIException(Exception):
