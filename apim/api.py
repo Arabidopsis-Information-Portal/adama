@@ -2,7 +2,6 @@ import subprocess
 import textwrap
 
 from flask.ext import restful
-from werkzeug.exceptions import ClientDisconnected
 
 from .adapter.register import RegisterException
 

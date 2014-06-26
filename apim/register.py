@@ -2,6 +2,8 @@ from flask import request
 from flask.ext import restful
 from flask.ext.restful import reqparse
 from flask_restful_swagger import swagger
+from werkzeug.exceptions import ClientDisconnected
+from werkzeug.datastructures import FileStorage
 
 from .adapter.register import register, run_workers, check_health
 from .config import Config
@@ -102,13 +104,17 @@ class Register(restful.Resource):
 
     def validate(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True, dest='name',
+        parser.add_argument('name', type=str, required=True,
                             help='name of the adapter is required')
-        args = parser.parse_args()
-        raise APIException('aborted', 400)
-
-        metadata = request.form
+        parser.add_argument('version', type=str)
+        parser.add_argument('description', type=str)
+        parser.add_argument('url', type=str, required=True,
+                            help='url of the data service is required')
+        parser.add_argument('requirements', type=str, dest='requirements')
+        parser.add_argument('code', type=FileStorage, required=True,
+                            location='files',
+                            help='a file, tarball, or zip, must be uploaded')
         try:
-            code = request.files['code']
-        except KeyError:
-            raise APIException('no file provided', 400)
+            args = parser.parse_args()
+        except ClientDisconnected as exc:
+            raise APIException(exc.data['message'], 400)
