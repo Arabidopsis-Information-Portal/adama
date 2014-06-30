@@ -3,15 +3,22 @@ import textwrap
 
 from flask.ext import restful
 
-from .adapter import RegisterException
 
 
 class APIException(Exception):
 
     def __init__(self, message, code):
+        Exception.__init__(self, message)
         self.message = message
         self.code = code
 
+class RegisterException(Exception):
+
+    def __init__(self, total_workers, logs):
+        super(Exception, self).__init__('foo')
+        self.total_workers = total_workers
+        self.failed_count = len(logs)
+        self.logs = logs
 
 class MyApi(restful.Api):
 

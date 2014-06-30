@@ -14,7 +14,7 @@ import jinja2
 from .tools import location_of
 from .config import Config
 from .docker import docker
-from .api import APIException
+from .api import APIException, RegisterException
 
 HERE = location_of(__file__)
 
@@ -212,12 +212,3 @@ def log_from(worker, producer, retry=True):
         return log_from(worker, producer, retry=False)
     else:
         return log
-
-
-class RegisterException(Exception):
-
-    def __init__(self, total_workers, logs):
-        super(Exception, self).__init__()
-        self.total_workers = total_workers
-        self.failed_count = len(logs)
-        self.logs = logs
