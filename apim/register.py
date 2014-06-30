@@ -4,7 +4,7 @@ from flask_restful_swagger import swagger
 from werkzeug.exceptions import ClientDisconnected
 from werkzeug.datastructures import FileStorage
 
-from .adapter import Adapter, run_workers, check_health
+from .adapter import Adapter
 from .config import Config
 from .api import APIException
 
@@ -89,19 +89,18 @@ class Register(restful.Resource):
     )
     def post(self):
         args = self.validate()
-        metadata = {'requirements': args.requirements,
+        metadata = {'name': args.name,
+                    'version': args.version,
+                    'requirements': args.requirements,
                     'url': args.url}
         adapter = Adapter(args.code.filename, args.code.read(), metadata)
         adapter.register()
-        num_instances = Config.getint(
-            'workers',
-            '{}_instances'.format(adapter.language))
-        workers = run_workers(adapter.iden, n=num_instances)
-        check_health(workers)
+        adapter.run_workers()
+        adapter.check_health()
         return {'status': 'success',
                 'result': {
                     'identifier': adapter.iden,
-                    'workers': workers,
+                    'workers': adapter.workers,
                 }}
 
     def validate(self):

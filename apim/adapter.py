@@ -162,45 +162,45 @@ class Adapter(object):
         finally:
             os.chdir(prev_cwd)
 
+    def run_workers(self, n=None):
+        if n is None:
+            n = Config.getint(
+                'workers', '{}_instances'.format(self.language))
+        self.workers = [
+            docker('run', '-d', self.iden,
+                   '--queue-host',
+                   Config.get('queue', 'host'),
+                   '--queue-port',
+                   Config.get('queue', 'port'),
+                   '--queue-name',
+                   self.iden)
+            for _ in range(n)]
 
-def run_workers(identifier, n=1):
-    workers = [
-        docker('run', '-d', identifier,
-               '--queue-host',
-               Config.get('queue', 'host'),
-               '--queue-port',
-               Config.get('queue', 'port'),
-               '--queue-name',
-               identifier)
-        for _ in range(n)]
-    return workers
+    def check_health(self):
+        """Check that all workers started ok."""
 
+        producer = functools.partial(lambda x: docker('logs', x))
+        q = Queue.Queue()
 
-def check_health(workers):
-    """Check that all workers started ok."""
+        def log(worker, q):
+            q.put(log_from(worker, producer))
 
-    producer = functools.partial(lambda x: docker('logs', x))
-    q = Queue.Queue()
-
-    def log(worker, q):
-        q.put(log_from(worker, producer))
-
-    # Ask for logs from workers. We do it in threads so we can poll
-    # for a little while the workers in parallel.
-    ts = []
-    for worker in workers:
-        t = threading.Thread(target=log, args=(worker, q))
-        t.start()
-        ts.append(t)
-    for t in ts:
-        t.join()
-    logs = []
-    while not q.empty():
-        x = q.get()
-        if x:
-            logs.append(x)
-    if logs:
-        raise RegisterException(len(workers), logs)
+        # Ask for logs from workers. We do it in threads so we can poll
+        # for a little while the workers in parallel.
+        ts = []
+        for worker in self.workers:
+            t = threading.Thread(target=log, args=(worker, q))
+            t.start()
+            ts.append(t)
+        for t in ts:
+            t.join()
+        logs = []
+        while not q.empty():
+            x = q.get()
+            if x:
+                logs.append(x)
+        if logs:
+            raise RegisterException(len(workers), logs)
 
 
 def analyze(log):
