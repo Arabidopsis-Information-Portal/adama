@@ -32,7 +32,7 @@ class MyApi(restful.Api):
                 {'status': 'error',
                  'message': 'API error: {0}'.format(exc.message)}, exc.code)
         except subprocess.CalledProcessError as exc:
-            return self.make_respons(
+            return self.make_response(
                 {'status': 'error',
                  'command': ' '.join(exc.cmd),
                  'message': exc.output}, 500)
