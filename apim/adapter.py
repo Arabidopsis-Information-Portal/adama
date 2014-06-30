@@ -190,12 +190,13 @@ def check_health(workers):
 
 
 def analyze(log):
+    state = EMPTY
     for line in log.splitlines():
         if line.startswith('*** WORKER ERROR'):
             return ERROR
         if line.startswith('*** WORKER STARTED'):
-            return STARTED
-    return EMPTY
+            state = STARTED
+    return state
 
 
 def log_from(worker, producer, retry=True):
