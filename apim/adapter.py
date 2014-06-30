@@ -49,7 +49,7 @@ class Adapter(object):
         self.filename = filename
         self.contents = contents
         self.metadata = metadata
-        self.detect_language()
+        self.language = None
         self.temp_dir = self.create_temp_dir()
 
     def register(self):
@@ -99,7 +99,7 @@ class Adapter(object):
         if ext == '.zip':
             # it's a zip file
             zip_file = os.path.join(self.temp_dir, 'contents.zip')
-            with open(zipfile, 'w') as f:
+            with open(zip_file, 'w') as f:
                 f.write(self.contents)
             zip = zipfile.ZipFile(zip_file)
             zip.extractall(user_code_dir)
