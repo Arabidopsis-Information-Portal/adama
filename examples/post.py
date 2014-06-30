@@ -20,7 +20,7 @@ def example():
                          data={'name': 'foo',
                                'url': 'http://bar.spam',
                                'requirements': 'requests'},
-                         files={'code': code})
+                         files={'code': ('main.py', code)})
     registration = resp.json()
     if registration['status'] == 'success':
         print('Registration successful.')
