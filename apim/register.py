@@ -88,11 +88,14 @@ class Register(restful.Resource):
         ]
     )
     def post(self):
-        metadata, code = self.validate()
-        iden = register(metadata, code)
+        args = self.validate()
+        metadata = {'requirements': args.requirements,
+                    'url': args.url}
+        adapter = Adapter(args.code.filename, args.code.read(), metadata)
+        iden, language = register(args)
         num_instances = Config.getint(
             'workers',
-            '{}_instances'.format(metadata['language']))
+            '{}_instances'.format(language))
         workers = run_workers(iden, n=num_instances)
         check_health(workers)
         return {'status': 'success',

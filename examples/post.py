@@ -15,10 +15,10 @@ HERE = location_of(__file__)
 
 def example():
     code = open(os.path.join(
-        HERE, '../apim/adapter/adapters/thalemine/main.py')).read()
+        HERE, '../apim/containers/adapters/thalemine/main.py')).read()
     resp = requests.post(urljoin(URL, 'register'),
-                         data={'language': 'python',
-                               'fileType': 'module',
+                         data={'name': 'foo',
+                               'url': 'http://bar.spam',
                                'requirements': 'requests'},
                          files={'code': code})
     registration = resp.json()

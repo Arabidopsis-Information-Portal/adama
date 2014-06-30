@@ -14,6 +14,7 @@ import jinja2
 from .tools import location_of
 from .config import Config
 from .docker import docker
+from .api import APIException
 
 HERE = location_of(__file__)
 
@@ -34,92 +35,118 @@ LANGUAGES = {
     'java': ('jar', None)
 }
 
-
-def register(metadata, contents):
-    """Register a user's module.
-
-    `metadata` has the form::
-
-        {'fileType': 'module'|'tar.gz'|'zip',
-         'language': ...,
-         'requirements': ...}
-
-    `requirements` is a comma separated list of packages which should
-    be installable with the standard package manager of `language`.
-
-    `contents` is a Python file or a compressed directory with a
-    `main` module.
-
-    On success, return an identifier for the new created container.
-
-    """
-    temp_dir = create_temp_dir()
-    extract_code(metadata, contents, temp_dir)
-    render_template(metadata, temp_dir)
-    save_metadata(metadata, temp_dir)
-    iden = build_docker(metadata, temp_dir)
-    return iden
+EXTENSIONS = {
+    '.py': 'python',
+    '.rb': 'ruby',
+    '.jar': 'java',
+    '.lua': 'lua'
+}
 
 
-def create_temp_dir():
-    return tempfile.mkdtemp()
+class Adapter(object):
 
+    def __init__(self, filename, contents, metadata):
+        self.filename = filename
+        self.contents = contents
+        self.metadata = metadata
+        self.detect_language()
+        self.temp_dir = self.create_temp_dir()
 
-def extract_code(metadata, contents, temp_dir):
-    language = metadata['language']
-    file_type = metadata['fileType']
+    def register(self):
+        """[FIX DOCS] Register a user's module.
 
-    user_code = os.path.join(temp_dir, 'user_code')
-    os.mkdir(user_code)
-    ext, _ = LANGUAGES[language]
-    if file_type == 'module':
-        main = 'main.{}'.format(ext)
-        with open(os.path.join(user_code, main), 'w') as f:
-            f.write(contents)
-    elif file_type == 'tar.gz':
-        with open(os.path.join(temp_dir, 'contents.tgz'), 'w') as f:
-            f.write(contents)
-        tar = tarfile.open(os.path.join(temp_dir, 'contents.tgz'))
-        tar.extractall(user_code)
-    elif file_type == 'zip':
-        with open(os.path.join(temp_dir, 'contents.zip'), 'w') as f:
-            f.write(contents)
-        zip = zipfile.ZipFile(os.path.join(temp_dir, 'contents.zip'))
-        zip.extractall(user_code)
-    elif file_type == 'package':
-        raise Exception('package support not implemented yet')
+        `metadata` has the form::
 
+            {'fileType': 'module'|'tar.gz'|'zip',
+             'language': ...,
+             'requirements': ...}
 
-def render_template(metadata, temp_dir):
-    language = metadata['language']
-    requirements = metadata['requirements']
+        `requirements` is a comma separated list of packages which should
+        be installable with the standard package manager of `language`.
 
-    dockerfile_template = jinja2.Template(
-        open(os.path.join(HERE, 'Dockerfile.adapter')).read())
-    _, installer = LANGUAGES[language]
-    requirement_cmds = 'RUN ' + installer.format(package=requirements)
+        `contents` is a Python file or a compressed directory with a
+        `main` module.
 
-    dockerfile = dockerfile_template.render(language=language,
-                                            requirement_cmds=requirement_cmds)
-    with open(os.path.join(temp_dir, 'Dockerfile'), 'w') as f:
-        f.write(dockerfile)
+        On success, return an identifier for the new created container.
 
+        """
+        self.get_code()
+        self.render_template()
+        self.save_metadata()
+        self.build_docker()
+        return self.iden, self.language
 
-def save_metadata(metadata, temp_dir):
-    with open(os.path.join(temp_dir, 'metadata.json'), 'w') as f:
-        f.write(json.dumps(metadata))
+    def create_temp_dir(self):
+        return tempfile.mkdtemp()
 
+    def extension(self):
+        _, ext = os.path.splitext(self.filename)
+        return ext
 
-def build_docker(metadata, temp_dir):
-    prev_cwd = os.getcwd()
-    os.chdir(temp_dir)
-    try:
-        iden = str(uuid.uuid4())
-        output = docker('build', '-t', iden, '.')
-        print(output)
-    finally:
-        os.chdir(prev_cwd)
-    return iden
+    def detect_language(self):
+        ext = self.extension()
+        try:
+            self.language = EXTENSIONS[ext]
+        except KeyError:
+            raise APIException('unknown extension {0}'.format(ext), 400)
+
+    def get_code(self):
+        """Extract code from args.code into ``temp_dir``."""
+
+        ext = self.extension()
+        user_code_dir = os.path.join(self.temp_dir, 'user_code')
+        os.mkdir(user_code_dir)
+        if ext == '.zip':
+            # it's a zip file
+            zip_file = os.path.join(self.temp_dir, 'contents.zip')
+            with open(zipfile, 'w') as f:
+                f.write(self.contents)
+            zip = zipfile.ZipFile(zip_file)
+            zip.extractall(user_code_dir)
+        elif ext in ('.tar', '.gz', '.tgz'):
+            # it's a tarball
+            tarball = os.path.join(self.temp_dir, 'contents.tgz')
+            with open(tarball, 'w') as f:
+                f.write(self.contents)
+            tar = tarfile.open(tarball)
+            tar.extractall(user_code_dir)
+        elif ext in EXTENSIONS.keys():
+            # it's a module
+            module = os.path.join(user_code_dir, self.filename)
+            with open(module, 'w') as f:
+                f.write(self.contents)
+        else:
+            raise APIException(
+                'unknown extension: {0}'.format(self.filename), 400)
+
+    def render_template(self):
+        """Create Dockerfile for this adapter."""
+
+        requirements = self.metadata['requirements']
+
+        dockerfile_template = jinja2.Template(
+            open(os.path.join(HERE, 'containers/Dockerfile.adapter')).read())
+        _, installer = LANGUAGES[self.language]
+        requirement_cmds = 'RUN ' + installer.format(package=requirements)
+
+        dockerfile = dockerfile_template.render(
+            language=self.language, requirement_cmds=requirement_cmds)
+        with open(os.path.join(self.temp_dir, 'Dockerfile'), 'w') as f:
+            f.write(dockerfile)
+
+    def save_metadata(self):
+        with open(os.path.join(self.temp_dir, 'metadata.json'), 'w') as f:
+            f.write(json.dumps(self.metadata))
+
+    def build_docker(self):
+        prev_cwd = os.getcwd()
+        os.chdir(self.temp_dir)
+        try:
+            self.iden = str(uuid.uuid4())
+            output = docker('build', '-t', self.iden, '.')
+            print(output)
+        finally:
+            os.chdir(prev_cwd)
 
 
 def run_workers(identifier, n=1):
