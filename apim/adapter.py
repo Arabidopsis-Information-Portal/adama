@@ -54,7 +54,14 @@ class Adapter(object):
         self.contents = contents
         self.metadata = metadata
         self.language = None
+        self.validate_metadata()
         self.temp_dir = self.create_temp_dir()
+
+    def validate_metadata(self):
+        self.requirements = self.metadata.get('requirements', {})
+        self.name = self.metadata.get('name', uuid.uuid4())
+        self.version = self.metadata.get('version', '0.1')
+        self.iden = '{0}_v{1}'.format(self.name, self.version)
 
     def register(self):
         """[FIX DOCS] Register a user's module.
@@ -79,7 +86,6 @@ class Adapter(object):
         self.render_template()
         self.save_metadata()
         self.build_docker()
-        return self.iden, self.language
 
     def create_temp_dir(self):
         return tempfile.mkdtemp()
@@ -136,12 +142,10 @@ class Adapter(object):
     def render_template(self):
         """Create Dockerfile for this adapter."""
 
-        requirements = self.metadata['requirements']
-
         dockerfile_template = jinja2.Template(
             open(os.path.join(HERE, 'containers/Dockerfile.adapter')).read())
         _, installer = LANGUAGES[self.language]
-        requirement_cmds = 'RUN ' + installer.format(package=requirements)
+        requirement_cmds = 'RUN ' + installer.format(package=self.requirements)
 
         dockerfile = dockerfile_template.render(
             language=self.language, requirement_cmds=requirement_cmds)
@@ -156,7 +160,6 @@ class Adapter(object):
         prev_cwd = os.getcwd()
         os.chdir(self.temp_dir)
         try:
-            self.iden = str(uuid.uuid4())
             output = docker('build', '-t', self.iden, '.')
             print(output)
         finally:

@@ -5,6 +5,7 @@ from werkzeug.exceptions import ClientDisconnected
 from werkzeug.datastructures import FileStorage
 
 from .adapter import Adapter
+from .adapters import adapters
 from .config import Config
 from .api import APIException
 
@@ -90,18 +91,23 @@ class Register(restful.Resource):
     def post(self):
         args = self.validate()
         metadata = {'name': args.name,
-                    'version': args.version,
-                    'requirements': args.requirements,
+                    'version': args.version or '0.1',
+                    'requirements': args.requirements or '',
                     'url': args.url}
         adapter = Adapter(args.code.filename, args.code.read(), metadata)
         adapter.register()
         adapter.run_workers()
         adapter.check_health()
+        adapters[adapter.name] = adapter
         return {'status': 'success',
                 'result': {
                     'identifier': adapter.iden,
                     'workers': adapter.workers,
                 }}
+
+    def get(self):
+        return {'status': 'success',
+                'adapters': adapters.list()}
 
     def validate(self):
         parser = reqparse.RequestParser()
@@ -111,7 +117,7 @@ class Register(restful.Resource):
         parser.add_argument('description', type=str)
         parser.add_argument('url', type=str, required=True,
                             help='url of the data service is required')
-        parser.add_argument('requirements', type=str, dest='requirements')
+        parser.add_argument('requirements', type=str)
         parser.add_argument('code', type=FileStorage, required=True,
                             location='files',
                             help='a file, tarball, or zip, must be uploaded')
