@@ -85,6 +85,18 @@ def test_adapter_detect_language():
     with pytest.raises(apim.adapter.APIException):
         a.detect_language()
 
+    a = apim.adapter.Adapter(
+        'foo.tgz', open(os.path.join(HERE, 'foo.tgz')).read(), {})
+    a.get_code()
+    a.detect_language()
+    assert a.language == 'python'
+
+    a = apim.adapter.Adapter(
+        'foo.zip', open(os.path.join(HERE, 'foo.zip')).read(), {})
+    a.get_code()
+    a.detect_language()
+    assert a.language == 'ruby'
+
 def test_get_code_module():
     a = apim.adapter.Adapter('foo.py', 'foo', {})
     a.get_code()

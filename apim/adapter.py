@@ -1,4 +1,5 @@
 import functools
+import glob
 import json
 import os
 import Queue
@@ -42,6 +43,8 @@ EXTENSIONS = {
     '.lua': 'lua'
 }
 
+TARBALLS = ['.tar', '.gz', '.tgz']
+ZIPS = ['.zip']
 
 class Adapter(object):
 
@@ -71,6 +74,7 @@ class Adapter(object):
 
         """
         self.get_code()
+        self.detect_language()
         self.render_template()
         self.save_metadata()
         self.build_docker()
@@ -79,31 +83,40 @@ class Adapter(object):
     def create_temp_dir(self):
         return tempfile.mkdtemp()
 
-    def extension(self):
-        _, ext = os.path.splitext(self.filename)
+    def extension(self, filename):
+        _, ext = os.path.splitext(filename)
         return ext
 
     def detect_language(self):
-        ext = self.extension()
+        ext = self.extension(self.filename)
         try:
             self.language = EXTENSIONS[ext]
         except KeyError:
+            if ext in TARBALLS + ZIPS:
+                main = os.path.join(self.temp_dir, 'user_code/main.*')
+                try:
+                    ext = self.extension(glob.glob(main)[0])
+                    self.language = EXTENSIONS[ext]
+                    return
+                except IndexError:
+                    raise APIException('compressed file does not contain '
+                                       'a "main" module', 400)
             raise APIException('unknown extension {0}'.format(ext), 400)
 
     def get_code(self):
         """Extract code from args.code into ``temp_dir``."""
 
-        ext = self.extension()
+        ext = self.extension(self.filename)
         user_code_dir = os.path.join(self.temp_dir, 'user_code')
         os.mkdir(user_code_dir)
-        if ext == '.zip':
+        if ext in ZIPS:
             # it's a zip file
             zip_file = os.path.join(self.temp_dir, 'contents.zip')
             with open(zip_file, 'w') as f:
                 f.write(self.contents)
             zip = zipfile.ZipFile(zip_file)
             zip.extractall(user_code_dir)
-        elif ext in ('.tar', '.gz', '.tgz'):
+        elif ext in TARBALLS:
             # it's a tarball
             tarball = os.path.join(self.temp_dir, 'contents.tgz')
             with open(tarball, 'w') as f:
