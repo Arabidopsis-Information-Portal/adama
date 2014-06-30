@@ -108,7 +108,7 @@ def test_get_code_tarball():
         'foo.tgz', open(os.path.join(HERE, 'foo.tgz')).read(), {})
     a.get_code()
     assert open(
-        os.path.join(a.temp_dir, 'user_code/foo.py')).read() == 'foo\n'
+        os.path.join(a.temp_dir, 'user_code/main.py')).read() == 'foo\n'
     assert open(
         os.path.join(a.temp_dir, 'user_code/dir/bar')).read() == 'bar\n'
 
@@ -117,6 +117,6 @@ def test_get_code_zip():
         'foo.zip', open(os.path.join(HERE, 'foo.zip')).read(), {})
     a.get_code()
     assert open(
-        os.path.join(a.temp_dir, 'user_code/foo.py')).read() == 'foo\n'
+        os.path.join(a.temp_dir, 'user_code/main.rb')).read() == 'foo\n'
     assert open(
         os.path.join(a.temp_dir, 'user_code/dir/bar')).read() == 'bar\n'
