@@ -92,15 +92,15 @@ class Register(restful.Resource):
         metadata = {'requirements': args.requirements,
                     'url': args.url}
         adapter = Adapter(args.code.filename, args.code.read(), metadata)
-        iden, language = register(args)
+        adapter.register()
         num_instances = Config.getint(
             'workers',
-            '{}_instances'.format(language))
-        workers = run_workers(iden, n=num_instances)
+            '{}_instances'.format(adapter.language))
+        workers = run_workers(adapter.iden, n=num_instances)
         check_health(workers)
         return {'status': 'success',
                 'result': {
-                    'identifier': iden,
+                    'identifier': adapter.iden,
                     'workers': workers,
                 }}
 
