@@ -4,13 +4,13 @@ import textwrap
 from flask.ext import restful
 
 
-
 class APIException(Exception):
 
     def __init__(self, message, code):
         Exception.__init__(self, message)
         self.message = message
         self.code = code
+
 
 class RegisterException(Exception):
 
@@ -19,6 +19,7 @@ class RegisterException(Exception):
         self.total_workers = total_workers
         self.failed_count = len(logs)
         self.logs = logs
+
 
 class MyApi(restful.Api):
 

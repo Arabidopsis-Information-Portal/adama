@@ -46,6 +46,7 @@ EXTENSIONS = {
 TARBALLS = ['.tar', '.gz', '.tgz']
 ZIPS = ['.zip']
 
+
 class Adapter(object):
 
     def __init__(self, filename, contents, metadata):
