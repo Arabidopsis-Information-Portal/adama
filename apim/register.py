@@ -4,7 +4,7 @@ from flask_restful_swagger import swagger
 from werkzeug.exceptions import ClientDisconnected
 from werkzeug.datastructures import FileStorage
 
-from .adapter import register, run_workers, check_health
+from .adapter import Adapter, run_workers, check_health
 from .config import Config
 from .api import APIException
 
