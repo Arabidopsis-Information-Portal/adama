@@ -11,3 +11,7 @@
     - python
     - python-dev
     - python-pip
+
+- name: Install ack-grep
+  apt: name=ack-grep state=present
+  sudo: yes
