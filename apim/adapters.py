@@ -19,17 +19,12 @@ class Adapters(dict):
         self._db.set(adapter.iden, obj)
 
     def list_all(self):
-        return list(self.get_adapters())
+        return list(self._list_all())
 
-    def get_adapters(self):
+    def _list_all(self):
         for key in self._db.keys():
-            obj = cPickle.loads(self._db.get(key))
-            yield {
-                'identifier': obj.iden,
-                'version': obj.version,
-                'metadata': obj.metadata,
-                'language': obj.language,
-                'workers': obj.workers
-            }
+            obj = self._db.get(key)
+            yield cPickle.loads(obj).to_json()
+
 
 adapters = Adapters()
