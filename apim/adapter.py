@@ -214,7 +214,7 @@ class Adapter(object):
             if x:
                 logs.append(x)
         if logs:
-            raise RegisterException(len(workers), logs)
+            raise RegisterException(len(self.workers), logs)
 
 
 def analyze(log):
