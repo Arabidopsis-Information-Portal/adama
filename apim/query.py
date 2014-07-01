@@ -69,6 +69,7 @@ class Query(restful.Resource):
             for line in interleave([', '], gen):
                 yield line
             yield '],\n'
+            yield '"metadata": {0},\n'.format(json.dumps(client.metadata))
             yield '"status": "success"}\n'
 
         return Response(result_generator(), mimetype='application/json')
