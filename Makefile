@@ -64,4 +64,4 @@ dist: clean
 	ls -l dist
 
 adapters:
-	$(MAKE) --directory=apim/adapter
+	$(MAKE) --directory=apim/containers
