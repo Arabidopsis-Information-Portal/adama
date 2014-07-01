@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import sys
+import time
 
 from tasks import QueueConnection
 
@@ -18,9 +19,11 @@ sys.path.insert(0, os.path.join(HERE, 'user_code'))
 class Worker(QueueConnection):
 
     def callback(self, message, responder):
+        t = None
         with Results(responder):
             try:
-                self.process(message)
+                t = self.process(message)
+                responder(json.dumps({'time_in_main': t}))
             except Exception as exc:
                 print(json.dumps({'error': exc.message}))
                 print('END')
@@ -31,7 +34,10 @@ class Worker(QueueConnection):
         d = json.loads(body)
         d['worker'] = os.uname()[1]
         body = json.dumps(d)
+        t_start = time.time()
         main.process(json.loads(body))
+        t_end = time.time()
+        return t_end - t_start
 
     def run(self):
         self.consume_forever(self.callback)
