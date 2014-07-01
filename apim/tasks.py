@@ -144,6 +144,9 @@ class Producer(QueueConnection):
         g = super(Producer, self).receive()
         for message in g:
             if message == 'END':
+                # save the object after 'END' as metadata, so the
+                # client can use it
+                self.metadata = json.loads(next(g))
                 g.send(True)
                 return
             yield json.loads(message)
