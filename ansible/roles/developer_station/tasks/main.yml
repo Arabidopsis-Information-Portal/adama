@@ -4,6 +4,14 @@
   apt: name=vim state=present
   sudo: yes
 
+- name: Make vim the default editor for everyone
+  lineinfile:
+    dest: /etc/bash.bashrc
+    insertafter: EOF
+    line: export EDITOR=vim
+    state: present
+  sudo: yes
+
 - name: Ensure Python 2.7 installation
   apt: name={{ item }} state=present
   sudo: yes
