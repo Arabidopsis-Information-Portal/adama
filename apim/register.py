@@ -98,7 +98,7 @@ class Register(restful.Resource):
         adapter.register()
         adapter.start_workers()
         adapter.check_health()
-        adapters[adapter.name] = adapter
+        adapters.add(adapter)
         return {'status': 'success',
                 'result': {
                     'identifier': adapter.iden,
@@ -107,7 +107,7 @@ class Register(restful.Resource):
 
     def get(self):
         return {'status': 'success',
-                'adapters': adapters.list()}
+                'adapters': adapters.list_all()}
 
     def validate(self):
         parser = reqparse.RequestParser()

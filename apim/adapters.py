@@ -1,19 +1,23 @@
-import shelve
+import cPickle
+
+import redis
+
+from .config import Config
 
 
 class Adapters(dict):
 
     def __init__(self):
         super(Adapters, self).__init__()
-        self._db = {}
+        self._db = redis.StrictRedis(host=Config.get('store', 'host'),
+                                     port=Config.getint('store', 'port'),
+                                     db=0)
 
-    def __getitem__(self, key):
-        return self._db[key]
+    def add(self, adapter):
+        obj = cPickle.dumps(adapter)
+        self._db.set(adapter.iden, obj)
 
-    def __setitem__(self, key, value):
-        self._db[key] = value
-
-    def list(self):
+    def list_all(self):
         return self._db.keys()
 
 
