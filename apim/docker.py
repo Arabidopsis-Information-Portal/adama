@@ -8,7 +8,7 @@ from .config import Config
 
 def docker(*args):
     host = Config.get('docker', 'host')
-    cmd = [Config.get('docker', 'command')] + ['-H', host] if host else []
+    cmd = [Config.get('docker', 'command')] + (['-H', host] if host else [])
     return subprocess.check_output(
         cmd + list(args), stderr=subprocess.STDOUT).strip()
 
