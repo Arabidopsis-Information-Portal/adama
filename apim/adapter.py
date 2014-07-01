@@ -165,7 +165,7 @@ class Adapter(object):
         finally:
             os.chdir(prev_cwd)
 
-    def run_workers(self, n=None):
+    def start_workers(self, n=None):
         if n is None:
             n = Config.getint(
                 'workers', '{}_instances'.format(self.language))

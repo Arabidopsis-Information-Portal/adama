@@ -96,7 +96,7 @@ class Register(restful.Resource):
                     'url': args.url}
         adapter = Adapter(args.code.filename, args.code.read(), metadata)
         adapter.register()
-        adapter.run_workers()
+        adapter.start_workers()
         adapter.check_health()
         adapters[adapter.name] = adapter
         return {'status': 'success',
