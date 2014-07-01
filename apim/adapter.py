@@ -64,6 +64,16 @@ class Adapter(object):
         self.iden = '{0}_v{1}'.format(self.name, self.version)
         self.url = self.metadata.get('url', '')
 
+    def to_json(self):
+        return {
+            'identifier': self.iden,
+            'name': self.name,
+            'version': self.version,
+            'url': self.url,
+            'language': self.language,
+            'workers': self.workers
+        }
+
     def register(self):
         """[FIX DOCS] Register a user's module.
 
