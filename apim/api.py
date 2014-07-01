@@ -51,7 +51,7 @@ class MyApi(restful.Api):
         except Exception as exc:
             child_tb = getattr(exc, 'child_traceback', None)
             trace = traceback.format_exc()
-            return {'status': 'error',
+            return self.make_response({'status': 'error',
                     'trace': trace,
                     'worker_trace': child_tb,
-                    'message': exc.message}, 500
+                    'message': exc.message}, 500)
