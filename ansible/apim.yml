@@ -7,3 +7,4 @@
     - rabbit_server
     - docker
     - apim_server
+    - redis_server
