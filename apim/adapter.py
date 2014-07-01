@@ -16,6 +16,7 @@ from .tools import location_of
 from .config import Config
 from .docker import docker
 from .api import APIException, RegisterException
+from . import app
 
 HERE = location_of(__file__)
 
@@ -96,7 +97,9 @@ class Adapter(object):
         self.detect_language()
         self.render_template()
         self.save_metadata()
+        app.logger.debug('+++ Starting to build container')
         self.build_docker()
+        app.logger.debug('+++ Finished building container')
 
     def create_temp_dir(self):
         return tempfile.mkdtemp()

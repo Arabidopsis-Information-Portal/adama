@@ -10,12 +10,13 @@ __version__ = '0.1.0'
 from flask import Flask
 from flask_restful_swagger import swagger
 
+app = Flask(__name__)
+
 from .query import Query
 from .register import Register
 from .api import MyApi
 
 
-app = Flask(__name__)
 api = swagger.docs(MyApi(app),
                    apiVersion='0.1',
                    basePath='http://localhost:8000',
@@ -25,3 +26,5 @@ api = swagger.docs(MyApi(app),
 
 api.add_resource(Query, '/query')
 api.add_resource(Register, '/register')
+
+app.debug = True

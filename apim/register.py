@@ -8,7 +8,7 @@ from .adapter import Adapter
 from .adapters import adapters
 from .config import Config
 from .api import APIException
-
+from . import app
 
 @swagger.model
 class AdapterIdentifierModel(object):
@@ -108,11 +108,17 @@ class Register(restful.Resource):
                     'version': args.version or '0.1',
                     'requirements': args.requirements or '',
                     'url': args.url}
+        app.logger.debug('Starting adapter registration')
         adapter = Adapter(args.code.filename, args.code.read(), metadata)
+        app.logger.debug(' created object')
         adapter.register()
+        app.logger.debug(' registered')
         adapter.start_workers()
+        app.logger.debug(' workers started')
         adapter.check_health()
+        app.logger.debug(' all healthy')
         adapters.add(adapter)
+        app.logger.debug(' recorded')
         return {
             'status': 'success',
             'result': adapter.to_json()

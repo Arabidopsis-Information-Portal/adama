@@ -8,7 +8,7 @@ from flask_restful_swagger import swagger
 from .tasks import Producer
 from .config import Config
 from .tools import interleave
-
+from . import app
 
 @swagger.model
 class AIPQueryModel(object):
@@ -25,6 +25,7 @@ class Query(restful.Resource):
         nickname='hello'
     )
     def get(self):
+        app.logger.debug('--- Hi')
         return {'hello': 'world'}
 
     @swagger.operation(
