@@ -6,10 +6,9 @@ from .config import Config
 from .adapter import Adapter
 
 
-class Adapters(dict):
+class Adapters(object):
 
     def __init__(self):
-        super(Adapters, self).__init__()
         self._db = redis.StrictRedis(host=Config.get('store', 'host'),
                                      port=Config.getint('store', 'port'),
                                      db=0)
