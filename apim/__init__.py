@@ -28,3 +28,6 @@ api.add_resource(Query, '/query')
 api.add_resource(Register, '/register')
 
 app.debug = True
+app.debug_log_format = ('---\n'
+                        '%(asctime)s %(module)s [%(pathname)s:%(lineno)d]:\n'
+                        '%(message)s')
