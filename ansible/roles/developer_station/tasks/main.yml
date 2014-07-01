@@ -23,3 +23,13 @@
 - name: Install ack-grep
   apt: name=ack-grep state=present
   sudo: yes
+
+- name: Install tmux
+  apt: name=tmux state=present
+  sudo: yes
+
+- name: Setup tmux
+  copy:
+    src: tmux.conf
+    dest: /etc/tmux.conf
+  sudo: yes
