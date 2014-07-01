@@ -62,6 +62,7 @@ class Adapter(object):
         self.name = self.metadata.get('name', uuid.uuid4())
         self.version = self.metadata.get('version', '0.1')
         self.iden = '{0}_v{1}'.format(self.name, self.version)
+        self.url = self.metadata.get('url', '')
 
     def register(self):
         """[FIX DOCS] Register a user's module.
