@@ -10,11 +10,12 @@ from apim.tasks import check_queue
 
 def run_gunicorn():
     subprocess.check_call(
-        ['gunicorn', '-w',
-         Config.get('server', 'workers'),
-         '-t',
-         Config.get('server', 'timeout'),
-         '-k', 'gevent', 'apim:app'])
+        ['gunicorn',
+         '-b', Config.getint('server', 'bind'),
+         '-w', Config.get('server', 'workers'),
+         '-t', Config.get('server', 'timeout'),
+         '-k', 'gevent',
+         'apim:app'])
 
 
 def run():
