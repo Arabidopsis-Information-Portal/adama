@@ -2,6 +2,8 @@
 
 import json
 import os
+import pprint
+import sys
 from urlparse import urljoin
 
 from apim.tools import location_of
@@ -13,7 +15,7 @@ URL = 'http://localhost:8000'
 HERE = location_of(__file__)
 
 
-def example():
+def example(full=False):
     code = open(os.path.join(
         HERE, '../apim/containers/adapters/thalemine/main.py')).read()
     resp = requests.post(urljoin(URL, 'register'),
@@ -26,6 +28,8 @@ def example():
         print('Registration successful.')
         print('Service name is: {0}'
               .format(registration['result']['identifier']))
+        if full:
+            pprint.pprint(registration)
     else:
         print('Error in registration: code {0}'.format(resp.status_code))
         print('Full JSON response:')
@@ -34,4 +38,5 @@ def example():
 
 
 if __name__ == '__main__':
-    example()
+    full = len(sys.argv) > 1
+    example(full)
