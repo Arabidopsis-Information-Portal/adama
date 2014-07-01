@@ -14,6 +14,10 @@ from .api import APIException
 class AdapterIdentifierModel(object):
     resource_fields = {
         'identifier': restful.fields.String,
+        'name': restful.fields.String,
+        'version': restful.fields.String,
+        'url': restful.fields.String,
+        'language': restful.fields.String,
         'workers': restful.fields.List(restful.fields.String)
     }
 
@@ -28,6 +32,16 @@ class AdapterModel(object):
         'result': restful.fields.Nested(AdapterIdentifierModel.resource_fields)
     }
 
+@swagger.model
+@swagger.nested(
+    result=AdapterIdentifierModel.__name__
+)
+class AdaptersResponse(object):
+    resource_fields = {
+        'status': restful.fields.String(attribute='success or failure'),
+        'result': restful.fields.List(
+            restful.fields.Nested(AdapterIdentifierModel.resource_fields))
+    }
 
 class Register(restful.Resource):
 
@@ -99,12 +113,17 @@ class Register(restful.Resource):
         adapter.start_workers()
         adapter.check_health()
         adapters.add(adapter)
-        return {'status': 'success',
-                'result': {
-                    'identifier': adapter.iden,
-                    'workers': adapter.workers,
-                }}
+        return {
+            'status': 'success',
+            'result': adapter.to_json()
+        }
 
+    @swagger.operation(
+        notes='List all registered adapters',
+        nickname='list',
+        responseClass=AdaptersResponse.__name__,
+        parameters=[]
+    )
     def get(self):
         return {'status': 'success',
                 'adapters': adapters.list_all()}
