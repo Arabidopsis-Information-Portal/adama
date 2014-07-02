@@ -7,6 +7,8 @@
     update: yes
   sudo: yes
   sudo_user: apim
+  notify:
+    - rebuild containers
 
 - name: Install all Python requirements
   pip: requirements=/home/apim/apim/dev_requirements.txt

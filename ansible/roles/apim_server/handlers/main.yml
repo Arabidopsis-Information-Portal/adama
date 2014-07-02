@@ -1,0 +1,8 @@
+---
+
+- name: rebuild containers
+  command: make adapters
+  args:
+    chdir: /home/apim/apim
+  sudo: yes
+  sudo_user: apim
