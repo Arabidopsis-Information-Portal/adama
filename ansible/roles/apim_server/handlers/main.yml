@@ -1,7 +1,7 @@
 ---
 
 - name: rebuild containers
-  command: make adapters
+  command: make adapters DOCKER=docker.io
   args:
     chdir: /home/apim/apim
   sudo: yes
