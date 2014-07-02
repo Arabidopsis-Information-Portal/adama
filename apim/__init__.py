@@ -7,7 +7,7 @@ __author__ = 'Walter Moreira'
 __email__ = 'wmoreira@tacc.utexas.edu'
 __version__ = '0.1.0'
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_restful_swagger import swagger
 
 app = Flask(__name__)
@@ -31,3 +31,7 @@ app.debug = True
 app.debug_log_format = ('---\n'
                         '%(asctime)s %(module)s [%(pathname)s:%(lineno)d]:\n'
                         '%(message)s')
+
+@app.route('/foo')
+def hello_world():
+    return render_template('template.html')
