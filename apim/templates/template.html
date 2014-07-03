@@ -34,6 +34,7 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
   </head>
 
   <body role="document">
@@ -70,7 +71,7 @@
           Adama
         </h1>
         <h2>
-          Araport DAta Mediator API
+          Araport DAta Mediator Api
         </h2>
         <p>
           Showcasing and experimenting with data federation strategies
@@ -93,6 +94,22 @@
         </ul>
       </p>
 
+      <h1 class="page-header">
+        Services
+      </h1>
+
+      <p>
+        <button id="refreshServices" class="btn btn-primary" type="button">
+          Refresh
+        </button>
+      </p>
+
+      <p>
+        Currently registered services:
+        <pre id="services">
+        </pre>
+      </p>
+
     </div> <!-- /container -->
 
 
@@ -103,6 +120,8 @@
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}">
     </script>
     <script src="{{ url_for('static', filename='js/docs.min.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/adama-site.js') }}">
     </script>
   </body>
 </html>
