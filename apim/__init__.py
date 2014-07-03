@@ -32,6 +32,6 @@ app.debug_log_format = ('---\n'
                         '%(asctime)s %(module)s [%(pathname)s:%(lineno)d]:\n'
                         '%(message)s')
 
-@app.route('/foo')
+@app.route('/home')
 def hello_world():
     return render_template('template.html')
