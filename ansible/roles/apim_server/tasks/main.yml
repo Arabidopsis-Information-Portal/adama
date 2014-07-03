@@ -13,3 +13,12 @@
 - name: Install all Python requirements
   pip: requirements=/home/apim/apim/dev_requirements.txt
   sudo: yes
+
+- name: Patch swagger ui
+  lineinfile:
+    dest: /usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py
+    regexp: "^(.*)docExpansion:(.*)$"
+    line: '\1docExpansion: "full"'
+    state: present
+    backrefs: yes
+  sudo: yes
