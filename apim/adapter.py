@@ -1,12 +1,10 @@
-import functools
 import glob
 import json
+import multiprocessing
 import os
 import Queue
 import tarfile
 import tempfile
-import threading
-import time
 import uuid
 import zipfile
 
@@ -24,6 +22,7 @@ HERE = location_of(__file__)
 # Timeout to wait for output of containers at start up, before
 # declaring them dead
 TIMEOUT = 1  # second
+
 
 class WorkerState(Enum):
     started = 1
@@ -197,26 +196,30 @@ class Adapter(object):
     def check_health(self):
         """Check that all workers started ok."""
 
-        producer = functools.partial(lambda x: docker('logs', x))
-        q = Queue.Queue()
+        q = multiprocessing.Queue()
 
         def log(worker, q):
-            q.put(log_from(worker, producer))
+            producer = tail_logs(worker, timeout=TIMEOUT)
+            v = (check(producer), worker)
+            q.put(v)
 
-        # Ask for logs from workers. We do it in threads so we can poll
-        # for a little while the workers in parallel.
+        # Ask for logs from workers. We do it in processes so we can
+        # poll for a little while the workers in parallel.
         ts = []
         for worker in self.workers:
-            t = threading.Thread(target=log, args=(worker, q))
+            t = multiprocessing.Process(target=log, args=(worker, q))
             t.start()
             ts.append(t)
+        # wait for all processes (the timeout guarantees they'll finish)
         for t in ts:
             t.join()
+
         logs = []
         while not q.empty():
-            x = q.get()
-            if x:
-                logs.append(x)
+            state, worker = q.get()
+            if state == WorkerState.error:
+                logs.append(docker_output('logs', worker))
+
         if logs:
             raise RegisterException(len(self.workers), logs)
 
