@@ -31,9 +31,9 @@ class TimeoutFunction:
 
     def __call__(self, *args, **kwargs):
         old = signal.signal(signal.SIGALRM, self.handle_timeout)
-        signal.alarm(self.timeout)
+        signal.setitimer(signal.ITIMER_REAL, self.timeout, 1)
         try:
             return self.function(*args, **kwargs)
         finally:
             signal.signal(signal.SIGALRM, old)
-            signal.alarm(0)
+            signal.setitimer(signal.ITIMER_REAL, 0, 0)
