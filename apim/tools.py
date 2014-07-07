@@ -1,5 +1,6 @@
 import itertools
 import os
+import signal
 
 
 def location_of(filename):
@@ -12,3 +13,27 @@ def interleave(a, b):
     for x, y in itertools.izip(itertools.cycle(a), b):
         yield x
         yield y
+
+
+class TimeoutFunctionException(Exception):
+    """Exception to raise on a timeout"""
+    pass
+
+
+class TimeoutFunction:
+
+    def __init__(self, function, timeout):
+        self.timeout = timeout
+        self.function = function
+
+    def handle_timeout(self, signum, frame):
+        raise TimeoutFunctionException()
+
+    def __call__(self, *args, **kwargs):
+        old = signal.signal(signal.SIGALRM, self.handle_timeout)
+        signal.alarm(self.timeout)
+        try:
+            return self.function(*args, **kwargs)
+        finally:
+            signal.signal(signal.SIGALRM, old)
+            signal.alarm(0)
