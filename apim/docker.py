@@ -45,7 +45,7 @@ def check_docker(display=False):
 
     """
     try:
-        docker('ps')
+        docker_output('ps')
         return True
     except Exception:
         if display:
