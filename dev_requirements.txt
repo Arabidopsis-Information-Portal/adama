@@ -9,6 +9,7 @@ anyjson==0.3.3
 backports.ssl-match-hostname==3.4.0.2
 billiard==3.3.0.17
 celery==3.1.11
+enum34==1.0
 flake8==2.1.0
 flask-restful-swagger==0.10
 gevent==1.0.1
