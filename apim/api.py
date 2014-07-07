@@ -16,7 +16,8 @@ class APIException(Exception):
 class RegisterException(Exception):
 
     def __init__(self, total_workers, logs):
-        super(Exception, self).__init__('foo')
+        super(Exception, self).__init__(
+            'register failed (see "logs" attribute)')
         self.total_workers = total_workers
         self.failed_count = len(logs)
         self.logs = logs
