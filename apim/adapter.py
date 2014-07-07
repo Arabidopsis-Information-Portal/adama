@@ -10,6 +10,7 @@ import time
 import uuid
 import zipfile
 
+from enum import Enum
 import jinja2
 
 from .tools import location_of
@@ -24,9 +25,9 @@ HERE = location_of(__file__)
 # declaring them dead
 TIMEOUT = 1  # second
 
-STARTED = 1
-ERROR = 2
-EMPTY = 3
+class WorkerState(Enum):
+    started = 1
+    error = 2
 
 
 LANGUAGES = {
@@ -220,27 +221,11 @@ class Adapter(object):
             raise RegisterException(len(self.workers), logs)
 
 
-def analyze(log):
-    state = EMPTY
-    for line in log.splitlines():
+def check(producer):
+    state = WorkerState.error
+    for line in producer:
         if line.startswith('*** WORKER ERROR'):
-            return ERROR
+            return WorkerState.error
         if line.startswith('*** WORKER STARTED'):
-            state = STARTED
+            state = WorkerState.started
     return state
-
-
-def log_from(worker, producer, retry=True):
-    """Return the logs from worker if start up failed."""
-
-    log = producer(worker)
-    state = analyze(log)
-    if state == ERROR:
-        return producer(worker)
-    if state == STARTED:
-        return None
-    if retry:
-        time.sleep(TIMEOUT)
-        return log_from(worker, producer, retry=False)
-    else:
-        return log
