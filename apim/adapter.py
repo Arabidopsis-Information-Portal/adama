@@ -15,7 +15,7 @@ import jinja2
 
 from .tools import location_of
 from .config import Config
-from .docker import docker
+from .docker import docker_output, tail_logs
 from .api import APIException, RegisterException
 from . import app
 
@@ -175,7 +175,7 @@ class Adapter(object):
         prev_cwd = os.getcwd()
         os.chdir(self.temp_dir)
         try:
-            output = docker('build', '-t', self.iden, '.')
+            output = docker_output('build', '-t', self.iden, '.')
             print(output)
         finally:
             os.chdir(prev_cwd)
@@ -185,13 +185,13 @@ class Adapter(object):
             n = Config.getint(
                 'workers', '{}_instances'.format(self.language))
         self.workers = [
-            docker('run', '-d', self.iden,
-                   '--queue-host',
-                   Config.get('queue', 'host'),
-                   '--queue-port',
-                   Config.get('queue', 'port'),
-                   '--queue-name',
-                   self.iden)
+            docker_output('run', '-d', self.iden,
+                          '--queue-host',
+                          Config.get('queue', 'host'),
+                          '--queue-port',
+                          Config.get('queue', 'port'),
+                          '--queue-name',
+                          self.iden).strip()
             for _ in range(n)]
 
     def check_health(self):
