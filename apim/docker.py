@@ -23,9 +23,9 @@ def docker_output(*args):
 
 def tail(fd, timeout=0):
     f = os.fdopen(fd, 'r', 0)
+    readline = TimeoutFunction(f.readline, timeout)
     try:
         while True:
-            readline = TimeoutFunction(f.readline, timeout)
             yield readline()
     except TimeoutFunctionException:
         return
