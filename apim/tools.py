@@ -30,10 +30,12 @@ class TimeoutFunction:
         raise TimeoutFunctionException()
 
     def __call__(self, *args, **kwargs):
-        old = signal.signal(signal.SIGALRM, self.handle_timeout)
-        signal.setitimer(signal.ITIMER_REAL, self.timeout, 1)
+        if self.timeout:
+            old = signal.signal(signal.SIGALRM, self.handle_timeout)
+            signal.setitimer(signal.ITIMER_REAL, self.timeout, 1)
         try:
             return self.function(*args, **kwargs)
         finally:
-            signal.signal(signal.SIGALRM, old)
-            signal.setitimer(signal.ITIMER_REAL, 0, 0)
+            if self.timeout:
+                signal.signal(signal.SIGALRM, old)
+                signal.setitimer(signal.ITIMER_REAL, 0, 0)
