@@ -1,16 +1,41 @@
 from __future__ import print_function
 
+import os
+import select
 import subprocess
 import sys
 
 from .config import Config
+from .tools import TimeoutFunction, TimeoutFunctionException
 
 
-def docker(*args):
+def docker(*args, **kwargs):
     host = Config.get('docker', 'host')
     cmd = [Config.get('docker', 'command')] + (['-H', host] if host else [])
-    return subprocess.check_output(
-        cmd + list(args), stderr=subprocess.STDOUT).strip()
+    stderr = kwargs.get('stderr', subprocess.STDOUT)
+    stdout = kwargs.get('stdout', subprocess.STDOUT)
+    return subprocess.Popen(
+        cmd + list(args), stdout=stdout, stderr=stderr)
+
+def docker_output(*args):
+    p = docker(*args, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+    return p.communicate()[0]
+
+def tail(fd, timeout=0):
+    f = os.fdopen(fd, 'r', 0)
+    try:
+        while True:
+            readline = TimeoutFunction(f.readline, timeout)
+            yield readline()
+    except TimeoutFunctionException:
+        return
+    finally:
+        f.close()
+
+def tail_logs(container, timeout=0):
+    r, w = os.pipe()
+    p = docker('logs', '-f', container, stderr=subprocess.STDOUT, stdout=w)
+    return tail(r, timeout)
 
 
 def check_docker(display=False):
