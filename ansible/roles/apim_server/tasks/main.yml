@@ -23,3 +23,14 @@
     state: present
     backrefs: yes
   sudo: yes
+
+- name: Setup local config file
+  ini_file:
+    dest: /home/apim/.apim.conf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    backup: yes
+  sudo: yes
+  sudo_user: apim
+  with_items: config
