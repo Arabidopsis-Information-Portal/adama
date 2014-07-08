@@ -1,4 +1,5 @@
 ---
 
-- include: apim.yml
+- include: alpha.yml
+- include: beta.yml
 

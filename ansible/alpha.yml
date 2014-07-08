@@ -1,10 +1,10 @@
 ---
 
-- hosts: apim
+- hosts: alpha
   roles:
     - common
     - developer_station
     - rabbit_server
     - docker
-    - apim_server
+    - { role: apim_server, branch: master }
     - redis_server

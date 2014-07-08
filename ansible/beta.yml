@@ -1,0 +1,10 @@
+---
+
+- hosts: beta
+  roles:
+    - common
+    - developer_station
+    - rabbit_server
+    - docker
+    - { role: apim_server, branch: dev-deploy }
+    - redis_server

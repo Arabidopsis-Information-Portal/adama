@@ -4,6 +4,7 @@
   git:
     repo: https://github.com/waltermoreira/apim
     dest: /home/apim/apim
+    version: "{{ branch | default(master) }}"
     update: yes
   sudo: yes
   sudo_user: apim
