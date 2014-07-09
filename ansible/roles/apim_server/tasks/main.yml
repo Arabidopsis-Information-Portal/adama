@@ -34,3 +34,4 @@
   sudo: yes
   sudo_user: apim
   with_items: config
+  notify: Document local config file

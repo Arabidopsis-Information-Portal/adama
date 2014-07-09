@@ -6,3 +6,12 @@
     chdir: /home/apim/apim
   sudo: yes
   sudo_user: apim
+
+- name: Document local config file
+  lineinfile:
+    dest: /home/apim/.apim.conf
+    insertbefore: BOF
+    line: "# Managed by ansible\n# See all options in $APIM_SRC/apim.conf\n# Tweak automatically configured values in $APIM_SRC/ansible/host_vars/<this_host>\n"
+    state: present
+  sudo: yes
+  sudo_user: apim
