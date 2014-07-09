@@ -1,6 +1,6 @@
 ---
 
-- name: rebuild containers
+- name: Rebuild containers
   command: make adapters DOCKER=docker.io
   args:
     chdir: /home/apim/apim
@@ -15,3 +15,8 @@
     state: present
   sudo: yes
   sudo_user: apim
+
+- name: Reload apim server
+  shell: kill -HUP `cat /var/run/apim_server.pid`
+  sudo: yes
+  ignore_errors: yes
