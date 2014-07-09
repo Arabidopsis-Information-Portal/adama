@@ -11,10 +11,11 @@ from apim.tasks import check_queue
 def run_gunicorn():
     subprocess.check_call(
         ['gunicorn',
-         '--debug', 
+         '--debug',
          '-b', Config.get('server', 'bind'),
          '-w', Config.get('server', 'workers'),
          '-t', Config.get('server', 'timeout'),
+         '-p', '/var/run/apim_server.pid',
          '-k', 'gevent',
          'apim:app'])
 
