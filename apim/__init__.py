@@ -7,7 +7,7 @@ __author__ = 'Walter Moreira'
 __email__ = 'wmoreira@tacc.utexas.edu'
 __version__ = '0.1.0'
 
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_restful_swagger import swagger
 
 app = Flask(__name__)
@@ -36,3 +36,7 @@ app.debug_log_format = ('---\n'
 @app.route('/home')
 def hello_world():
     return render_template('template.html')
+
+@app.route('/')
+def root():
+    return redirect(url_for('hello_world'))
