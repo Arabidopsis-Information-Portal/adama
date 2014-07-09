@@ -6,7 +6,7 @@ config:
     value: http://adama.waltermoreira.net
   - section: server
     option: bind
-    value: 0.0.0.0:8000
+    value: 0.0.0.0:80
   - section: store
     option: host
     value: localhost
