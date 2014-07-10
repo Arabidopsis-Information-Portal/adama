@@ -11,13 +11,20 @@ function consume(host, port, queue) {
                 return ch.consume(queue, on_consume, {noAck: true});
             });
             return ok;
+
+            function on_consume(msg) {
+                console.log = function(data) {
+                    ch.publish('', msg.properties.replyTo,
+                               new Buffer(data));
+                };
+                var main = require('./main.js');
+                main.process(msg.content.toString());
+            };
+
         });
     }).then(null, console.warn);
 }
 
-function on_consume(msg) {
-    console.log('got', msg.content.toString());
-}
 
 function results(responder) {
     console.log = function (data) {
