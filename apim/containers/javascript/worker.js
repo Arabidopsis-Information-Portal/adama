@@ -13,12 +13,30 @@ function consume(host, port, queue) {
             return ok;
 
             function on_consume(msg) {
-                console.log = function(data) {
+                var lines = [];
+                var responder = function(data) {
                     ch.publish('', msg.properties.replyTo,
                                new Buffer(data));
                 };
-                var main = require('./main.js');
-                main.process(msg.content.toString());
+                console.log = function(data) {
+                    if (data === '---' || data === 'END') {
+                        responder(lines.join(' '));
+                        lines = [];
+                    } else {
+                        lines.push(data);
+                    }
+                    if (data === 'END') {
+                        responder(data);
+                    }
+                };
+                try {
+                    var main = require('./main.js');
+                    main.process(JSON.parse(msg.content.toString()));
+                }
+                catch (err) {
+                    responder(JSON.stringify({error: err.message}));
+                    responder('END');
+                }
             };
 
         });
