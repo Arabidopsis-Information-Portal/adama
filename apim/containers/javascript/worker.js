@@ -43,17 +43,6 @@ function consume(host, port, queue) {
     }).then(null, console.warn);
 }
 
-
-function results(responder) {
-    console.log = function (data) {
-        responder('---');
-        responder(data);
-    }
-    var main = require('./main.js');
-    main.process({foo: 3});
-}
-
-
 function worker() {
     var host = process.argv[3];
     var port = process.argv[5];
