@@ -40,13 +40,17 @@ function consume(host, port, queue) {
             };
 
         });
-    }).then(null, console.warn);
+    }).then(null, function (msg) {
+        console.error('*** WORKER ERROR');
+        console.error(msg);
+    });
 }
 
 function worker() {
     var host = process.argv[3];
     var port = process.argv[5];
     var queue = process.argv[7];
+    console.error('*** WORKER STARTED');
     consume(host, port, queue);
 }
 
