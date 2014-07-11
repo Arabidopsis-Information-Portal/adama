@@ -39,6 +39,7 @@ LANGUAGES = {
 
 EXTENSIONS = {
     '.py': 'python',
+    '.js': 'javascript',
     '.rb': 'ruby',
     '.jar': 'java',
     '.lua': 'lua'
