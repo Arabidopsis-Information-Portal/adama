@@ -32,7 +32,7 @@ class WorkerState(Enum):
 LANGUAGES = {
     'python': ('py', 'pip install {package}'),
     'ruby': ('rb', 'gem install {package}'),
-    'javascript': ('js', 'npm install {package}'),
+    'javascript': ('js', 'npm install -g {package}'),
     'lua': ('lua', None),
     'java': ('jar', None)
 }
