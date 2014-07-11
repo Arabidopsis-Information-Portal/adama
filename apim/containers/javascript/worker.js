@@ -30,12 +30,14 @@ function consume(host, port, queue) {
                     }
                 };
                 try {
-                    var main = require('./main.js');
+                    var main = require('./user_code/main.js');
                     main.process(JSON.parse(msg.content.toString()));
+                    responder(JSON.stringify({'time_in_main': 0}));
                 }
                 catch (err) {
                     responder(JSON.stringify({error: err.message}));
                     responder('END');
+                    responder(JSON.stringify({'time_in_main': 0}));
                 }
             };
 
