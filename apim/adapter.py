@@ -2,7 +2,6 @@ import glob
 import json
 import multiprocessing
 import os
-import Queue
 import tarfile
 import tempfile
 import uuid
