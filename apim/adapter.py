@@ -4,6 +4,7 @@ import multiprocessing
 import os
 import tarfile
 import tempfile
+import threading
 import uuid
 import zipfile
 
@@ -21,6 +22,9 @@ HERE = location_of(__file__)
 # Timeout to wait for output of containers at start up, before
 # declaring them dead
 TIMEOUT = 1  # second
+
+# Timout to wait while stopping workers
+STOP_TIMEOUT = 5
 
 
 class WorkerState(Enum):
@@ -194,6 +198,19 @@ class Adapter(object):
                           '--queue-name',
                           self.iden).strip()
             for _ in range(n)]
+
+    def stop_workers(self):
+        threads = []
+        for worker in self.workers:
+            threads.append(self.async_stop_worker(worker))
+        for thread in threads:
+            thread.join(STOP_TIMEOUT)
+
+    def async_stop_worker(self, worker):
+        thread = threading.Thread(target=docker_output,
+                                  args=('stop', worker))
+        thread.start()
+        return thread
 
     def check_health(self):
         """Check that all workers started ok."""
