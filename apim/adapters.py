@@ -15,6 +15,10 @@ class Adapters(object):
     def add(self, adapter):
         self._set(adapter.iden, adapter)
 
+    def stop(self, iden):
+        adapter = self._get(iden)
+        adapter.stop_workers()
+
     def delete(self, iden):
         self.stop(iden)
         self._del(iden)
