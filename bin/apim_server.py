@@ -15,7 +15,7 @@ def run_gunicorn():
          '-b', Config.get('server', 'bind'),
          '-w', Config.get('server', 'workers'),
          '-t', Config.get('server', 'timeout'),
-         '-p', '/var/run/apim_server.pid',
+         '-p', Config.get('server', 'pid_file'),
          '-k', 'gevent',
          'apim:app'])
 
