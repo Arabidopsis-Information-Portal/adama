@@ -160,7 +160,9 @@ class Adapter(object):
         dockerfile_template = jinja2.Template(
             open(os.path.join(HERE, 'containers/Dockerfile.adapter')).read())
         _, installer = LANGUAGES[self.language]
-        requirement_cmds = 'RUN ' + installer.format(package=self.requirements)
+        requirement_cmds = (
+            'RUN ' + installer.format(package=self.requirements)
+            if self.requirements else '')
 
         dockerfile = dockerfile_template.render(
             language=self.language, requirement_cmds=requirement_cmds)
