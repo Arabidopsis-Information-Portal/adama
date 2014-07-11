@@ -13,8 +13,11 @@ class Adapters(object):
                                      db=0)
 
     def add(self, adapter):
-        obj = cPickle.dumps(adapter)
-        self._db.set(adapter.iden, obj)
+        self._set(adapter.iden, adapter)
+
+    def delete(self, iden):
+        self.stop(iden)
+        self._del(iden)
 
     def list_all(self):
         return list(self._list_all())
@@ -23,6 +26,16 @@ class Adapters(object):
         for key in self._db.keys():
             obj = self._db.get(key)
             yield cPickle.loads(obj).to_json()
+
+    def _get(self, key):
+        return cPickle.loads(self._db.get(key))
+
+    def _set(self, key, value):
+        obj = cPickle.dumps(value)
+        self._db.set(key, obj)
+
+    def _del(self, key):
+        self._db.delete(key)
 
 
 adapters = Adapters()
