@@ -3,7 +3,6 @@ import cPickle
 import redis
 
 from .config import Config
-from .adapter import Adapter
 
 
 class Adapters(object):
