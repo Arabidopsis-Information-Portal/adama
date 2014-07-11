@@ -60,8 +60,8 @@ class Adapter(object):
         self.temp_dir = self.create_temp_dir()
 
     def validate_metadata(self):
-        self.requirements = self.metadata.get('requirements', {})
-        self.name = self.metadata.get('name', uuid.uuid4())
+        self.requirements = self.metadata.get('requirements', None)
+        self.name = self.metadata.get('name', uuid.uuid4().hex)
         self.version = self.metadata.get('version', '0.1')
         self.iden = '{0}_v{1}'.format(self.name, self.version)
         self.url = self.metadata.get('url', '')
