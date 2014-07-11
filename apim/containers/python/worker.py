@@ -27,6 +27,7 @@ class Worker(QueueConnection):
             except Exception as exc:
                 print(json.dumps({'error': exc.message}))
                 print('END')
+                responder(json.dumps({'time_in_main': 0}))
 
     def process(self, body):
         import main
