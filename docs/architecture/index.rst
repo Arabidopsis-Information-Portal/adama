@@ -9,8 +9,6 @@ Adama
 Araport Data Mediator API
 -------------------------
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
