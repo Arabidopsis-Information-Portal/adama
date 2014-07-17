@@ -1,0 +1,9 @@
+============
+Introduction
+============
+
+Problem
+=======
+
+Strategy
+========
