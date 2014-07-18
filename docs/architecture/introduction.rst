@@ -74,6 +74,11 @@ following features that aim to solve the points in :ref:`problem`:
   depending on the load to particular services.  In addition, load
   balancing to the full Adama API is performed automatically.
 
+- *Extra Services*. Adama provides extra services for each data
+  source: pagination, count, and caching.  These services do not
+  require support from the data source and they do not require extra
+  work from the developer of the adapter.
+
 
 .. |araport| replace:: `Arabidopsis Information Portal`_
 .. _Arabidopsis Information Portal: http://araport.org
