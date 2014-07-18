@@ -58,7 +58,21 @@ following features that aim to solve the points in :ref:`problem`:
   multiple data sources simultaneously and the results to be collected
   through a single endpoint.
 
-- *Distributed responsability*.
+- *Distributed responsability*. The task of maintaining an up-to-date
+  conversion between the Araport Language and the third party services
+  is distributed among the developers of the latter.  Adama provides
+  an extremely easy way to develop the adapters and to test them in
+  complete isolation of the Araport site (see :ref:`developer_role`).
+
+- *Security and isolation*. The adapters from each developer and for
+  each service are run fully isolated and with a restricted access to
+  the network.  This allows to control the security in execution, and
+  to control the network usage (including throttling, caching, etc.).
+
+- *Scalability*. Adama takes care of the horizontal scaling of the
+  adapters.  The scalability can be performed in a dynamic way,
+  depending on the load to particular services.  In addition, load
+  balancing to the full Adama API is performed automatically.
 
 
 .. |araport| replace:: `Arabidopsis Information Portal`_
