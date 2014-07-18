@@ -53,6 +53,121 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
+			<string>{{172.47060648600259, 366.49998744328826}, {97, 34}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>FitText</key>
+			<string>YES</string>
+			<key>Flow</key>
+			<string>Resize</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica</string>
+				<key>Size</key>
+				<real>12</real>
+			</dict>
+			<key>ID</key>
+			<integer>92149</integer>
+			<key>Shape</key>
+			<string>Rectangle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+				<key>stroke</key>
+				<dict>
+					<key>CornerRadius</key>
+					<real>9</real>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+			</dict>
+			<key>Text</key>
+			<dict>
+				<key>Text</key>
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf190
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
+
+\f0\fs20 \cf0 Persistent store for\
+registered adapters}</string>
+			</dict>
+			<key>Wrap</key>
+			<string>NO</string>
+		</dict>
+		<dict>
+			<key>Class</key>
+			<string>LineGraphic</string>
+			<key>Head</key>
+			<dict>
+				<key>ID</key>
+				<integer>4</integer>
+			</dict>
+			<key>ID</key>
+			<integer>92148</integer>
+			<key>Points</key>
+			<array>
+				<string>{366.58021196813996, 277.04484533489602}</string>
+				<string>{248.06494856430641, 328.50771517175872}</string>
+			</array>
+			<key>Style</key>
+			<dict>
+				<key>stroke</key>
+				<dict>
+					<key>HeadArrow</key>
+					<string>FilledArrow</string>
+					<key>Legacy</key>
+					<true/>
+					<key>TailArrow</key>
+					<string>0</string>
+				</dict>
+			</dict>
+			<key>Tail</key>
+			<dict>
+				<key>ID</key>
+				<integer>92146</integer>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{193.97060648600228, 322.24999999999994}, {54, 36}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>ID</key>
+			<integer>4</integer>
+			<key>Shape</key>
+			<string>Rectangle</string>
+			<key>Style</key>
+			<dict>
+				<key>stroke</key>
+				<dict>
+					<key>CornerRadius</key>
+					<real>9</real>
+				</dict>
+			</dict>
+			<key>Text</key>
+			<dict>
+				<key>Text</key>
+				<string>{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf190
+\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
+
+\f0\fs20 \cf0 Redis}</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
 			<string>{{420.2995198567711, 293.66666666666714}, {37, 22}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
@@ -130,8 +245,8 @@
 			<integer>92117</integer>
 			<key>Points</key>
 			<array>
-				<string>{201.91934603046542, 525.72314416159747}</string>
-				<string>{311.87729770315474, 662.61016289769782}</string>
+				<string>{201.91910623076203, 525.72314824358637}</string>
+				<string>{311.87415078667209, 662.61018477322943}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -242,7 +357,7 @@ module}</string>
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{400.02746393804176, 113.32682116929595}, {94.867134094238281, 15}}</string>
+					<string>{{400.02746369053091, 113.32682040046993}, {94.867134094238281, 15}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>HFlip</key>
@@ -337,7 +452,7 @@ module}</string>
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{300.83585115202106, 115.02213086524996}, {105.49864196777344, 15}}</string>
+					<string>{{300.83585088785878, 115.02213101841282}, {105.49864196777344, 15}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>Head</key>
@@ -540,7 +655,7 @@ data source}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs20 \cf0 APIM}</string>
+\f0\fs20 \cf0 Adama}</string>
 					</dict>
 					<key>Wrap</key>
 					<string>NO</string>
@@ -910,7 +1025,7 @@ data source}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{237.21389381491576, 594.06047512974772}, {88, 22}}</string>
+			<string>{{237.21190628789526, 594.06061323287747}, {88, 22}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -943,7 +1058,7 @@ data source}</string>
 				<integer>2</integer>
 			</dict>
 			<key>Rotation</key>
-			<real>51.2259521484375</real>
+			<real>51.2266845703125</real>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -974,7 +1089,7 @@ data source}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{260.90510435676867, 423.37954483256073}, {37, 22}}</string>
+			<string>{{260.90510713754321, 423.37954491165709}, {37, 22}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -1121,8 +1236,8 @@ data source}</string>
 			<integer>92093</integer>
 			<key>Points</key>
 			<array>
-				<string>{435.73084227402813, 399.77663895394227}</string>
-				<string>{551.07782750640229, 468.70145746218566}</string>
+				<string>{435.73073980833851, 399.77664746137691}</string>
+				<string>{551.07743797855812, 468.70158973705031}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1155,7 +1270,7 @@ data source}</string>
 			<key>Points</key>
 			<array>
 				<string>{408.49155442006742, 400.99999705799519}</string>
-				<string>{408.49155442006742, 467.49999997804684}</string>
+				<string>{408.49155442006742, 467.49999997804474}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1187,8 +1302,8 @@ data source}</string>
 			<integer>31</integer>
 			<key>Points</key>
 			<array>
-				<string>{377.39964188356208, 399.43465825717277}</string>
-				<string>{244.05909143137589, 467.77195390282543}</string>
+				<string>{377.39964251915734, 399.43465831202718}</string>
+				<string>{244.05909535348053, 467.77195390556767}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1210,7 +1325,7 @@ data source}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{557.0274658203125, 561}, {128, 34}}</string>
+			<string>{{534.5274658203125, 561}, {173, 34}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -1256,15 +1371,15 @@ data source}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs20 \cf0 Adapter for Data Source C\
-(Java)}</string>
+\f0\fs20 \cf0 Running Adapters for Data Source C\
+(e.g. Java)}</string>
 			</dict>
 			<key>Wrap</key>
 			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{344.49154663085938, 561}, {128, 34}}</string>
+			<string>{{322.49154663085938, 561}, {172, 34}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -1310,15 +1425,15 @@ data source}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs20 \cf0 Adapter for Data Source B\
-(Ruby)}</string>
+\f0\fs20 \cf0 Running Adapters for Data Source B\
+(e.g. Ruby)}</string>
 			</dict>
 			<key>Wrap</key>
 			<string>NO</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{97.1876220703125, 561}, {127, 34}}</string>
+			<string>{{56.541910807291679, 561}, {172, 34}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -1364,8 +1479,8 @@ data source}</string>
 {\colortbl;\red255\green255\blue255;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
 
-\f0\fs20 \cf0 Adapter for Data Source A\
-(Python)}</string>
+\f0\fs20 \cf0 Running Adapters for Data Source A\
+(e.g. Python)}</string>
 			</dict>
 			<key>Wrap</key>
 			<string>NO</string>
@@ -1651,11 +1766,6 @@ data source}</string>
 			<string>RoundRect</string>
 			<key>Style</key>
 			<dict>
-				<key>shadow</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
 				<key>stroke</key>
 				<dict>
 					<key>Pattern</key>
@@ -1718,7 +1828,7 @@ data source}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2014-06-04 21:57:43 +0000</string>
+	<string>2014-07-18 17:59:28 +0000</string>
 	<key>Modifier</key>
 	<string>Walter Moreira</string>
 	<key>NotesVisible</key>
@@ -1813,7 +1923,7 @@ data source}</string>
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{0, 10}, {877.33333333333337, 628.66666666666663}}</string>
+		<string>{{0, 104}, {877.33333333333337, 628.66666666666663}}</string>
 		<key>Zoom</key>
 		<real>1.5</real>
 		<key>ZoomValues</key>
