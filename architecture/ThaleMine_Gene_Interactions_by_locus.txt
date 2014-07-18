@@ -1,0 +1,118 @@
+Thalemine_Gene_Interactions_by_locus
+====================================
+
+Service Metadata
+----------------
+# URL-compatible, globally unique
+ServiceID: "thalemine_gene_interactions_by_locus"
+# Max 64 char
+ServiceName: "Gene interaction data warehoused in ThaleMine"
+# Max 255 char
+Description: "Find interaction data in ThaleMine via locus. This can be done better with an improved template but this serves as an illustration of facading an Intermine service."
+# Restricted to a controlled list of references. For now, TAIR10 is the only member of the list
+Reference: "TAIR10"
+# Future features
+# Will we cache the JSON document
+Cache: False
+# Do we send any successful results to our Search interface
+IndexForSearch: True
+# For creating human-readable interpretation of search results
+SearchHitTemplate: "$locus relates to $related_entity via $type according to $ServiceName"
+# Queries per minute allowable. We won't enforce this in the local API manager but 
+# may want to use it to select a wso2 service tier when we enroll there
+MaximumQueryRate: 120
+URI: "http://apps.araport.org/thalemine/service/template/results?name=Gene_Interactions"
+
+Remote Service Description
+--------------------------
+
+*Example GET based form. POST is not supported*
+https://apps.araport.org/thalemine/service/template/results?name=Gene_Interactions&constraint1=Gene&op1=%3D&value1=AT1G65480&format=json&size=100
+
+Query parameters:
+#param	attributes
+value1	type=string;visible=true;required=true;multiple=false;mapping="locus"
+# Described in Intermine API docs
+# Values: json, 
+format	type=string;visible=false;required=true;multiple=false;default="json"
+# Described in Intermine API docs.
+# Intermine supports pagination, so want to map to our system-level pagination hooks
+# size determines maximum count of records to return
+size
+# Described in Intermine API docs
+# Values (URI escaped): LOOKUP, = (%3D), 
+op1	type=string;visible=true;required=true;multiple=false;default="%3D";mapping="match_operation"
+# Described in Intermine API docs
+# Not clear on this yet
+constraint1	type=string;visible=false;required=true;multiple=false;default="Gene"
+# Described in Intermine API docs
+# Intermine template name
+# Field is common to all template based services, the value is specific to the template
+name	type=string;visible=false;required=true;multiple=false;default="Gene_Interactions"
+
+*Query JSON might look like this*
+
+{ "locus":"At2g26230", "match_operation":"=" }
+
+*Example native output (JSON)*
+
+{"rootClass":"Gene",
+ "modelName":"genomic",
+ "start":0,
+ "views":["Gene.primaryIdentifier","Gene.symbol","Gene.name","Gene.interactions.details.allInteractors.primaryIdentifier","Gene.interactions.details.allInteractors.symbol","Gene.interactions.details.allInteractors.name"],
+ "columnHeaders":["Gene > DB identifier","Gene > Symbol","Gene > Name","Gene > Interactions > Details > All Interactors > DB identifier","Gene > Interactions > Details > All Interactors > Symbol","Gene > Interactions > Details > All Interactors > Name"],
+ "results":[["AT1G65480","FT","FLOWERING LOCUS T","AT1G22770","GI","GIGANTEA"],["AT1G65480","FT","FLOWERING LOCUS T","AT1G22920","CSN5A","COP9 signalosome 5A"],["AT1G65480","FT","FLOWERING LOCUS T","AT1G65480","FT","FLOWERING LOCUS T"],["AT1G65480","FT","FLOWERING LOCUS T","AT1G69120","AP1","APETALA1"],["AT1G65480","FT","FLOWERING LOCUS T","AT2G01430","HB17","homeobox-leucine zipper protein 17"],["AT1G65480","FT","FLOWERING LOCUS T","AT2G17770","BZIP27","basic region/leucine zipper motif 27"],["AT1G65480","FT","FLOWERING LOCUS T","AT2G18876","AT2G18876",null],["AT1G65480","FT","FLOWERING LOCUS T","AT2G21230","AT2G21230",null],["AT1G65480","FT","FLOWERING LOCUS T","AT2G25930","ELF3","EARLY FLOWERING 3"],["AT1G65480","FT","FLOWERING LOCUS T","AT3G11540","SPY","SPINDLY"],["AT1G65480","FT","FLOWERING LOCUS T","AT3G19290","ABF4","ABRE binding factor 4"],["AT1G65480","FT","FLOWERING LOCUS T","AT3G48150","APC8","anaphase-promoting complex subunit 8"],["AT1G65480","FT","FLOWERING LOCUS T","AT4G25530","FWA","FLOWERING WAGENINGEN"],["AT1G65480","FT","FLOWERING LOCUS T","AT4G35900","FD",null],["AT1G65480","FT","FLOWERING LOCUS T","AT5G18230","AT5G18230",null],["AT1G65480","FT","FLOWERING LOCUS T","AT5G60410","SIZ1",null]],
+ "executionTime":"2014.05.26 13:03::24",
+ "wasSuccessful":true,
+ "error":null,
+ "statusCode":200}
+
+*Example transformed output (JSON)*
+
+# Truncated list but you get the idea
+# Score is not returned by this remote service. We can either return an empty array or
+# not return score at all. Probably depends on whether score is declared as mandatory in the
+# JSON schema for locus_relationship documents
+
+{"status":"success",
+ "message":"",
+ "result":[
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"AT1G65480",
+     "type":"generic_interaction",
+     "related_entity":"AT1G22770",
+	 "score":[],
+     "direction":"unknown"},
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"AT1G65480",
+     "type":"generic_interaction",
+     "related_entity":"AT1G22920",
+     "score":[],
+     "direction":"unknown"},
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"AT1G65480",
+     "type":"generic_interaction",
+     "related_entity":"AT1G65480",
+     "direction":"unknown"},
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"AT1G65480",
+     "type":"generic_interaction",
+     "related_entity":"AT1G22770",
+	 "score":[],
+     "direction":"unknown"},
+    {"class":"locus_relationship",
+     "reference":"TAIR10",
+     "locus":"AT1G65480",
+     "type":"generic_interaction",
+     "related_entity":"AT1G69120",
+	 "score":[],
+     "direction":"unknown"}]}
+     
+*Notes*
+* Current list of types for this JSON document class are similarity, coexpression, colocation, generic_interaction, physical_interaction, genetic_interaction, predicted_interaction
+* Valid values for direction: unknown, undirected, a_to_b, b_to_a
+* score is an array of 1+ JSON objects; valid keys are similarity_percentage, correlation_coefficient, confidence_score, p_value, z_score, e_value
