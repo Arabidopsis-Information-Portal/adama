@@ -18,7 +18,7 @@ The following picture illustrates the architecture of |Adama|:
 
    .. figure:: workers.pdf
       :align: center
-      :width: 90 %
+      :width: 95 %
 
 The main components are:
 
@@ -54,13 +54,52 @@ The main components are:
 API
 ===
 
+.. warning:: This section is in flux. The API will change before a
+             stable release.
 
+In what follows, assume that ``$ADAMA`` is the base url of the Adama
+services.
+
+The resource ``$ADAMA/register`` accepts a ``GET`` and ``POST``
+request.  The ``GET`` verb returns a list of registered adapters in
+the form:
+
+.. code-block:: javascript
+
+    {
+      "identifier": "foo_v0.1",
+      "language": "python",
+      "name": "foo",
+      "url": "http://example.com",
+      "version": "0.1",
+      "workers": [
+        "ad89eefd01ca4648dc388dd12b95816cc24fe938ca801bd938ef982fa057a489",
+        "7ec01fefe8c8a54d92a773569e0dc0b38be8b3a9bbdea7a16da05c5a800117ad",
+        "ca88c73a13c17704e348eca468c101c784654dbe90b1156846e34507d0cccd6a",
+        "7f3fbb1faadd7493c349dd316ad3d1dcf8775b8851dbf0e9111b00bf64c03612"
+      ]
+    }
+
+The identifier is unique and can be used in the queries to refer to
+the service provided by this adapter.  The ``workers`` field contains
+internal information about the workers currently running to attend
+this adapter (it may be removed from the public API in the future).
+
+The ``POST`` verb allows to register a new adapter.  It accepts the
+parameters: ...
+
+
+The verbs ``PUT`` and ``DELETE`` will be implemented in the future to
+allow administration of already registered adapters.
 
 
 .. _adapter_api:
 
 Adapter API
 ===========
+
+.. warning:: This section is in flux. The API will change before a
+             stable release.
 
 
 .. |Adama| replace:: *Adama*
