@@ -150,5 +150,72 @@ Adapter API
 .. warning:: This section is in flux. The API will change before a
              stable release.
 
+An *adapter* can be written in any of the programming languages
+supported by |Adama|.  The list initially includes:
+
+    Python, Javascript (node.js), Ruby, Java, Lua, Perl.
+
+Other languages can be added in the future by request.
+
+The description that follows is generic, and details for each language
+will be provided in newer revisions of this document.
+
+An adapter is a module called ``main``.  It contains a function named
+``process`` which accepts a string and returns nothing.  The string
+argument is a JSON encoded object that will be passed by Adama, and it
+will contain the query from the user (in the Araport Language).
+
+The task of the function ``process`` is:
+
+- Convert the Araport Language query to the proper format for the 3rd
+  party service.
+
+- Send the query to the 3rd party service and retrieve the results.
+
+- For each result, convert it to Araport Language and **print** it to
+  screen (as a JSON encoded value).
+
+  The output may use several lines with no restriction.  **Print** the
+  line ``---`` to separate results.  Many results can be generated
+  from every result from the data source.
+
+The function ``process`` in the module ``main`` can be tested by the
+developer by simply running it in his or her own system, with no
+access to Adama or Araport.  As long as the adapter follows the
+protocol to print to standard output as JSON, and to separate the
+objects with ``---``, Adama will be able to capture the results.
+
+.. note:: By printing to standard output, the adapter is effectively
+          using an *asynchronous* output model, allowing Adama to
+          start delivering results to the clients as soon as possible.
+          It does not require any effort from the developer. And it is
+          actually easier to code than collecting the results in a
+          temporary container and returning them.
+
+The ``main`` module can have dependencies of two types:
+
+- It can depend on other modules provided by the developer.  In such
+  case, the developer can choose to register the adapter as tarball or
+  zip compressed archive.  The only requirement is that the ``main``
+  module has to be at the root level of the compressed archive.  Other
+  files or assets needed by the module can be at the same level or in
+  subdirectories.
+
+- Or it can depend on modules or packages from the standard package
+  repository for the corresponding language.  In this case, the extra
+  modules will be installed at registration time in the workers (see
+  :ref:`Registration API <register_post>`).
+
+The language of the adapter is detected automatically by looking at
+the module ``main`` uploaded during registration.
+
+See :ref:`developer_role` for an example of this API.
+
+
+.. _araport_language:
+
+Araport Language
+================
+
 
 .. |Adama| replace:: *Adama*
