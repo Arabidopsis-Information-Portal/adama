@@ -64,7 +64,7 @@ The resource ``$ADAMA/register`` accepts a ``GET`` and ``POST``
 request.  The ``GET`` verb returns a list of registered adapters in
 the form:
 
-.. code-block:: javascript
+.. code-block:: json
 
     {
       "identifier": "foo_v0.1",
@@ -83,17 +83,66 @@ the form:
 The identifier is unique and can be used in the queries to refer to
 the service provided by this adapter.  The ``workers`` field contains
 internal information about the workers currently running to attend
-this adapter (it may be removed from the public API in the future).
+this adapter (it may be removed from the public API in the
+future).
+
+.. _register_post:
 
 The ``POST`` verb allows to register a new adapter.  It accepts the
-parameters: ...
+parameters described below.  The type of the parameter and whether
+they are mandatory or optional is described besides the paramter name.
 
+``name`` [form, mandatory]
+    Name of the service provided by this adapter (together with the
+    version they must form a unique identifier)
+
+``version`` [form, mandatory]
+    Version of the service.
+
+``url`` [form, mandatory]
+   URL of the data source.  The network access for the adapter may be
+   restricted to access only this URL.
+
+``description`` [form, mandatory]
+   Human readable description of the service.
+
+``requirements`` [form, optional]
+   Comma separated list of third party modules to be installed inside
+   the workers.  They should be accessible in the standard package
+   repository for the language bein used (i.e., ``pypi`` for Python,
+   ``rubygems`` for Ruby, etc.).
+
+``code`` [file, mandatory]
+   The user's code for the adapter. See
+   :ref:`adapter_api` for its API and requirements.  The code can be
+   provided in a single file, or in a tarball or zip compressed
+   archive.  The type is detected automatically.
+
+Workers are started immediately after registration.  The response is
+the standard (``status``, ``message``, ``result``) triple (see Agave).
 
 The verbs ``PUT`` and ``DELETE`` will be implemented in the future to
 allow administration of already registered adapters.
 
+The resource ``$ADAMA/query`` accepts ``POST`` requests to perform
+queries to a selected list of services.  The parameter is a JSON
+encoded in the body with the schema:
+
+.. code-block:: json
+
+   {
+     "serviceName": "foo_v0.1",
+     "query": "...Araport Language query..."
+   }
+
+The ``serviceName`` field can also be a list of multiple services. The
+query will be delivered to all of them, and responses will be
+collected together.  See :ref:`araport_language` for the schema of the
+queries.
+
 
 .. _adapter_api:
+
 
 Adapter API
 ===========
