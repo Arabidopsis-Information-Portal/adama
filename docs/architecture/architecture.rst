@@ -217,5 +217,6 @@ See :ref:`developer_role` for an example of this API.
 Araport Language
 ================
 
+.. todo:: To be defined and to be written.
 
 .. |Adama| replace:: *Adama*
