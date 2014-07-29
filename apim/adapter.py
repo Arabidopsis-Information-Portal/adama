@@ -5,6 +5,7 @@ import os
 import tarfile
 import tempfile
 import threading
+import urlparse
 import uuid
 import zipfile
 
@@ -15,6 +16,7 @@ from .tools import location_of
 from .config import Config
 from .docker import docker_output, tail_logs
 from .api import APIException, RegisterException
+from .firewall import Firewall
 from . import app
 
 HERE = location_of(__file__)
@@ -61,6 +63,7 @@ class Adapter(object):
         self.language = None
         self.validate_metadata()
         self.temp_dir = self.create_temp_dir()
+        self.firewall = Firewall()
 
     def validate_metadata(self):
         self.requirements = self.metadata.get('requirements', None)
@@ -68,6 +71,8 @@ class Adapter(object):
         self.version = self.metadata.get('version', '0.1')
         self.iden = '{0}_v{1}'.format(self.name, self.version)
         self.url = self.metadata.get('url', '')
+        self.whitelist = self.metadata.get('whitelist', [])
+        self.whitelist.append(urlparse.urlparse(self.url).hostname)
 
     def to_json(self):
         return {
@@ -185,19 +190,32 @@ class Adapter(object):
         finally:
             os.chdir(prev_cwd)
 
+    def start_worker(self):
+        worker = docker_output('run', '-d', self.iden,
+                               '--queue-host',
+                               Config.get('queue', 'host'),
+                               '--queue-port',
+                               Config.get('queue', 'port'),
+                               '--queue-name',
+                               self.iden).strip()
+        self.allow_network(worker)
+        return worker
+
+    def allow_network(self, worker):
+        """Allow restricted network access to worker.
+
+        Only allow to whitelist and to queue.  Whitelist includes the
+        url registered as the data source.
+
+        """
+        whitelist = self.whitelist + [Config.get('queue', 'host')]
+        self.firewall.allow(worker, whitelist)
+
     def start_workers(self, n=None):
         if n is None:
             n = Config.getint(
                 'workers', '{}_instances'.format(self.language))
-        self.workers = [
-            docker_output('run', '-d', self.iden,
-                          '--queue-host',
-                          Config.get('queue', 'host'),
-                          '--queue-port',
-                          Config.get('queue', 'port'),
-                          '--queue-name',
-                          self.iden).strip()
-            for _ in range(n)]
+        self.workers = [self.start_worker() for _ in range(n)]
 
     def stop_workers(self):
         threads = []
