@@ -63,7 +63,7 @@ class Adapter(object):
         self.language = None
         self.validate_metadata()
         self.temp_dir = self.create_temp_dir()
-        self.firewall = Firewall()
+        self.firewall = Firewall(self.whitelist)
 
     def validate_metadata(self):
         self.requirements = self.metadata.get('requirements', None)
@@ -198,18 +198,8 @@ class Adapter(object):
                                Config.get('queue', 'port'),
                                '--queue-name',
                                self.iden).strip()
-        self.allow_network(worker)
+        self.firewall.register(worker)
         return worker
-
-    def allow_network(self, worker):
-        """Allow restricted network access to worker.
-
-        Only allow to whitelist and to queue.  Whitelist includes the
-        url registered as the data source.
-
-        """
-        whitelist = self.whitelist + [Config.get('queue', 'host')]
-        self.firewall.allow(worker, whitelist)
 
     def start_workers(self, n=None):
         if n is None:
@@ -225,6 +215,7 @@ class Adapter(object):
             thread.join(STOP_TIMEOUT)
 
     def async_stop_worker(self, worker):
+        self.firewall.unregister(worker)
         thread = threading.Thread(target=docker_output,
                                   args=('stop', worker))
         thread.start()
