@@ -3,6 +3,12 @@
 - name: Ensure Docker is installed
   apt: name=docker.io state=present
   sudo: yes
+  when: ansible_os_family == "Debian"
+
+- name: Ensure Docker is installed
+  yum: name=docker-io state=latest
+  sudo: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Add apim user to docker group
   user:

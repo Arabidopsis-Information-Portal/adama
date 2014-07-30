@@ -1,0 +1,7 @@
+---
+
+- hosts: centos
+  roles:
+    - common
+    - developer_station
+    - docker
