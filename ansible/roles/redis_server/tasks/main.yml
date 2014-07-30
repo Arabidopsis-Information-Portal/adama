@@ -3,10 +3,22 @@
 - name: Ensure redis server is installed
   apt: name=redis-server state=present
   sudo: yes
+  when: ansible_os_family == "Debian"
+
+- name: Ensure redis server is installed
+  yum: name=redis state=latest
+  sudo: yes
+  when: ansible_os_family == "RedHat"
+
+- set_fact: redis="redis-server"
+  when: ansible_os_family == "Debian"
+
+- set_fact: redis="redis"
+  when: ansible_os_family == "RedHat"
 
 - name: Ensure redis server is running
   service:
-    name: redis-server
+    name: "{{ redis }}"
     state: started
     enabled: yes
   sudo: yes

@@ -16,9 +16,15 @@
   pip: requirements=/home/apim/apim/dev_requirements.txt
   sudo: yes
 
+- set_fact: swagger_html="/usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py"
+  when: ansible_os_family == "Debian"
+
+- set_fact: swagger_html="/usr/lib/python2.7/site-packages/flask_restful_swagger/html.py"
+  when: ansible_os_family == "RedHat"
+
 - name: Patch swagger ui
   lineinfile:
-    dest: /usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py
+    dest: "{{ swagger_html }}"
     regexp: "^(.*)docExpansion:(.*)$"
     line: '\1docExpansion: "full"'
     state: present

@@ -1,5 +1,10 @@
 ---
 
+- name: Ensure gcc is available
+  yum: name="@Development tools" state=present
+  sudo: yes
+  when: ansible_os_family == "RedHat"
+
 - name: Ensure vim installation
   apt: name=vim state=present
   sudo: yes
