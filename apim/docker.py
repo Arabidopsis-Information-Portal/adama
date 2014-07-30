@@ -55,3 +55,21 @@ def check_docker(display=False):
                   format(Config.get('docker', 'command')), file=sys.stderr)
             print('Please, check ~/.apim.conf', file=sys.stderr)
         return False
+
+
+def start_container(iden, *params):
+    """Run container from image ``iden``.
+
+    Create veth pair and bind them properly. Return the name of the
+    interface in the inside of the container, and the ip address.
+
+    """
+    container = docker_output(
+        'run', '-d', '--net=none', iden, *params).strip()
+    pid = docker_output(
+        'inspect', '-f', '{{.State.Pid}}', iden).strip()
+    subprocess.check_call('sudo mkdir -p /var/run/netns'.split())
+    subprocess.check_call('sudo ln -s /proc/{0}/ns/net /var/run/netns/{0}'
+                          .format(pid).split())
+    # create veth pair (do until file not exists)
+    # set the same ip across containers
