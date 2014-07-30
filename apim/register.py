@@ -117,7 +117,7 @@ class Register(restful.Resource):
                     'version': args.version or '0.1',
                     'requirements': args.requirements or '',
                     'url': args.url,
-                    'whitelist': args.whitelist or ''}
+                    'whitelist': (args.whitelist or '').split()}
         app.logger.debug('Starting adapter registration')
         adapter = Adapter(args.code.filename, args.code.read(), metadata)
         app.logger.debug(' created object')
