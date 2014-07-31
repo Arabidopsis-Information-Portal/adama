@@ -82,7 +82,7 @@ def start_container(iden, *params):
         ['sudo', 'sh', '-c',
          """
          mkdir -p /var/run/netns
-         ln -s /proc/{pid}/ns/net /var/run/netns/{pid}
+         ln -sf /proc/{pid}/ns/net /var/run/netns/{pid}
          ip link add {veth_a} type veth peer name {veth_b}
          brctl addif docker0 {veth_a}
          ip link set {veth_a} up
