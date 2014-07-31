@@ -77,6 +77,7 @@ def start_container(iden, *params):
 
     x = random.randint(1, 255)
     y = random.randint(1, 255)
+    ip = '172.17.{0}.{1}'.format(x, y)
 
     subprocess.check_call(
         ['sudo', 'sh', '-c',
@@ -89,9 +90,8 @@ def start_container(iden, *params):
          ip link set {veth_b} netns {pid}
          ip netns exec {pid} ip link set dev {veth_b} name eth0
          ip netns exec {pid} ip link set eth0 up
-         ip netns exec {pid} ip addr add 172.17.{x}.{y}/16 dev eth0
+         ip netns exec {pid} ip addr add {ip}/16 dev eth0
          ip netns exec {pid} ip route add default via 172.17.42.1
-         """.format(pid=pid, veth_a=veth_a, veth_b=veth_b, x=x, y=y)])
+         """.format(pid=pid, veth_a=veth_a, veth_b=veth_b, ip=ip)])
 
-    return veth_a, x, y
-
+    return veth_a, ip
