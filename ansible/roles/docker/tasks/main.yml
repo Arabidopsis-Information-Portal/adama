@@ -15,3 +15,13 @@
     append: yes
     groups: docker
   sudo: yes
+
+- name: Ensure bridge utils are installed
+  apt: name=bridge-utils state=present
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure bridge utils are installed
+  yum: name=bridge-utils state=latest
+  sudo: yes
+  when: ansible_os_family == 'RedHat'
