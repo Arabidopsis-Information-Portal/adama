@@ -1,0 +1,22 @@
+---
+
+- name: Ensure https transport available
+  apt: name=apt-transport-https state=present
+  sudo: yes
+
+- name: Import key
+  apt_key:
+    keyserver: hkp://keyserver.ubuntu.com:80
+    id: A88D21E9
+    state: present
+  sudo: yes
+
+- name: Add docker repository
+  apt_repository:
+    repo: "deb https://get.docker.io/ubuntu docker main"
+    state: present
+  sudo: yes
+
+- name: Install docker latest
+  apt: name=lxc-docker state=present
+  sudo: yes

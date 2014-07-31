@@ -1,8 +1,7 @@
 ---
 
-- name: Ensure Docker is installed
-  apt: name=docker.io state=present
-  sudo: yes
+- name: Ensure Docker 1.1 is installed in Debian based distro
+  include: debian_docker.yml
   when: ansible_os_family == "Debian"
 
 - name: Ensure Docker is installed
