@@ -39,8 +39,13 @@ class Firewall(object):
         self._refresh(iface)
 
     def unregister(self, worker):
-        # delete rules for iface
-        pass
+        """Remove worker from firewall."""
+
+        iface = self.workers[worker]
+        rules = [rule for rule in self._list() if rule[-1] == iface]
+        for rule in rules:
+            self.delete(rule[-2], iface, rule[1])
+        del self.workers[worker]
 
     def _refresh(self, iface):
         """Set iptables from whitelist."""
