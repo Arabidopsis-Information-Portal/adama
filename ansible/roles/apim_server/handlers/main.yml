@@ -17,6 +17,5 @@
   sudo_user: apim
 
 - name: Reload apim server
-  shell: kill -HUP `cat /var/run/apim_server.pid`
+  shell: test -f /var/run/apim_server.pid && kill -HUP `cat /var/run/apim_server.pid`
   sudo: yes
-  ignore_errors: yes

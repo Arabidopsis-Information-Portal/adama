@@ -43,9 +43,10 @@
   notify: Document local config file
 
 - name: Make sure the apim server is started
-  debug: msg="(should implement this)"
-
-- name: Reload apim server
-  shell: test -f /var/run/apim_server.pid && kill -HUP `cat /var/run/apim_server.pid`
+  command: apim_server.py
+  args:
+    chdir: /home/apim/apim/bin
+    creates: /var/run/apim_server.pid
   sudo: yes
-  ignore_errors: yes
+  environment:
+    HOME: /home/apim
