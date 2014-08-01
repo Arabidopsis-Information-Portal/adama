@@ -94,4 +94,4 @@ def start_container(iden, *params):
          ip netns exec {pid} ip route add default via 172.17.42.1
          """.format(pid=pid, veth_a=veth_a, veth_b=veth_b, ip=ip)])
 
-    return veth_a, ip
+    return container, veth_a, ip
