@@ -1,3 +1,4 @@
+import collections
 import socket
 import subprocess
 
@@ -6,7 +7,8 @@ class Firewall(object):
 
     def __init__(self, whitelist,
                  get=None, insert=None, delete=None):
-        self.whitelist = set(whitelist)
+        self._whitelists = collections.deque([set()], maxlen=2)
+        self.whitelist = whitelist
         # function that retuns the chain FORWARD
         self.get = get or self._get
         # function to insert a rule
@@ -14,6 +16,18 @@ class Firewall(object):
         # function to delete a rule
         self.delete = delete or self._delete
         self.workers = {}
+
+    @property
+    def whitelist(self):
+        return self._whitelists[1]
+
+    @property
+    def old_whitelist(self):
+        return self._whitelists[0]
+
+    @whitelist.setter
+    def whitelist(self, new_list):
+        self._whitelists.append(set(new_list))
 
     def _get(self):
         return subprocess.check_output(
@@ -26,10 +40,11 @@ class Firewall(object):
             '-s 0/0 -d {dest} -j {target}'
             .format(**locals()).split())
 
-    def _delete(self, line_no):
+    def _delete(self, dest, iface, target):
         subprocess.check_output(
-            'sudo iptables -D FORWARD {0}'
-            .format(line_no).split())
+            'sudo iptables -D FORWARD -s 0/0 -d {dest} '
+            '-m physdev --physdev-in {iface} '
+            '-j {target}'.format(**locals()).split())
 
     def register(self, worker, iface):
         """Allow worker to whitelist."""
@@ -46,19 +61,20 @@ class Firewall(object):
 
         self._ensure_drop(iface)
 
-        new = set(self._resolve())
-        for ip in new:
-            self._iptables_add(ip, iface)
-            # write rule
+        new = set(self._resolve(self.whitelist))
+        old = set(self._resolve(self.old_whitelist))
 
-        for ip in self.whitelist - new:
-            # remove rule
-            pass
+        for ip in new - old:
+            self.insert(1, ip, iface, 'ACCEPT')
 
-    def _resolve(self):
+        for ip in old - new:
+            self.delete(ip, iface, 'ACCEPT')
+
+    @staticmethod
+    def _resolve(whitelist):
         """Convert names to ip's."""
 
-        for addr in self.whitelist:
+        for addr in whitelist:
             _, _, ips = socket.gethostbyname_ex(addr)
             for ip in ips:
                 yield ip
