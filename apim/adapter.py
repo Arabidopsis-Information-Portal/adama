@@ -191,14 +191,15 @@ class Adapter(object):
             os.chdir(prev_cwd)
 
     def start_worker(self):
-        worker = docker_output('run', '-d', self.iden,
-                               '--queue-host',
-                               Config.get('queue', 'host'),
-                               '--queue-port',
-                               Config.get('queue', 'port'),
-                               '--queue-name',
-                               self.iden).strip()
-        self.firewall.register(worker)
+        worker, iface, ip = start_container(
+            self.iden,
+            '--queue-host',
+            Config.get('queue', 'host'),
+            '--queue-port',
+            Config.get('queue', 'port'),
+            '--queue-name',
+            self.iden)
+        self.firewall.register(worker, iface)
         return worker
 
     def start_workers(self, n=None):
