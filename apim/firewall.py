@@ -1,4 +1,3 @@
-import collections
 import socket
 import subprocess
 
@@ -7,7 +6,6 @@ class Firewall(object):
 
     def __init__(self, whitelist,
                  get=None, insert=None, delete=None):
-        self._whitelists = collections.deque([set()], maxlen=2)
         self.whitelist = whitelist
         # function that retuns the chain FORWARD
         self.get = get or self._get
@@ -16,18 +14,6 @@ class Firewall(object):
         # function to delete a rule
         self.delete = delete or self._delete
         self.workers = {}
-
-    @property
-    def whitelist(self):
-        return self._whitelists[1]
-
-    @property
-    def old_whitelist(self):
-        return self._whitelists[0]
-
-    @whitelist.setter
-    def whitelist(self, new_list):
-        self._whitelists.append(set(new_list))
 
     def _get(self):
         return subprocess.check_output(
@@ -62,7 +48,9 @@ class Firewall(object):
         self._ensure_drop(iface)
 
         new = set(self._resolve(self.whitelist))
-        old = set(self._resolve(self.old_whitelist))
+        old = set(self._resolve(
+            rule[-2] for rule in self._list()
+            if rule[-1] == iface and rule[1] == 'ACCEPT'))
 
         for ip in new - old:
             self.insert(1, ip, iface, 'ACCEPT')
@@ -71,10 +59,10 @@ class Firewall(object):
             self.delete(ip, iface, 'ACCEPT')
 
     @staticmethod
-    def _resolve(whitelist):
+    def _resolve(addresses):
         """Convert names to ip's."""
 
-        for addr in whitelist:
+        for addr in addresses:
             _, _, ips = socket.gethostbyname_ex(addr)
             for ip in ips:
                 yield ip
