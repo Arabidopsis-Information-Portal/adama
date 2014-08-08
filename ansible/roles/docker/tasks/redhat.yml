@@ -1,0 +1,9 @@
+---
+
+- name: Ensure Docker is installed
+  yum: name=docker-io state=latest
+  sudo: yes
+
+- name: Ensure bridge utils are installed
+  yum: name=bridge-utils state=latest
+  sudo: yes

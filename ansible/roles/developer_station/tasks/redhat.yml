@@ -1,0 +1,27 @@
+---
+
+- set_fact: bashrc="bashrc"
+
+- name: Ensure gcc is available
+  yum: name="@Development tools" state=present
+  sudo: yes
+
+- name: Ensure vim installation
+  yum: name=vim state=latest
+  sudo: yes
+
+- name: Ensure Python 2.7 installation
+  yum: name={{ item }} state=latest
+  sudo: yes
+  with_items:
+    - python
+    - python-devel
+    - python-pip
+
+- name: Install ack-grep
+  yum: name=ack state=latest
+  sudo: yes
+
+- name: Install tmux
+  yum: name=tmux state=latest
+  sudo: yes

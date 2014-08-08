@@ -1,0 +1,17 @@
+---
+
+- name: Update apt cache once a day
+  apt: update_cache=yes cache_valid_time=84600
+  sudo: yes
+
+- name: Install git in Debian
+  apt: name=git state=present
+  sudo: yes
+
+- name: Install libncurses in Debian
+  apt: name=libncurses5-dev state=present
+  sudo: yes
+
+- name: Install supervisor in Debian
+  apt: name=supervisor state=latest
+  sudo: yes

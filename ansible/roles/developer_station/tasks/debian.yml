@@ -1,0 +1,23 @@
+---
+
+- set_fact: bashrc="bash.bashrc"
+
+- name: Ensure vim installation
+  apt: name=vim state=present
+  sudo: yes
+
+- name: Ensure Python 2.7 installation
+  apt: name={{ item }} state=present
+  sudo: yes
+  with_items:
+    - python
+    - python-dev
+    - python-pip
+
+- name: Install ack-grep
+  apt: name=ack-grep state=present
+  sudo: yes
+
+- name: Install tmux
+  apt: name=tmux state=present
+  sudo: yes

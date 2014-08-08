@@ -20,3 +20,7 @@
 - name: Install docker latest
   apt: name=lxc-docker state=present
   sudo: yes
+
+- name: Ensure bridge utils are installed
+  apt: name=bridge-utils state=present
+  sudo: yes

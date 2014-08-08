@@ -1,12 +1,9 @@
 ---
 
-- name: Ensure Docker 1.1 is installed in Debian based distro
-  include: debian_docker.yml
+- include: debian.yml
   when: ansible_os_family == "Debian"
 
-- name: Ensure Docker is installed
-  yum: name=docker-io state=latest
-  sudo: yes
+- include: redhat.yml
   when: ansible_os_family == "RedHat"
 
 - name: Add adama user to docker group
@@ -15,13 +12,3 @@
     append: yes
     groups: docker
   sudo: yes
-
-- name: Ensure bridge utils are installed
-  apt: name=bridge-utils state=present
-  sudo: yes
-  when: ansible_os_family == 'Debian'
-
-- name: Ensure bridge utils are installed
-  yum: name=bridge-utils state=latest
-  sudo: yes
-  when: ansible_os_family == 'RedHat'

@@ -1,0 +1,13 @@
+---
+
+- name: Install git in Redhat
+  yum: name=git state=latest
+  sudo: yes
+
+- name: Install libncurses in Redhat
+  yum: name=ncurses-devel state=latest
+  sudo: yes
+
+- name: Install supervisor in Redhat
+  yum: name=supervisor state=latest
+  sudo: yes

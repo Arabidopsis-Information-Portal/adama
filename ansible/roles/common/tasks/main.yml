@@ -1,9 +1,10 @@
 ---
 
-- name: Update apt cache once a day
-  apt: update_cache=yes cache_valid_time=84600
-  sudo: yes
+- include: debian.yml
   when: ansible_os_family == "Debian"
+
+- include: redhat.yml
+  when: ansible_os_family == "RedHat"
 
 - name: Add user adama
   user: name=adama generate_ssh_key=yes state=present
@@ -17,28 +18,16 @@
     create: yes
   sudo: yes
 
+- name: Make sure old user 'apim' is deleted
+  user: name=apim state=absent remove=yes
+  sudo: yes
+
 - name: Ensure permissions on adama sudoers
   file:
     path: /etc/sudoers.d/99-adama-user
     mode: 0440
   sudo: yes
 
-- name: Install git
-  apt: name=git state=present
+- name: Ensure supervisor is running
+  service: name=supervisord state=started
   sudo: yes
-  when: ansible_os_family == "Debian"
-
-- name: Install git
-  yum: name=git state=latest
-  sudo: yes
-  when: ansible_os_family == "RedHat"
-
-- name: Install libncurses
-  apt: name=libncurses5-dev state=present
-  sudo: yes
-  when: ansible_os_family == "Debian"
-
-- name: Install libncurses
-  yum: name=ncurses-devel state=latest
-  sudo: yes
-  when: ansible_os_family == "RedHat"
