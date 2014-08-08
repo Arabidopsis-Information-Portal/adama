@@ -1,7 +1,7 @@
 ---
 
 - name: Rebuild containers
-  command: make adapters DOCKER=docker.io
+  command: make adapters
   args:
     chdir: /home/adama/adama
   sudo: yes
