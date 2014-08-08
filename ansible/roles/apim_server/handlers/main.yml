@@ -3,19 +3,19 @@
 - name: Rebuild containers
   command: make adapters DOCKER=docker.io
   args:
-    chdir: /home/apim/apim
+    chdir: /home/adama/adama
   sudo: yes
-  sudo_user: apim
+  sudo_user: adama
 
 - name: Document local config file
   lineinfile:
-    dest: /home/apim/.apim.conf
+    dest: /home/adama/.adama.conf
     insertbefore: BOF
-    line: "# Managed by ansible\n# See all options in $APIM_SRC/apim.conf\n# Tweak automatically configured values in $APIM_SRC/ansible/host_vars/<this_host>\n"
+    line: "# Managed by ansible\n# See all options in $ADAMA_SRC/adama.conf\n# Tweak automatically configured values in $ADAMA_SRC/ansible/host_vars/<this_host>\n"
     state: present
   sudo: yes
-  sudo_user: apim
+  sudo_user: adama
 
-- name: Reload apim server
-  shell: test -f /var/run/apim_server.pid && kill -HUP `cat /var/run/apim_server.pid`
+- name: Reload adama server
+  shell: test -f /var/run/adama_server.pid && kill -HUP `cat /var/run/adama_server.pid`
   sudo: yes

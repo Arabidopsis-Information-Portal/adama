@@ -5,21 +5,21 @@
   sudo: yes
   when: ansible_os_family == "Debian"
 
-- name: Add user apim
-  user: name=apim generate_ssh_key=yes state=present
+- name: Add user adama
+  user: name=adama generate_ssh_key=yes state=present
   sudo: yes
 
-- name: Add user apim to sudoers with no password
+- name: Add user adama to sudoers with no password
   lineinfile:
-    dest: /etc/sudoers.d/99-apim-user
-    line: 'apim ALL=(ALL) NOPASSWD:ALL'
+    dest: /etc/sudoers.d/99-adama-user
+    line: 'adama ALL=(ALL) NOPASSWD:ALL'
     state: present
     create: yes
   sudo: yes
 
-- name: Ensure permissions on apim sudoers
+- name: Ensure permissions on adama sudoers
   file:
-    path: /etc/sudoers.d/99-apim-user
+    path: /etc/sudoers.d/99-adama-user
     mode: 0440
   sudo: yes
 

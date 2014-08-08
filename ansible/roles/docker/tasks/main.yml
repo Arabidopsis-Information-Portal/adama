@@ -9,9 +9,9 @@
   sudo: yes
   when: ansible_os_family == "RedHat"
 
-- name: Add apim user to docker group
+- name: Add adama user to docker group
   user:
-    name: apim
+    name: adama
     append: yes
     groups: docker
   sudo: yes

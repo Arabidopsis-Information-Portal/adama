@@ -1,19 +1,19 @@
 ---
 
-- name: Get apim code
+- name: Get adama code
   git:
-    repo: https://github.com/waltermoreira/apim
-    dest: /home/apim/apim
+    repo: https://github.com/waltermoreira/adama
+    dest: /home/adama/adama
     version: "{{ branch | default(master) }}"
     update: yes
   sudo: yes
-  sudo_user: apim
+  sudo_user: adama
   notify:
     - Rebuild containers
-    - Reload apim server
+    - Reload adama server
 
 - name: Install all Python requirements
-  pip: requirements=/home/apim/apim/dev_requirements.txt
+  pip: requirements=/home/adama/adama/dev_requirements.txt
   sudo: yes
 
 - set_fact: swagger_html="/usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py"
@@ -33,20 +33,20 @@
 
 - name: Setup local config file
   ini_file:
-    dest: /home/apim/.apim.conf
+    dest: /home/adama/.adama.conf
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   sudo: yes
-  sudo_user: apim
+  sudo_user: adama
   with_items: config
   notify: Document local config file
 
-- name: Make sure the apim server is started
-  command: apim_server.py
+- name: Make sure the adama server is started
+  command: adama_server.py
   args:
-    chdir: /home/apim/apim/bin
-    creates: /var/run/apim_server.pid
+    chdir: /home/adama/adama/bin
+    creates: /var/run/adama_server.pid
   sudo: yes
   environment:
-    HOME: /home/apim
+    HOME: /home/adama
