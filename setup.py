@@ -42,7 +42,7 @@ setup(
     scripts=['bin/adama_server.py'],
     package_dir={'adama': 'adama'},
     include_package_data=True,
-    data_files=[('', ['adama.conf'])],
+    data_files=[('etc', ['adama.conf'])],
     install_requires=[
     ],
     license="MIT",
