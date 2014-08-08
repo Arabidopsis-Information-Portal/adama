@@ -245,4 +245,4 @@ results using any of the available increamental JSON parsers.
 
 
 .. _Adama github repository: https://github.com/waltermoreira/adama/blob/master/adama/containers/adapters/expressologs_by_locus/main.py
-.. _examples directory of Adama github repository: https://github.com/waltermoreira/apim/tree/master/examples
+.. _examples directory of Adama github repository: https://github.com/waltermoreira/adama/tree/master/examples

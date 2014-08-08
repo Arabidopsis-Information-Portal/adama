@@ -4,9 +4,9 @@ Installation
 
 At the command line::
 
-    $ easy_install apim
+    $ easy_install adama
 
 Or, if you have virtualenvwrapper installed::
 
-    $ mkvirtualenv apim
-    $ pip install apim
+    $ mkvirtualenv adama
+    $ pip install adama
