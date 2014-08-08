@@ -4,9 +4,9 @@ include HISTORY.rst
 include LICENSE
 include README.rst
 
-include apim.conf
+include adama.conf
 
-recursive-include apim *
+recursive-include adama *
 recursive-include tests *
 recursive-include ansible *
 recursive-exclude * __pycache__

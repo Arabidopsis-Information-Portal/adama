@@ -2,16 +2,16 @@
 Araport API manager
 ===================
 
-.. image:: https://badge.fury.io/gh/waltermoreira%2Fapim.svg
-    :target: http://badge.fury.io/gh/waltermoreira%2Fapim
+.. image:: https://badge.fury.io/gh/waltermoreira%2Fadama.svg
+    :target: http://badge.fury.io/gh/waltermoreira%2Fadama
 
 ..
-   .. image:: https://travis-ci.org/waltermoreira/apim.png?branch=master
-           :target: https://travis-ci.org/waltermoreira/apim
+   .. image:: https://travis-ci.org/waltermoreira/adama.png?branch=master
+           :target: https://travis-ci.org/waltermoreira/adama
 
 ..
-   .. image:: https://pypip.in/d/apim/badge.png
-           :target: https://pypi.python.org/pypi/apim
+   .. image:: https://pypip.in/d/adama/badge.png
+           :target: https://pypi.python.org/pypi/adama
 
 
 This project implements a data federation strategy for the `Arabidopsis Information Portal`_.
@@ -24,20 +24,20 @@ Setting up a development box
 ============================
 
 To build a system where to develop the Araport API manager, use the provided ansible_ playbook.
-You'll need to copy ``$APIM_SRC/ansible/hosts.example`` to ``$APIM_SRC/ansible/hosts`` and set up the proper
+You'll need to copy ``$ADAMA_SRC/ansible/hosts.example`` to ``$ADAMA_SRC/ansible/hosts`` and set up the proper
 values pointing to a Ubuntu linux (at least 14.04).  Then, run
 
 .. code-block:: bash
 
-   $ cd $APIM_SRC/ansible
+   $ cd $ADAMA_SRC/ansible
    $ ansible-playbook -i hosts site.yml
 
-.. note:: 
+.. note::
 
-   A development box is where the AIP developers work on the APIM.  Do not confuse with the environment where
+   A development box is where the AIP developers work on the ADAMA.  Do not confuse with the environment where
    the users develop their adapter functions.  The latter will be provided as an already built VM.  Also, do not
    confuse with the containers where the user's code runs.
-   
+
 Building the base containers
 ============================
 
@@ -45,9 +45,9 @@ To build the containers where the user code runs:
 
 .. code-block:: bash
 
-    $ cd $APIM_SRC
+    $ cd $ADAMA_SRC
     $ make adapters
-    
+
 The first build may take a long time while pulling the base images from the network. Subsequent builds should
 be much faster.
 
@@ -69,7 +69,7 @@ rebuild them with the option ``NO_CACHE=true`` (this is due to the package manag
 .. code-block:: bash
 
    $ make adapters NO_CACHE=true
-   
+
 
 License
 -------

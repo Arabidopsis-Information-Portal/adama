@@ -29,25 +29,25 @@ if sys.argv[-1] == 'publish':
 readme = open('README.rst').read()
 
 setup(
-    name='apim',
+    name='adama',
     version='0.1.0',
     description='Araport API manager',
     long_description=readme,
     author='Walter Moreira',
     author_email='wmoreira@tacc.utexas.edu',
-    url='https://github.com/waltermoreira/apim',
+    url='https://github.com/waltermoreira/adama',
     packages=[
-        'apim'
+        'adama'
     ],
-    scripts=['bin/apim_server.py'],
-    package_dir={'apim': 'apim'},
+    scripts=['bin/adama_server.py'],
+    package_dir={'adama': 'adama'},
     include_package_data=True,
-    data_files=[('', 'apim.conf')],
+    data_files=[('', 'adama.conf')],
     install_requires=[
     ],
     license="MIT",
     zip_safe=False,
-    keywords='apim',
+    keywords='adama',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

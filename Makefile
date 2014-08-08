@@ -32,7 +32,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 apim tests
+	flake8 adama tests
 
 test:
 	python setup.py test
@@ -41,15 +41,15 @@ test-all:
 	tox
 
 coverage:
-	coverage run --source apim setup.py test
+	coverage run --source adama setup.py test
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
 
 docs:
-	rm -f docs/apim.rst
+	rm -f docs/adama.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ apim
+	sphinx-apidoc -o docs/ adama
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
@@ -64,4 +64,4 @@ dist: clean
 	ls -l dist
 
 adapters:
-	$(MAKE) --directory=apim/containers
+	$(MAKE) --directory=adama/containers
