@@ -6,5 +6,5 @@
     - developer_station
     - rabbit_server
     - docker
-    - { role: adama_server, branch: master }
+    - { role: adama_server, branch: renaming }
     - redis_server

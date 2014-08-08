@@ -17,5 +17,5 @@
   sudo_user: adama
 
 - name: Reload adama server
-  shell: test -f /var/run/adama_server.pid && kill -HUP `cat /var/run/adama_server.pid`
+  supervisorctl: name=adama state=restarted
   sudo: yes

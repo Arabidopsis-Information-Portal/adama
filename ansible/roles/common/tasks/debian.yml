@@ -15,3 +15,7 @@
 - name: Install supervisor in Debian
   apt: name=supervisor state=latest
   sudo: yes
+
+- name: Ensure supervisor is running in Debian
+  service: name=supervisor state=started
+  sudo: yes

@@ -16,10 +16,22 @@
   pip: requirements=/home/adama/adama/dev_requirements.txt
   sudo: yes
 
-- set_fact: swagger_html="/usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py"
+- name: Install adama itself
+  pip: name=/home/adama/adama state=latest
+  sudo: yes
+
+- set_fact:
+    swagger_html="/usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py"
+    supervisord_conf_dir="/etc/supervisor/conf.d"
+    supervisord_conf_ext="conf"
+    supervisord_service="supervisor"
   when: ansible_os_family == "Debian"
 
-- set_fact: swagger_html="/usr/lib/python2.7/site-packages/flask_restful_swagger/html.py"
+- set_fact:
+    swagger_html="/usr/lib/python2.7/site-packages/flask_restful_swagger/html.py"
+    supervisord_conf_dir="/etc/supervisord.d"
+    supervisord_conf_ext="ini"
+    supervisord_service="supervisord"
   when: ansible_os_family == "RedHat"
 
 - name: Patch swagger ui
@@ -42,11 +54,18 @@
   with_items: config
   notify: Document local config file
 
-- name: Make sure the adama server is started
-  command: adama_server.py
-  args:
-    chdir: /home/adama/adama/bin
-    creates: /var/run/adama_server.pid
+- name: Add adama to supervisor
+  template:
+    src=adama.ini.j2
+    dest={{ supervisord_conf_dir }}/adama.{{ supervisord_conf_ext }}
   sudo: yes
-  environment:
-    HOME: /home/adama
+  notify:
+    - Reload adama server
+
+- name: Make sure supervisor sees the new .conf file
+  service: name={{ supervisord_service }} state=restarted
+  sudo: yes
+
+- name: Make sure the adama server is started
+  supervisorctl: name=adama state=started
+  sudo: yes

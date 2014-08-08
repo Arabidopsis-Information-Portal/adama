@@ -27,7 +27,3 @@
     path: /etc/sudoers.d/99-adama-user
     mode: 0440
   sudo: yes
-
-- name: Ensure supervisor is running
-  service: name=supervisord state=started
-  sudo: yes

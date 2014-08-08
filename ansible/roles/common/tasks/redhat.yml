@@ -11,3 +11,7 @@
 - name: Install supervisor in Redhat
   yum: name=supervisor state=latest
   sudo: yes
+
+- name: Ensure supervisor is running in Redhat
+  service: name=supervisord state=started
+  sudo: yes
