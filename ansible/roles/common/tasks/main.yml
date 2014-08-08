@@ -3,6 +3,7 @@
 - name: Update apt cache once a day
   apt: update_cache=yes cache_valid_time=84600
   sudo: yes
+  when: ansible_os_family == "Debian"
 
 - name: Add user apim
   user: name=apim generate_ssh_key=yes state=present
@@ -25,7 +26,19 @@
 - name: Install git
   apt: name=git state=present
   sudo: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install git
+  yum: name=git state=latest
+  sudo: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Install libncurses
   apt: name=libncurses5-dev state=present
   sudo: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install libncurses
+  yum: name=ncurses-devel state=latest
+  sudo: yes
+  when: ansible_os_family == "RedHat"

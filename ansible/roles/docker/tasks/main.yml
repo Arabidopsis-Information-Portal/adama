@@ -1,8 +1,13 @@
 ---
 
+- name: Ensure Docker 1.1 is installed in Debian based distro
+  include: debian_docker.yml
+  when: ansible_os_family == "Debian"
+
 - name: Ensure Docker is installed
-  apt: name=docker.io state=present
+  yum: name=docker-io state=latest
   sudo: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Add apim user to docker group
   user:
@@ -10,3 +15,13 @@
     append: yes
     groups: docker
   sudo: yes
+
+- name: Ensure bridge utils are installed
+  apt: name=bridge-utils state=present
+  sudo: yes
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure bridge utils are installed
+  yum: name=bridge-utils state=latest
+  sudo: yes
+  when: ansible_os_family == 'RedHat'

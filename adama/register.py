@@ -76,6 +76,15 @@ class Register(restful.Resource):
                 'paramType': 'form'
             },
             {
+                'name': 'whitelist',
+                'description': ("comma separated list of names of IP's "
+                                "to which network access is requested"),
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
                 'name': 'description',
                 'description': ('Description of the service provided by '
                                 'this adapter'),
@@ -107,7 +116,8 @@ class Register(restful.Resource):
         metadata = {'name': args.name,
                     'version': args.version or '0.1',
                     'requirements': args.requirements or '',
-                    'url': args.url}
+                    'url': args.url,
+                    'whitelist': (args.whitelist or '').split()}
         app.logger.debug('Starting adapter registration')
         adapter = Adapter(args.code.filename, args.code.read(), metadata)
         app.logger.debug(' created object')
@@ -142,6 +152,7 @@ class Register(restful.Resource):
         parser.add_argument('description', type=str)
         parser.add_argument('url', type=str, required=True,
                             help='url of the data service is required')
+        parser.add_argument('whitelist', type=str)
         parser.add_argument('requirements', type=str)
         parser.add_argument('code', type=FileStorage, required=True,
                             location='files',

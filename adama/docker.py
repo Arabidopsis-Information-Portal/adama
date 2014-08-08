@@ -1,12 +1,15 @@
 from __future__ import print_function
 
 import os
+import random
 import select
 import subprocess
 import sys
 
 from .config import Config
 from .tools import TimeoutFunction, TimeoutFunctionException
+
+MAX_VETH = 100000
 
 
 def docker(*args, **kwargs):
@@ -55,3 +58,40 @@ def check_docker(display=False):
                   format(Config.get('docker', 'command')), file=sys.stderr)
             print('Please, check ~/.apim.conf', file=sys.stderr)
         return False
+
+
+def start_container(iden, *params):
+    """Run container from image ``iden``.
+
+    Create veth pair and bind them properly. Return the name of the
+    interface in the inside of the container, and the ip address.
+
+    """
+    container = docker_output(
+        'run', '-d', '--net=none', iden, *params).strip()
+    pid = docker_output(
+        'inspect', '-f', '{{.State.Pid}}', container).strip()
+    n = random.randint(1, MAX_VETH)
+    veth_a = 'vethA{0}'.format(n)
+    veth_b = 'vethB{0}'.format(n)
+
+    x = random.randint(1, 255)
+    y = random.randint(1, 255)
+    ip = '172.17.{0}.{1}'.format(x, y)
+
+    subprocess.check_call(
+        ['sudo', 'sh', '-c',
+         """
+         mkdir -p /var/run/netns
+         ln -sf /proc/{pid}/ns/net /var/run/netns/{pid}
+         ip link add {veth_a} type veth peer name {veth_b}
+         brctl addif docker0 {veth_a}
+         ip link set {veth_a} up
+         ip link set {veth_b} netns {pid}
+         ip netns exec {pid} ip link set dev {veth_b} name eth0
+         ip netns exec {pid} ip link set eth0 up
+         ip netns exec {pid} ip addr add {ip}/16 dev eth0
+         ip netns exec {pid} ip route add default via 172.17.42.1
+         """.format(pid=pid, veth_a=veth_a, veth_b=veth_b, ip=ip)])
+
+    return container, veth_a, ip

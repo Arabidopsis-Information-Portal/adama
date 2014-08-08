@@ -16,9 +16,15 @@
   pip: requirements=/home/apim/apim/dev_requirements.txt
   sudo: yes
 
+- set_fact: swagger_html="/usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py"
+  when: ansible_os_family == "Debian"
+
+- set_fact: swagger_html="/usr/lib/python2.7/site-packages/flask_restful_swagger/html.py"
+  when: ansible_os_family == "RedHat"
+
 - name: Patch swagger ui
   lineinfile:
-    dest: /usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py
+    dest: "{{ swagger_html }}"
     regexp: "^(.*)docExpansion:(.*)$"
     line: '\1docExpansion: "full"'
     state: present
@@ -31,16 +37,16 @@
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
-    backup: yes
   sudo: yes
   sudo_user: apim
   with_items: config
   notify: Document local config file
 
 - name: Make sure the apim server is started
-  debug: msg="(should implement this)"
-
-- name: Reload apim server
-  shell: test -f /var/run/apim_server.pid && kill -HUP `cat /var/run/apim_server.pid`
+  command: apim_server.py
+  args:
+    chdir: /home/apim/apim/bin
+    creates: /var/run/apim_server.pid
   sudo: yes
-  ignore_errors: yes
+  environment:
+    HOME: /home/apim

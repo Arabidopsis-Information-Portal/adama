@@ -1,12 +1,29 @@
 ---
 
+- name: Ensure gcc is available
+  yum: name="@Development tools" state=present
+  sudo: yes
+  when: ansible_os_family == "RedHat"
+
 - name: Ensure vim installation
   apt: name=vim state=present
   sudo: yes
+  when: ansible_os_family == "Debian"
+
+- name: Ensure vim installation
+  yum: name=vim state=latest
+  sudo: yes
+  when: ansible_os_family == "RedHat"
+
+- set_fact: bashrc="bash.bashrc"
+  when: ansible_os_family == "Debian"
+
+- set_fact: bashrc="bashrc"
+  when: ansible_os_family == "RedHat"
 
 - name: Make vim the default editor for everyone
   lineinfile:
-    dest: /etc/bash.bashrc
+    dest: /etc/{{ bashrc }}
     insertafter: EOF
     line: export EDITOR=vim
     state: present
@@ -19,14 +36,36 @@
     - python
     - python-dev
     - python-pip
+  when: ansible_os_family == "Debian"
+
+- name: Ensure Python 2.7 installation
+  yum: name={{ item }} state=latest
+  sudo: yes
+  with_items:
+    - python
+    - python-devel
+    - python-pip
+  when: ansible_os_family == "RedHat"
 
 - name: Install ack-grep
   apt: name=ack-grep state=present
   sudo: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install ack-grep
+  yum: name=ack state=latest
+  sudo: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Install tmux
   apt: name=tmux state=present
   sudo: yes
+  when: ansible_os_family == "Debian"
+
+- name: Install tmux
+  yum: name=tmux state=latest
+  sudo: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Setup tmux
   copy:

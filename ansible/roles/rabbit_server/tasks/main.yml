@@ -3,6 +3,12 @@
 - name: Ensure rabbitmq server is installed
   apt: name=rabbitmq-server state=present
   sudo: yes
+  when: ansible_os_family == "Debian"
+
+- name: Ensure rabbitmq server is installed
+  yum: name=rabbitmq-server state=latest
+  sudo: yes
+  when: ansible_os_family == "RedHat"
 
 - name: Ensure rabbitmq server is running
   service:
