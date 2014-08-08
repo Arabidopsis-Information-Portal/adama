@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-import apim.tools as t
+import adama.tools as t
 
 @pytest.fixture(scope='module')
 def f():

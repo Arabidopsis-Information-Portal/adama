@@ -2,7 +2,7 @@ from textwrap import dedent
 
 import pytest
 
-import apim.firewall as f
+import adama.firewall as f
 
 
 
