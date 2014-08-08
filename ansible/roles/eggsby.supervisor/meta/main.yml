@@ -1,0 +1,27 @@
+---
+galaxy_info:
+  author: Thomas Omans
+  description: install and run supervisord as any user, requires virtualenv
+  company: commission junction
+  license: MIT
+  min_ansible_version: 1.4
+
+  platforms:
+  - name: EL
+    versions:
+    - 5
+    - 6
+  - name: Ubuntu
+    versions:
+    - all
+  - name: GenericLinux
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+
+  categories:
+  - monitoring
+  - web
+dependencies: []

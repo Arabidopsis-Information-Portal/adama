@@ -1,0 +1,27 @@
+supervisor_version: 3.1
+supervisor_virtualenv: '~/.virtualenvs/supervisor'
+
+supervisor_home: '{{ supervisor_virtualenv }}/etc/supervisor'
+supervisor_config: '{{ supervisor_home }}/supervisord.conf'
+supervisor_config_dir: '{{ supervisor_home }}/conf.d'
+
+supervisord_path: '{{ supervisor_virtualenv }}/bin/supervisord'
+supervisorctl_path: '{{ supervisor_virtualenv }}/bin/supervisorctl'
+
+bin_dir: ~/bin
+
+supervisor_link: off # ~/path/to/symlink
+supervisor_link_parent: ""
+
+supervisor_http: yes
+supervisor_http_host: 0.0.0.0
+supervisor_http_port: 9001
+
+supervisor_http_auth: off
+# supervisor_http_auth:
+#   username: foo
+#   password: bar
+
+pip_args: off # --index-url=http://my.custom.pypi/"
+
+super_args: 'supervisorctl_path={{ supervisorctl_path }} config={{ supervisor_config }}'
