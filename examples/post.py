@@ -6,10 +6,10 @@ import pprint
 import sys
 from urlparse import urljoin
 
-from apim.tools import location_of
+from adama.tools import location_of
 import requests
 
-# Change this url to match where APIM is running
+# Change this url to match where ADAMA is running
 URL = 'http://localhost:8000'
 
 HERE = location_of(__file__)
@@ -17,7 +17,7 @@ HERE = location_of(__file__)
 
 def example(full=False):
     code = open(os.path.join(
-        HERE, '../apim/containers/adapters/thalemine/main.py')).read()
+        HERE, '../adama/containers/adapters/thalemine/main.py')).read()
     resp = requests.post(urljoin(URL, 'register'),
                          data={'name': 'foo',
                                'url': 'http://bar.spam',
