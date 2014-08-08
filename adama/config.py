@@ -1,6 +1,6 @@
 """Read config files from:
 
-- $SRC/adama/apim.conf
+- $SRC/adama/adama.conf
 - $USER/.adama.conf
 
 """

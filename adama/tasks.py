@@ -155,7 +155,7 @@ class Producer(QueueConnection):
 def check_queue(display=False):
     """Check that we can establish a connection to the queue."""
 
-    from apim.config import Config
+    from adama.config import Config
 
     host = Config.get('queue', 'host')
     port = Config.getint('queue', 'port')
@@ -171,6 +171,6 @@ def check_queue(display=False):
                 """
                 Cannot connect to queue exchange at {0}:{1}
                 with dummy queue "test".
-                Please, check ~/.apim.conf
+                Please, check ~/.adama.conf
                 """.format(host, port)), file=sys.stderr)
         return False

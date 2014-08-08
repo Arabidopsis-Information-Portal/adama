@@ -56,7 +56,7 @@ def check_docker(display=False):
                   format(Config.get('docker', 'host')), file=sys.stderr)
             print('or wrong command "{0}"'.
                   format(Config.get('docker', 'command')), file=sys.stderr)
-            print('Please, check ~/.apim.conf', file=sys.stderr)
+            print('Please, check ~/.adama.conf', file=sys.stderr)
         return False
 
 
