@@ -3,9 +3,9 @@
 import subprocess
 import sys
 
-from apim.config import Config
-from apim.docker import check_docker
-from apim.tasks import check_queue
+from adama.config import Config
+from adama.docker import check_docker
+from adama.tasks import check_queue
 
 
 def run_gunicorn():
@@ -17,7 +17,7 @@ def run_gunicorn():
          '-t', Config.get('server', 'timeout'),
          '-p', Config.get('server', 'pid_file'),
          '-k', 'gevent',
-         'apim:app'])
+         'adama:app'])
 
 
 def run():
