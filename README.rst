@@ -77,6 +77,6 @@ License
 Free software: MIT license
 
 
-.. _architecture: https://github.com/Arabidopsis-Information-Portal/araport_data_api_design
+.. _architecture: http://rawgit.com/waltermoreira/apim/master/docs/index.html
 .. _Arabidopsis Information Portal: https://www.araport.org/
 .. _ansible: http://www.ansible.com/
