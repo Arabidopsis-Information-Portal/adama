@@ -1,6 +1,6 @@
-===================
-Araport API manager
-===================
+=========================
+Araport Data Mediator API
+=========================
 
 .. image:: https://badge.fury.io/gh/waltermoreira%2Fadama.svg
     :target: http://badge.fury.io/gh/waltermoreira%2Fadama
@@ -77,6 +77,6 @@ License
 Free software: MIT license
 
 
-.. _architecture: http://rawgit.com/waltermoreira/apim/master/docs/index.html
+.. _architecture: http://rawgit.com/waltermoreira/adama/master/docs/index.html
 .. _Arabidopsis Information Portal: https://www.araport.org/
 .. _ansible: http://www.ansible.com/
