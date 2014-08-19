@@ -17,6 +17,7 @@ HERE = location_of(__file__)
 def read_config():
     parser = ConfigParser.ConfigParser()
     places = [os.path.join(sys.prefix, 'etc/adama.conf'),
+              os.path.join(sys.prefix, 'local/etc/adama.conf'),
               os.path.abspath(os.path.join(HERE, '../adama.conf')),
               os.path.expanduser('~/.adama.conf')]
     if not parser.read(places):
