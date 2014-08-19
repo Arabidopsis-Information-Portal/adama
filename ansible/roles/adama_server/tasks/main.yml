@@ -62,8 +62,8 @@
   notify:
     - Reload adama server
 
-- name: Make sure supervisor sees the new .conf file
-  service: name={{ supervisord_service }} state=restarted
+- name: Force supervisor to reload configs
+  command: supervisorctl update
   sudo: yes
 
 - name: Make sure the adama server is started
