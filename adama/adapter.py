@@ -14,7 +14,7 @@ import jinja2
 
 from .tools import location_of
 from .config import Config
-from .docker import docker_output, tail_logs
+from .docker import docker_output, tail_logs, start_container
 from .api import APIException, RegisterException
 from .firewall import Firewall
 from . import app
