@@ -21,7 +21,7 @@ config:
     value: 5672
   - section: docker
     option: command
-    value: docker.io
+    value: docker
   - section: docker
     option: host
     value: ""
