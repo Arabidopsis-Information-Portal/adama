@@ -10,6 +10,15 @@
   user: name=adama generate_ssh_key=yes state=present
   sudo: yes
 
+- name: Add public keys to access user adama
+  authorized_key:
+    user: adama
+    key: "{{ lookup('file', item) }}"
+    state: present
+  with_fileglob:
+    - public_keys/*
+  sudo: yes
+
 - name: Add user adama to sudoers with no password
   lineinfile:
     dest: /etc/sudoers.d/99-adama-user
