@@ -40,6 +40,3 @@ class Adapters(object):
 
     def _del(self, key):
         self._db.delete(key)
-
-
-adapters = Adapters()
