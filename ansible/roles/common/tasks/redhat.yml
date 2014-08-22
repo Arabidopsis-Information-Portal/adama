@@ -1,5 +1,12 @@
 ---
 
+- name: Add epel [Redhat]
+  yum: name=http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm state=present
+  sudo: yes
+
+- name: Install libselinux-python [Redhat]
+  yum: name=libselinux-python state=latest
+  sudo: yes
 - name: Install git in Redhat
   yum: name=git state=latest
   sudo: yes
