@@ -3,6 +3,7 @@
 - hosts: alpha
   roles:
     - common
+    - { role: python27, when: ansible_os_family == "RedHat" }
     - developer_station
     - rabbit_server
     - docker

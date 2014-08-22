@@ -1,0 +1,60 @@
+---
+
+- name: Install development tools
+  yum:
+    name: '@Development tools'
+    state: present
+  sudo: yes
+
+- name: Install additional tools
+  yum:
+    name: "{{ item }}"
+    state: present
+  sudo: yes
+  with_items:
+    - zlib-devel
+    - openssl-devel
+    - sqlite-devel
+    - bzip2-devel
+
+- name: Download Python 2.7 from python.org
+  get_url:
+    url: https://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
+    dest: /tmp/
+
+- name: Unpack Python
+  unarchive:
+    src: /tmp/Python-2.7.8.tgz
+    dest: /tmp/
+    copy: no
+    creates: /tmp/Python-2.7.8
+
+- name: Configure Python source
+  command: ./configure
+  args:
+    chdir: /tmp/Python-2.7.8
+    creates: /tmp/Python-2.7.8/Makefile
+
+- name: Make Python
+  command: make
+  args:
+    chdir: /tmp/Python-2.7.8
+    creates: /tmp/Python-2.7.8/python
+
+- name: Install Python
+  command: make install
+  args:
+    chdir: /tmp/Python-2.7.8
+    creates: /usr/local/bin/python
+  sudo: yes
+
+- name: Get pip
+  get_url:
+    url: https://bootstrap.pypa.io/get-pip.py
+    dest: /tmp/
+
+- name: Install pip
+  command: /usr/local/bin/python /tmp/get-pip.py
+  args:
+    creates: /usr/local/bin/pip
+  sudo: yes
