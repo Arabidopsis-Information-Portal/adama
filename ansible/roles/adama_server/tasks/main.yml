@@ -13,11 +13,15 @@
     - Reload adama server
 
 - name: Install all Python requirements
-  pip: requirements=/home/adama/adama/dev_requirements.txt
+  pip:
+    requirements: /home/adama/adama/dev_requirements.txt
+    executable: /usr/local/bin/python
   sudo: yes
 
 - name: Install adama itself
-  pip: name=/home/adama/adama state=latest
+  pip:
+    name: /home/adama/adama
+    executable: /usr/local/bin/python
   sudo: yes
 
 - set_fact:
