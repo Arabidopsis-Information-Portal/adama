@@ -7,3 +7,7 @@
 - name: Ensure bridge utils are installed
   yum: name=bridge-utils state=latest
   sudo: yes
+
+- name: Ensure docker service is running
+  service: name=docker state=started
+  sudo: yes
