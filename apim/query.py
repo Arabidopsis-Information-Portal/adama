@@ -25,8 +25,8 @@ class Query(restful.Resource):
         nickname='hello'
     )
     def get(self):
-        app.logger.debug('--- Hi')
-        return {'hello': 'world'}
+        app.logger.debug('/query received GET')
+        return {'api': 'Adama v0.1'}
 
     @swagger.operation(
         notes='Query a data source',
@@ -51,6 +51,7 @@ class Query(restful.Resource):
         ]
     )
     def post(self):
+        app.logger.debug('/query received POST')
         query = request.get_json(force=True)
         service = query['serviceName']
         queue = service

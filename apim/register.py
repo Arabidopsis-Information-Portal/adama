@@ -1,3 +1,4 @@
+from flask import request
 from flask.ext import restful
 from flask.ext.restful import reqparse
 from flask_restful_swagger import swagger
@@ -103,6 +104,7 @@ class Register(restful.Resource):
         ]
     )
     def post(self):
+        app.logger.debug('/register received POST')
         args = self.validate()
         metadata = {'name': args.name,
                     'version': args.version or '0.1',
@@ -131,6 +133,7 @@ class Register(restful.Resource):
         parameters=[]
     )
     def get(self):
+        app.logger.debug('/register received GET')
         return {'status': 'success',
                 'adapters': adapters.list_all()}
 
