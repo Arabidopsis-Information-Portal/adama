@@ -122,8 +122,11 @@ class Register(restful.Resource):
         name = self.async_register(args)
         return {
             'status': 'success',
-            'message': ("registration started; will POST to '{}' when ready"
-                        .format(args.notify)),
+            'message': (
+                "registration started; will POST to '{}' when ready.\n"
+                "GET to 'https://api.araport.org/v0.1/register/{}/state' "
+                "to query for adapter state"
+                .format(args.notify, name)),
             'name': name
         }
 
@@ -151,22 +154,28 @@ class Register(restful.Resource):
     def _register_adapter(self, adapter):
         try:
             adapters = Adapters()
+            adapters.add(adapter)
+            adapters.set_attr(adapter, 'state', '[1/4] Empty adapter created')
             app.logger.debug('Starting adapter registration')
             app.logger.debug(' created object')
             adapter.register()
+            adapters.set_attr(adapter, 'state', '[2/4] Container for adapter created')
             app.logger.debug(' registered')
             adapter.start_workers()
+            adapters.set_attr(adapter, 'state', '[3/4] Workers for adapter created')
             app.logger.debug(' workers started')
             adapter.check_health()
+            adapters.set_attr(adapter, 'state', '[4/4] Health of all workers checked')
             app.logger.debug(' all healthy')
-            adapters.add(adapter)
             app.logger.debug(' recorded')
             data = {
                 'status': 'success',
                 'result': adapter.to_json()
             }
+            adapters.set_attr(adapter, 'state', 'Ready')
             print("success")
         except Exception as exc:
+            adapters.delete(adapter.iden)
             data = {
                 'status': 'error',
                 'result': str(exc)
