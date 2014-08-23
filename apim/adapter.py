@@ -61,6 +61,7 @@ class Adapter(object):
         self.language = None
         self.validate_metadata()
         self.temp_dir = self.create_temp_dir()
+        self.state = None
 
     def validate_metadata(self):
         self.requirements = self.metadata.get('requirements', None)
