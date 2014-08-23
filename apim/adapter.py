@@ -68,6 +68,7 @@ class Adapter(object):
         self.version = self.metadata.get('version', '0.1')
         self.iden = '{0}_v{1}'.format(self.name, self.version)
         self.url = self.metadata.get('url', '')
+        self.notify = self.metadata.get('notify', '')
 
     def to_json(self):
         return {

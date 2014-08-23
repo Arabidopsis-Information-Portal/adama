@@ -119,21 +119,28 @@ class Register(restful.Resource):
     def post(self):
         app.logger.debug('/register received POST')
         args = self.validate()
-        self.async_register(args)
+        name = self.async_register(args)
         return {
             'status': 'success',
             'message': ("registration started; will POST to '{}' when ready"
-                        .format(args.notify))
+                        .format(args.notify)),
+            'name': name
         }
 
     def async_register(self, args):
         try:
             print("to spawn")
-            code = args.code.read()
+            metadata = {'name': args.name,
+                        'version': args.version or '0.1',
+                        'requirements': args.requirements or '',
+                        'url': args.url,
+                        'notify': args.notify}
+            adapter = Adapter(args.code.filename, args.code.read(), metadata)
             proc = multiprocessing.Process(
-                target=self._register_adapter, args=(args, code))
+                target=self._register_adapter, args=(adapter,))
             proc.start()
             print("after spawn")
+            return adapter.iden
         except Exception as exc:
             raise APIException(
                 "Failed to start registration process.\n"
@@ -141,16 +148,10 @@ class Register(restful.Resource):
                 "{}".format(exc),
                 500)
 
-    def _register_adapter(self, args, code):
+    def _register_adapter(self, adapter):
         try:
             adapters = Adapters()
-            metadata = {'name': args.name,
-                        'version': args.version or '0.1',
-                        'requirements': args.requirements or '',
-                        'url': args.url,
-                        'notify': args.notify}
             app.logger.debug('Starting adapter registration')
-            adapter = Adapter(args.code.filename, code, metadata)
             app.logger.debug(' created object')
             adapter.register()
             app.logger.debug(' registered')
@@ -172,7 +173,7 @@ class Register(restful.Resource):
             }
             print ("exception")
             print("-->", exc)
-        requests.post(args.notify,
+        requests.post(adapter.notify,
                       headers={"Content-Type": "application/json"},
                       data=json.dumps(data))
 
