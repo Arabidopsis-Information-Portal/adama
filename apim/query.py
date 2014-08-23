@@ -52,6 +52,7 @@ class Query(restful.Resource):
     )
     def post(self):
         app.logger.debug('/query received POST')
+        app.logger.debug(request.data)
         query = request.get_json(force=True)
         service = query['serviceName']
         queue = service
