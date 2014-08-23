@@ -208,3 +208,25 @@ class Register(restful.Resource):
             raise APIException(exc.data['message'], 400)
 
         return args
+
+
+class Manage(restful.Resource):
+
+    def get(self, adapter, command):
+        if command == 'state':
+            try:
+                adapters = Adapters()
+                a = adapters[adapter]
+                return {
+                    'status': 'success',
+                    'state': a.state
+                }
+            except KeyError:
+                raise APIException("adapter {} not found".format(adapter))
+            except Exception as exc:
+                raise APIException(
+                    "Error retrieving state.\n"
+                    "Original exception follows:\n"
+                    "{}".format(exc),
+                    500)
+        return {}, 400
