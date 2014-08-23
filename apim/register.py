@@ -1,7 +1,6 @@
 import json
 import multiprocessing
 
-from flask import request
 from flask.ext import restful
 from flask.ext.restful import reqparse
 from flask_restful_swagger import swagger
@@ -11,9 +10,9 @@ from werkzeug.datastructures import FileStorage
 
 from .adapter import Adapter
 from .adapters import Adapters
-from .config import Config
 from .api import APIException
 from . import app
+
 
 @swagger.model
 class AdapterIdentifierModel(object):
@@ -37,6 +36,7 @@ class AdapterModel(object):
         'result': restful.fields.Nested(AdapterIdentifierModel.resource_fields)
     }
 
+
 @swagger.model
 @swagger.nested(
     result=AdapterIdentifierModel.__name__
@@ -47,6 +47,7 @@ class AdaptersResponse(object):
         'result': restful.fields.List(
             restful.fields.Nested(AdapterIdentifierModel.resource_fields))
     }
+
 
 class Register(restful.Resource):
 
