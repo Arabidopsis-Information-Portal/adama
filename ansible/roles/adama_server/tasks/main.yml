@@ -15,13 +15,13 @@
 - name: Install all Python requirements
   pip:
     requirements: /home/adama/adama/dev_requirements.txt
-    executable: /usr/local/bin/python
+    executable: /usr/local/bin/pip
   sudo: yes
 
 - name: Install adama itself
   pip:
     name: /home/adama/adama
-    executable: /usr/local/bin/python
+    executable: /usr/local/bin/pip
   sudo: yes
 
 - set_fact:
@@ -32,7 +32,7 @@
   when: ansible_os_family == "Debian"
 
 - set_fact:
-    swagger_html="/usr/lib/python2.7/site-packages/flask_restful_swagger/html.py"
+    swagger_html="/usr/local/lib/python2.7/site-packages/flask_restful_swagger/html.py"
     supervisord_conf_dir="/etc/supervisord.d"
     supervisord_conf_ext="ini"
     supervisord_service="supervisord"
