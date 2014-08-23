@@ -10,6 +10,7 @@ from .config import Config
 from .tools import interleave
 from . import app
 
+
 @swagger.model
 class AIPQueryModel(object):
     resource_fields = {

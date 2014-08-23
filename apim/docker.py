@@ -1,7 +1,6 @@
 from __future__ import print_function
 
 import os
-import select
 import subprocess
 import sys
 
@@ -17,9 +16,11 @@ def docker(*args, **kwargs):
     return subprocess.Popen(
         cmd + list(args), stdout=stdout, stderr=stderr)
 
+
 def docker_output(*args):
     p = docker(*args, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
     return p.communicate()[0]
+
 
 def tail(fd, timeout=0):
     f = os.fdopen(fd, 'r', 0)
@@ -32,9 +33,10 @@ def tail(fd, timeout=0):
     finally:
         f.close()
 
+
 def tail_logs(container, timeout=0):
     r, w = os.pipe()
-    p = docker('logs', '-f', container, stderr=subprocess.STDOUT, stdout=w)
+    docker('logs', '-f', container, stderr=subprocess.STDOUT, stdout=w)
     return tail(r, timeout)
 
 
