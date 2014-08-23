@@ -23,6 +23,12 @@ class Adapters(object):
         self.stop(iden)
         self._del(iden)
 
+    def set_attr(self, adapter, attr, value):
+        iden = adapter.iden
+        adapter = self._get(iden)
+        setattr(adapter, attr, value)
+        self._set(iden, adapter)
+
     def list_all(self):
         return list(self._list_all())
 
@@ -40,3 +46,6 @@ class Adapters(object):
 
     def _del(self, key):
         self._db.delete(key)
+
+    def __getitem__(self, key):
+        return self._get(key)
