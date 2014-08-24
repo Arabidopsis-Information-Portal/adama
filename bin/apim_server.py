@@ -3,6 +3,7 @@
 import subprocess
 import sys
 
+from apim import app
 from apim.config import Config
 from apim.docker import check_docker
 from apim.tasks import check_queue
@@ -32,4 +33,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    app.run(host='0.0.0.0', port=80, debug=True)
