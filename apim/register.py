@@ -219,6 +219,27 @@ class Register(restful.Resource):
 
         return args
 
+    def delete(self):
+        app.logger.debug('/register received DELETE')
+        args = self.validate_delete()
+        adapters.stop(args.name)
+        adapters.delete(args.name)
+        return {
+            'status': 'success',
+            'message': 'adapter {} deleted'.format(args.name)
+        }
+
+    def validate_delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, required=True,
+                            help='name of the adapter is required')
+        try:
+            args = parser.parse_args()
+        except ClientDisconnected as exc:
+            raise APIException(exc.data['message'], 400)
+
+        return args
+
 
 class Manage(restful.Resource):
 
