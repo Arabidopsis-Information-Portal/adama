@@ -49,3 +49,6 @@ class Adapters(object):
 
     def __getitem__(self, key):
         return self._get(key)
+
+
+adapters = Adapters()

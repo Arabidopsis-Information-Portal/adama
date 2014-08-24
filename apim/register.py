@@ -9,7 +9,7 @@ from werkzeug.exceptions import ClientDisconnected
 from werkzeug.datastructures import FileStorage
 
 from .adapter import Adapter
-from .adapters import Adapters
+from .adapters import adapters
 from .api import APIException
 from . import app
 
@@ -154,7 +154,6 @@ class Register(restful.Resource):
 
     def _register_adapter(self, adapter):
         try:
-            adapters = Adapters()
             adapters.add(adapter)
             adapters.set_attr(adapter, 'state', '[1/4] Empty adapter created')
             app.logger.debug('Starting adapter registration')
@@ -194,7 +193,6 @@ class Register(restful.Resource):
         parameters=[]
     )
     def get(self):
-        adapters = Adapters()
         app.logger.debug('/register received GET')
         return {'status': 'success',
                 'adapters': adapters.list_all()}
@@ -223,9 +221,9 @@ class Register(restful.Resource):
 class Manage(restful.Resource):
 
     def get(self, adapter, command):
+        app.logger.debug('Manage: {} {}'.format(adapter, command))
         if command == 'state':
             try:
-                adapters = Adapters()
                 a = adapters[adapter]
                 return {
                     'status': 'success',
