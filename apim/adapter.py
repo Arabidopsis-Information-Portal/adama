@@ -228,7 +228,8 @@ class Adapter(object):
         # poll for a little while the workers in parallel.
         ts = []
         for worker in self.workers:
-            t = multiprocessing.Process(target=log, args=(worker, q))
+            t = multiprocessing.Process(target=log, args=(worker, q),
+                                        name='Worker log {}'.format(worker))
             t.start()
             ts.append(t)
         # wait for all processes (the timeout guarantees they'll finish)
