@@ -140,6 +140,7 @@ class Register(restful.Resource):
                         'notify': args.notify}
             adapter = Adapter(args.code.filename, args.code.read(), metadata)
             proc = multiprocessing.Process(
+                name='Async Register {}'.format(args.name),
                 target=self._register_adapter, args=(adapter,))
             proc.start()
             print("after spawn")
