@@ -162,6 +162,8 @@ class Register(restful.Resource):
             adapters.set_attr(adapter, 'state', '[2/4] Container for adapter created')
             app.logger.debug(' registered')
             adapter.start_workers()
+            # save name of workers in the store
+            adapters.set_attr(adapter, 'workers', adapter.workers)
             adapters.set_attr(adapter, 'state', '[3/4] Workers for adapter created')
             app.logger.debug(' workers started')
             adapter.check_health()
