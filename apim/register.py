@@ -231,7 +231,7 @@ class Manage(restful.Resource):
                     'state': a.state
                 }
             except KeyError:
-                raise APIException("adapter {} not found".format(adapter))
+                raise APIException("adapter {} not found".format(adapter), 400)
             except Exception as exc:
                 raise APIException(
                     "Error retrieving state.\n"
