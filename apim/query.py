@@ -27,7 +27,7 @@ class Query(restful.Resource):
     )
     def get(self):
         app.logger.debug('/query received GET')
-        return {'api': 'Adama v0.1'}
+        return {'api': 'Adama v0.2'}
 
     @swagger.operation(
         notes='Query a data source',
