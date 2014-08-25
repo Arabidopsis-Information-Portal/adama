@@ -1,3 +1,5 @@
+.. warning:: This API is preliminary, and it **will** change.
+
 ================
 Adama Quickstart
 ================
