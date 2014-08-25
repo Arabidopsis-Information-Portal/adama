@@ -184,9 +184,10 @@ class Register(restful.Resource):
             }
             print ("exception")
             print("-->", exc)
-        requests.post(adapter.notify,
-                      headers={"Content-Type": "application/json"},
-                      data=json.dumps(data))
+        if adapter.notify is not None:
+            requests.post(adapter.notify,
+                          headers={"Content-Type": "application/json"},
+                          data=json.dumps(data))
 
     @swagger.operation(
         notes='List all registered adapters',
