@@ -61,6 +61,9 @@ This function can be tested in the Python interpreter:
    {"another": {"query": 5}}
    END
 
+Registering
+-----------
+
 To register this adapter with the name ``example``, we ``POST`` to
 ``https://api.araport.org/collective/v0.1/register`` with the following data:
 
