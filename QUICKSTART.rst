@@ -14,7 +14,7 @@ such token.
 Checking access to Adama
 ========================
 
-A ``GET`` request to |adama_base|\ ``/query`` should return:
+A ``GET`` request to ``https://api.araport.org/collective/v0.1/query`` should return:
 
 .. code-block:: bash
 
@@ -62,7 +62,7 @@ This function can be tested in the Python interpreter:
    END
 
 To register this adapter with the name ``example``, we ``POST`` to
-|adama_base|\ ``/register`` with the following data:
+``https://api.araport.org/collective/v0.1/register`` with the following data:
 
 - **name** (mandatory): the name of the adapter (``example`` in this case),
 - **version** (optional): version (default ``0.1``),
@@ -129,7 +129,7 @@ In this case, the service has one worker attending query requests.
 Performing a query
 ==================
 
-By doing a ``POST`` to the |adama_base|\ ``/query`` we can reach the
+By doing a ``POST`` to the ``https://api.araport.org/collective/v0.1/query`` we can reach the
 ``example`` adapter previously registered.
 
 For example:
