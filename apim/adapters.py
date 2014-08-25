@@ -38,7 +38,10 @@ class Adapters(object):
             yield cPickle.loads(obj).to_json()
 
     def _get(self, key):
-        return cPickle.loads(self._db.get(key))
+        obj = self._db.get(key)
+        if obj is None:
+            raise KeyError('"{}" not found'.format(key))
+        return cPickle.loads(obj)
 
     def _set(self, key, value):
         obj = cPickle.dumps(value)
