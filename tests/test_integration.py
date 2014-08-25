@@ -4,6 +4,7 @@ import time
 import os
 import json
 
+from apim.adapters import adapters
 from apim.docker import docker_output
 from apim.tools import location_of
 HERE = location_of(__file__)
@@ -67,4 +68,5 @@ def test_delete():
         assert out.startswith('false')
 
 def test_no_adapter():
-    pass
+    with pytest.raises(KeyError):
+        adapters['foo_v0.1']
