@@ -16,7 +16,7 @@ Araport Data Mediator API
 
 This project implements a data federation strategy for the `Arabidopsis Information Portal`_.
 
-See the architecture_:
+Go over the quickstart_, and see an overview of the architecture_.
 
 .. image:: https://github.com/Arabidopsis-Information-Portal/araport_data_api_design/raw/master/architecture/workers.png
 
@@ -80,3 +80,4 @@ Free software: MIT license
 .. _architecture: http://rawgit.com/waltermoreira/adama/master/docs/index.html
 .. _Arabidopsis Information Portal: https://www.araport.org/
 .. _ansible: http://www.ansible.com/
+.. _quickstart: https://github.com/waltermoreira/adama/blob/master/QUICKSTART.rst
