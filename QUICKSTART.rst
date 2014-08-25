@@ -8,7 +8,11 @@ The base url of the Adama is |adama_base|.
 
 You need to obtain a token through your method of choice.  In what
 follows, the environment variable ``TOKEN`` is assumed to be set to
-such token.
+such token.  It is convenient to set it as:
+
+.. code-block:: bash
+
+   $ export TOKEN=my-token
 
 
 Checking access to Adama
@@ -80,7 +84,7 @@ Using curl_:
 .. code-block:: bash
 
    $ curl -L -X POST https://api.araport.org/collective/v0.2/register \
-       -F "name=example" -F "url=none" -F code=@main2.py \
+       -F "name=example" -F "url=none" -F code=@main.py \
        -F "notify=https://my.url" \
        -H "Authorization: Bearer $TOKEN"
    {
