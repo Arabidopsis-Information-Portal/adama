@@ -124,7 +124,7 @@ class Register(restful.Resource):
             'status': 'success',
             'message': (
                 "registration started; will POST to '{}' when ready.\n"
-                "GET to 'https://api.araport.org/v0.1/register/{}/state' "
+                "GET to 'https://api.araport.org/collective/v0.2/manage/{}/state' "
                 "to query for adapter state"
                 .format(args.notify, name)),
             'name': name
