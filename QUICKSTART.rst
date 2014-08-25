@@ -14,14 +14,14 @@ such token.
 Checking access to Adama
 ========================
 
-A ``GET`` request to ``https://api.araport.org/collective/v0.1/query`` should return:
+A ``GET`` request to ``https://api.araport.org/collective/v0.2/query`` should return:
 
 .. code-block:: bash
 
-   $ curl -L -X GET https://api.araport.org/collective/v0.1/query \
+   $ curl -L -X GET https://api.araport.org/collective/v0.2/query \
       -H "Authorization: Bearer $TOKEN"
    {
-       "api": "Adama v0.1"
+       "api": "Adama v0.2"
    }
 
 
@@ -65,7 +65,7 @@ Registering
 -----------
 
 To register this adapter with the name ``example``, we ``POST`` to
-``https://api.araport.org/collective/v0.1/register`` with the following data:
+``https://api.araport.org/collective/v0.2/register`` with the following data:
 
 - **name** (mandatory): the name of the adapter (``example`` in this case),
 - **version** (optional): version (default ``0.1``),
@@ -79,12 +79,12 @@ Using curl_:
 
 .. code-block:: bash
 
-   $ curl -L -X POST https://api.araport.org/collective/v0.1/register \
+   $ curl -L -X POST https://api.araport.org/collective/v0.2/register \
        -F "name=example" -F "url=none" -F code=@main2.py \
        -F "notify=https://my.url" \
        -H "Authorization: Bearer $TOKEN"
    {
-       "message": "registration started; will POST to 'http://my.url' when ready.\nGET to 'https://api.araport.org/collective/v0.1/manage/example_v0.1/state' to query for adapter state",
+       "message": "registration started; will POST to 'http://my.url' when ready.\nGET to 'https://api.araport.org/collective/v0.2/manage/example_v0.1/state' to query for adapter state",
        "name": "example_v0.1",
        "status": "success"
    }
@@ -95,7 +95,7 @@ be checked with:
 
 .. code-block:: bash
 
-   $ curl -L -X GET https://api.araport.org/collective/v0.1/manage/example_v0.1/state \
+   $ curl -L -X GET https://api.araport.org/collective/v0.2/manage/example_v0.1/state \
       -H "Authorization: Bearer $TOKEN"
    {
        "state": "[1/4] Empty adapter created",
@@ -108,7 +108,7 @@ services.  To see a list of all the available services:
 
 .. code-block:: bash
 
-   $ curl -L -X GET https://api.araport.org/collective/v0.1/register \
+   $ curl -L -X GET https://api.araport.org/collective/v0.2/register \
       -H "Authorization: Bearer $TOKEN"
    {
        "adapters": [
@@ -132,14 +132,14 @@ In this case, the service has one worker attending query requests.
 Performing a query
 ==================
 
-By doing a ``POST`` to the ``https://api.araport.org/collective/v0.1/query`` we can reach the
+By doing a ``POST`` to the ``https://api.araport.org/collective/v0.2/query`` we can reach the
 ``example`` adapter previously registered.
 
 For example:
 
 .. code-block:: bash
 
-   $ curl -L -X POST https://api.araport.org/collective/v0.1/query \
+   $ curl -L -X POST https://api.araport.org/collective/v0.2/query \
       -d '{"serviceName": "example_v0.1", \
            "query": {"value": 3}}' \
       -H "Authorization: Bearer $TOKEN" \
@@ -158,4 +158,4 @@ case containing some extra metadata added by Adama).
 
 .. _curl: http://curl.haxx.se
 
-.. |adama_base| replace:: ``https://api.araport.org/collective/v0.1``
+.. |adama_base| replace:: ``https://api.araport.org/collective/v0.2``
