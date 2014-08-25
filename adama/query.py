@@ -10,6 +10,7 @@ from .config import Config
 from .tools import interleave
 from . import app
 
+
 @swagger.model
 class AIPQueryModel(object):
     resource_fields = {
@@ -25,8 +26,8 @@ class Query(restful.Resource):
         nickname='hello'
     )
     def get(self):
-        app.logger.debug('--- Hi')
-        return {'hello': 'world'}
+        app.logger.debug('/query received GET')
+        return {'api': 'Adama v0.1'}
 
     @swagger.operation(
         notes='Query a data source',
@@ -51,6 +52,8 @@ class Query(restful.Resource):
         ]
     )
     def post(self):
+        app.logger.debug('/query received POST')
+        app.logger.debug(request.data)
         query = request.get_json(force=True)
         service = query['serviceName']
         queue = service

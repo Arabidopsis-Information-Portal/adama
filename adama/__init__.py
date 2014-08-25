@@ -13,7 +13,7 @@ from flask_restful_swagger import swagger
 app = Flask(__name__)
 
 from .query import Query
-from .register import Register
+from .register import Register, Manage
 from .api import MyApi
 from .config import Config
 
@@ -27,15 +27,18 @@ api = swagger.docs(MyApi(app),
 
 api.add_resource(Query, '/query')
 api.add_resource(Register, '/register')
+api.add_resource(Manage, '/manage/<string:adapter>/<string:command>')
 
 app.debug = True
 app.debug_log_format = ('---\n'
                         '%(asctime)s %(module)s [%(pathname)s:%(lineno)d]:\n'
                         '%(message)s')
 
+
 @app.route('/home')
 def hello_world():
     return render_template('template.html')
+
 
 @app.route('/')
 def root():

@@ -23,6 +23,12 @@ class Adapters(object):
         self.stop(iden)
         self._del(iden)
 
+    def set_attr(self, adapter, attr, value):
+        iden = adapter.iden
+        adapter = self._get(iden)
+        setattr(adapter, attr, value)
+        self._set(iden, adapter)
+
     def list_all(self):
         return list(self._list_all())
 
@@ -32,7 +38,10 @@ class Adapters(object):
             yield cPickle.loads(obj).to_json()
 
     def _get(self, key):
-        return cPickle.loads(self._db.get(key))
+        obj = self._db.get(key)
+        if obj is None:
+            raise KeyError('"{}" not found'.format(key))
+        return cPickle.loads(obj)
 
     def _set(self, key, value):
         obj = cPickle.dumps(value)
@@ -40,6 +49,9 @@ class Adapters(object):
 
     def _del(self, key):
         self._db.delete(key)
+
+    def __getitem__(self, key):
+        return self._get(key)
 
 
 adapters = Adapters()

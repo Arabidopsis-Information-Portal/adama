@@ -20,11 +20,13 @@ def docker(*args, **kwargs):
     return subprocess.Popen(
         cmd + list(args), stdout=stdout, stderr=stderr)
 
+
 def docker_output(*args):
     p = docker(*args, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
     return p.communicate()[0]
 
-def tail(fd, timeout=0):
+
+def tail(fd, timeout=0, process=None):
     f = os.fdopen(fd, 'r', 0)
     readline = TimeoutFunction(f.readline, timeout)
     try:
@@ -34,11 +36,14 @@ def tail(fd, timeout=0):
         return
     finally:
         f.close()
+        if process is not None:
+            process.kill()
+
 
 def tail_logs(container, timeout=0):
     r, w = os.pipe()
-    p = docker('logs', '-f', container, stderr=subprocess.STDOUT, stdout=w)
-    return tail(r, timeout)
+    logs = docker('logs', '-f', container, stderr=subprocess.STDOUT, stdout=w)
+    return tail(r, timeout, process=logs)
 
 
 def check_docker(display=False):

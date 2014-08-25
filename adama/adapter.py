@@ -23,7 +23,7 @@ HERE = location_of(__file__)
 
 # Timeout to wait for output of containers at start up, before
 # declaring them dead
-TIMEOUT = 1  # second
+TIMEOUT = 3  # second
 
 # Timout to wait while stopping workers
 STOP_TIMEOUT = 5
@@ -64,6 +64,8 @@ class Adapter(object):
         self.validate_metadata()
         self.temp_dir = self.create_temp_dir()
         self.firewall = Firewall(self.whitelist)
+        self.state = None
+        self.workers = []
 
     def validate_metadata(self):
         self.requirements = self.metadata.get('requirements', None)
@@ -73,6 +75,7 @@ class Adapter(object):
         self.url = self.metadata.get('url', '')
         self.whitelist = self.metadata.get('whitelist', [])
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
+        self.notify = self.metadata.get('notify', '')
 
     def to_json(self):
         return {
@@ -236,7 +239,8 @@ class Adapter(object):
         # poll for a little while the workers in parallel.
         ts = []
         for worker in self.workers:
-            t = multiprocessing.Process(target=log, args=(worker, q))
+            t = multiprocessing.Process(target=log, args=(worker, q),
+                                        name='Worker log {}'.format(worker))
             t.start()
             ts.append(t)
         # wait for all processes (the timeout guarantees they'll finish)

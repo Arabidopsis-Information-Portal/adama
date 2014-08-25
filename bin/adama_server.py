@@ -3,6 +3,7 @@
 import subprocess
 import sys
 
+from adama import app
 from adama.config import Config
 from adama.docker import check_docker
 from adama.tasks import check_queue
@@ -32,4 +33,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    app.run(host='0.0.0.0', port=80, debug=True)
