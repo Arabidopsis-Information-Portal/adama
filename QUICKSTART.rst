@@ -141,12 +141,12 @@ For example:
 
    $ curl -L -X POST https://api.araport.org/collective/v0.1/query \
       -d '{"serviceName": "example_v0.1", \
-           "query": {"foo": 3}}' \
+           "query": {"value": 3}}' \
       -H "Authorization: Bearer $TOKEN" \
       -H "Content-Type: application/json"
    {"result": [
    {"one": "object"}
-   , {"another": {"count": false, "query": {"foo": 3}, "worker": "0af609080636", "page": 1, "pageSize": 100}}
+   , {"another": {"count": false, "query": {"value": 3}, "worker": "0af609080636", "page": 1, "pageSize": 100}}
    ],
    "metadata": {"time_in_main": 0.0013320446014404297},
    "status": "success"}
