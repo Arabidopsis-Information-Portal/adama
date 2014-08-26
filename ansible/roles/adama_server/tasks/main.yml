@@ -66,11 +66,8 @@
     dest={{ supervisord_conf_dir }}/adama.{{ supervisord_conf_ext }}
   sudo: yes
   notify:
+    - Force supervisor to reload configs
     - Reload adama server
-
-- name: Force supervisor to reload configs
-  command: supervisorctl update
-  sudo: yes
 
 - name: Make sure the adama server is started
   supervisorctl: name=adama state=started

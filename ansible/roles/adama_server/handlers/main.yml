@@ -16,6 +16,10 @@
   sudo: yes
   sudo_user: adama
 
+- name: Force supervisor to reload configs
+  command: supervisorctl update
+  sudo: yes
+
 - name: Reload adama server
   supervisorctl: name=adama state=restarted
   sudo: yes
