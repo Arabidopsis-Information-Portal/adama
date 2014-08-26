@@ -173,6 +173,7 @@ class Register(restful.Resource):
             adapter.start_workers()
             # save name of workers in the store
             adapters.set_attr(adapter, 'workers', adapter.workers)
+            adapters.set_attr(adapter, 'firewall', adapter.firewall)
             adapters.set_attr(adapter, 'state', '[3/4] Workers for adapter created')
             app.logger.debug(' workers started')
             adapter.check_health()
