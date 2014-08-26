@@ -16,7 +16,7 @@
     key: "{{ lookup('file', item) }}"
     state: present
   with_fileglob:
-    - public_keys/*
+    - public_keys/*.pub
   sudo: yes
 
 - name: Add user adama to sudoers with no password
