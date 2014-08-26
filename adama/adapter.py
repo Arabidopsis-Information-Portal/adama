@@ -2,6 +2,7 @@ import glob
 import json
 import multiprocessing
 import os
+import socket
 import tarfile
 import tempfile
 import threading
@@ -75,7 +76,17 @@ class Adapter(object):
         self.url = self.metadata.get('url', '')
         self.whitelist = self.metadata.get('whitelist', [])
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
+        self.validate_whitelist()
         self.notify = self.metadata.get('notify', '')
+
+    def validate_whitelist(self):
+        """Make sure ip's and domain name can be resolved."""
+
+        for addr in self.whitelist:
+            try:
+                socket.gethostbyname_ex(addr)
+            except:
+                raise APIException("'{}' does not look like an ip or domain name".format(addr), 400)
 
     def to_json(self):
         return {
