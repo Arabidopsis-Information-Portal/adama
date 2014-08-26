@@ -28,3 +28,10 @@
     - curl
     - htop
   sudo: yes
+
+- name: Make sure there is a gitconfig
+  copy:
+    src: gitconfig
+    dest: /home/adama/.gitconfig
+    owner: adama
+  sudo: yes
