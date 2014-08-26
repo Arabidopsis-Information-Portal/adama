@@ -9,13 +9,15 @@ from adama.docker import docker_output
 from adama.tools import location_of
 HERE = location_of(__file__)
 
+URL = 'http://localhost:8080'
+
 TIMEOUT = 120 # seconds
 
 def test_register():
     code = open(os.path.join(HERE, 'main.py')).read()
-    resp = requests.post('http://localhost/register',
+    resp = requests.post(URL+'/register',
                   data={'name': 'foo',
-                        'url': 'http://foo.bar',
+                        'url': URL,
                         'requirements': 'requests'},
                   files={'code': ('main.py', code)})
     response = resp.json()
@@ -26,7 +28,7 @@ def test_state():
     while True:
         if time.time() - start > TIMEOUT:
             assert False
-        response = requests.get('http://localhost/manage/foo_v0.1/state').json()
+        response = requests.get(URL+'/manage/foo_v0.1/state').json()
         assert response['status'] == 'success'
         if response.get('state', None) == 'Ready':
             assert True
@@ -34,7 +36,7 @@ def test_state():
         time.sleep(5)
 
 def test_query():
-    resp = requests.post('http://localhost/query',
+    resp = requests.post(URL+'/query',
                  data=json.dumps({
                      'serviceName': 'foo_v0.1',
                      'query': {'foo': 3}
@@ -48,7 +50,7 @@ def test_query():
     assert result[0]['args']['query'] == {'foo': 3}
 
 def test_delete():
-    workers = requests.get('http://localhost/register').json()
+    workers = requests.get(URL+'/register').json()
     assert workers['status'] == 'success'
     for adapter in workers['adapters']:
         workers = adapter['workers']
@@ -58,7 +60,7 @@ def test_delete():
         assert False
 
     resp = requests.delete(
-        'http://localhost/register',
+        URL+'/register',
         data={'name': 'foo_v0.1'})
     response = resp.json()
     assert response['status'] == 'success'
