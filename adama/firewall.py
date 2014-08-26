@@ -8,11 +8,14 @@ class Firewall(object):
                  get=None, insert=None, delete=None):
         self.whitelist = whitelist
         # function that retuns the chain FORWARD
-        self.get = get or self._get
+        if get is not None:
+            self.get = get
         # function to insert a rule
-        self.insert = insert or self._insert
+        if insert is not None:
+            self.insert = insert
         # function to delete a rule
-        self.delete = delete or self._delete
+        if delete is not None:
+            self.delete = delete
         self.workers = {}
 
     def _get(self):
@@ -31,6 +34,10 @@ class Firewall(object):
             'sudo iptables -D FORWARD -s 0/0 -d {dest} '
             '-m physdev --physdev-in {iface} '
             '-j {target}'.format(**locals()).split())
+
+    get = _get
+    insert = _insert
+    delete = _delete
 
     def register(self, worker, iface):
         """Allow worker to whitelist."""
