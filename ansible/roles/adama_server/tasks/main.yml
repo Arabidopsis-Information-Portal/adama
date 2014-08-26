@@ -1,5 +1,21 @@
 ---
 
+- set_fact:
+    swagger_html="/usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py"
+    supervisord_conf_dir="/etc/supervisor/conf.d"
+    supervisord_conf_ext="conf"
+    supervisord_service="supervisor"
+    pip_executable="/usr/bin/pip"
+  when: ansible_os_family == "Debian"
+
+- set_fact:
+    swagger_html="/usr/local/lib/python2.7/site-packages/flask_restful_swagger/html.py"
+    supervisord_conf_dir="/etc/supervisord.d"
+    supervisord_conf_ext="ini"
+    supervisord_service="supervisord"
+    pip_executable="/usr/local/bin/pip"
+  when: ansible_os_family == "RedHat"
+
 - name: Get adama code
   git:
     repo: https://github.com/waltermoreira/adama
@@ -15,28 +31,14 @@
 - name: Install all Python requirements
   pip:
     requirements: /home/adama/adama/dev_requirements.txt
-    executable: /usr/local/bin/pip
+    executable: "{{ pip_executable }}"
   sudo: yes
 
 - name: Install adama itself
   pip:
     name: /home/adama/adama
-    executable: /usr/local/bin/pip
+    executable: "{{ pip_executable }}"
   sudo: yes
-
-- set_fact:
-    swagger_html="/usr/local/lib/python2.7/dist-packages/flask_restful_swagger/html.py"
-    supervisord_conf_dir="/etc/supervisor/conf.d"
-    supervisord_conf_ext="conf"
-    supervisord_service="supervisor"
-  when: ansible_os_family == "Debian"
-
-- set_fact:
-    swagger_html="/usr/local/lib/python2.7/site-packages/flask_restful_swagger/html.py"
-    supervisord_conf_dir="/etc/supervisord.d"
-    supervisord_conf_ext="ini"
-    supervisord_service="supervisord"
-  when: ansible_os_family == "RedHat"
 
 - name: Patch swagger ui
   lineinfile:
