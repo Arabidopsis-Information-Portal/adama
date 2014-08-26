@@ -4,6 +4,7 @@ from functools import partial
 import json
 import sys
 from textwrap import dedent
+import time
 
 import pika
 
@@ -16,8 +17,15 @@ class AbstractQueueConnection(object):
 
     """
 
+    TIMEOUT = 1 # second
+
     def connect(self):
-        """Establish the connection."""
+        """Establish the connection.
+
+	This method should be able to retry the connection until TIMEOUT or
+	sleep and try at the end of the TIMEOUT period.  Lack of network
+        connection is NOT an error until the TIMEOUT period expires.
+        """
         pass
 
     def send(self, message):
@@ -69,12 +77,20 @@ class QueueConnection(AbstractQueueConnection):
     def connect(self):
         """Establish a connection with the task queue."""
 
-        self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=self.queue_host,
-                                      port=self.queue_port))
-        self.channel = self.connection.channel()
-        self.channel.queue_declare(queue=self.queue_name, durable=True)
-
+        start_t = time.time()
+        while True:
+            try:
+                self.connection = pika.BlockingConnection(
+                    pika.ConnectionParameters(host=self.queue_host,
+                                              port=self.queue_port))
+                self.channel = self.connection.channel()
+                self.channel.queue_declare(queue=self.queue_name, durable=True)
+                return
+            except pika.exceptions.AMQPConnectionError:
+                if time.time() - start_t > self.TIMEOUT:
+                    raise
+                time.sleep(0.5)
+ 
     def send(self, message):
         """Send a message to the queue.
 
