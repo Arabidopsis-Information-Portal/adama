@@ -20,8 +20,12 @@ class Adapters(object):
         adapter.stop_workers()
 
     def delete(self, iden):
-        self.stop(iden)
-        self._del(iden)
+        try:
+            self.stop(iden)
+            self._del(iden)
+        except KeyError:
+            # ignore if adapter does not exist
+            pass
 
     def set_attr(self, adapter, attr, value):
         iden = adapter.iden
