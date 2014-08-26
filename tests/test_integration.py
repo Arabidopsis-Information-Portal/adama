@@ -4,9 +4,9 @@ import time
 import os
 import json
 
-from apim.adapters import adapters
-from apim.docker import docker_output
-from apim.tools import location_of
+from adama.adapters import adapters
+from adama.docker import docker_output
+from adama.tools import location_of
 HERE = location_of(__file__)
 
 TIMEOUT = 120 # seconds
