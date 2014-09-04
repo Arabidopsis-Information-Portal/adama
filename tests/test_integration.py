@@ -9,7 +9,7 @@ from adama.docker import docker_output
 from adama.tools import location_of
 HERE = location_of(__file__)
 
-URL = 'http://localhost:8080'
+URL = 'http://localhost:80'
 
 TIMEOUT = 120 # seconds
 
