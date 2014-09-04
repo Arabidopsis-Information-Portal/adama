@@ -73,7 +73,7 @@ class Adapter(object):
         self.name = self.metadata.get('name', uuid.uuid4().hex)
         self.version = self.metadata.get('version', '0.1')
         self.iden = '{0}_v{1}'.format(self.name, self.version)
-        self.url = self.metadata.get('url', '')
+        self.url = self.metadata.get('url', 'http://localhost')
         self.whitelist = self.metadata.get('whitelist', [])
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
         self.validate_whitelist()
