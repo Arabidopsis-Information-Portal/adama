@@ -16,6 +16,7 @@ from .query import Query
 from .register import Register, Manage
 from .api import MyApi
 from .config import Config
+from .namespaces import Namespaces
 
 
 api = swagger.docs(MyApi(app),
@@ -25,6 +26,7 @@ api = swagger.docs(MyApi(app),
                    produces=["application/json", "text/html"],
                    api_spec_url='/api/spec')
 
+api.add_resource(Namespaces, '/adama')
 api.add_resource(Query, '/query')
 api.add_resource(Register, '/register')
 api.add_resource(Manage, '/manage/<string:adapter>/<string:command>')
