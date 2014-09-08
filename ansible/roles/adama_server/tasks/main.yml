@@ -38,6 +38,7 @@
   pip:
     name: /home/adama/adama
     executable: "{{ pip_executable }}"
+    extra_args: "-U"
   sudo: yes
 
 - name: Patch swagger ui
