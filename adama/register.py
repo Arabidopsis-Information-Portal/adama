@@ -133,7 +133,7 @@ class Register(restful.Resource):
             'status': 'success',
             'message': (
                 "registration started; will POST to '{}' when ready.\n"
-                "GET to 'https://api.araport.org/v0.1/register/{}/state' "
+                "GET to 'https://api.araport.org/collective/v0.2/manage/{}/state' "
                 "to query for adapter state"
                 .format(args.notify, name)),
             'name': name
@@ -174,6 +174,7 @@ class Register(restful.Resource):
             # save name of workers in the store
             adapters.set_attr(adapter, 'workers', adapter.workers)
             adapters.set_attr(adapter, 'firewall', adapter.firewall)
+            adapters.set_attr(adapter, 'language', adapter.language)
             adapters.set_attr(adapter, 'state', '[3/4] Workers for adapter created')
             app.logger.debug(' workers started')
             adapter.check_health()

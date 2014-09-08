@@ -35,6 +35,16 @@ def test_state():
             return
         time.sleep(5)
 
+def test_language():
+    response = requests.get('http://localhost/register').json()
+    assert response['status'] == 'success'
+    adapters = response['adapters']
+    for adapter in adapters:
+        if adapter['identifier'] == 'foo_v0.1':
+            assert adapter['language'] == 'python'
+            return
+    assert False
+
 def test_query():
     resp = requests.post(URL+'/query',
                  data=json.dumps({
