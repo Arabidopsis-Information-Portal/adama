@@ -75,7 +75,7 @@ To register this adapter with the name ``example``, we ``POST`` to
 
 - **name** (mandatory): the name of the adapter (``example`` in this case),
 - **version** (optional): version (default ``0.1``),
-- **url** (mandatory): URL of the external service (``none`` in this
+- **url** (mandatory): URL of the external service (``http://example.com`` in this
   case),
 - **notify** (optional): URL to notify with a POST request when the
   adapter is ready to use,
@@ -86,7 +86,7 @@ Using curl_:
 .. code-block:: bash
 
    $ curl -L -X POST https://api.araport.org/collective/v0.2/register \
-       -F "name=example" -F "url=none" -F code=@main.py \
+       -F "name=example" -F "url=http://example.com" -F code=@main.py \
        -F "notify=https://my.url" \
        -H "Authorization: Bearer $TOKEN"
    {
@@ -122,7 +122,7 @@ services.  To see a list of all the available services:
                "identifier": "example_v0.1",
                "language": "python",
                "name": "example",
-               "url": "none",
+               "url": "http://example.com",
                "version": "0.1",
                "workers": [
                    "25be3f74b075c2753ce6690502f41caf61464b6c71096251eed16b1ad5a8c964"
