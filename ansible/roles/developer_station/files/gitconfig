@@ -1,0 +1,12 @@
+[color]
+        diff = auto
+        status = auto
+        branch = auto
+[alias]
+        co = checkout
+        ci = commit
+        st = status
+        pushit = push origin HEAD
+        gl = log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+[push]
+	default = simple
