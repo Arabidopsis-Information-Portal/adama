@@ -12,8 +12,48 @@ class NamespaceStore(Store):
     pass
 
 
+@swagger.model
+class NamespacesResponse(object):
+    "A response"
+
+    resource_fields = {
+        'status': restful.fields.String(attribute='success or failure'),
+        'result': restful.fields.String
+    }
+
 class Namespaces(restful.Resource):
 
+    @swagger.operation(
+        notes='Register a new namespace',
+        nickname='registerNamespace',
+        responseClass=NamespacesResponse.__name__,
+        parameters=[
+            {
+                'name': 'name',
+                'description': 'name of the namespace',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'url',
+                'description': 'url associated to this namespace',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'description',
+                'description': 'description of this namespace',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            }
+        ]
+    )
     def post(self):
         args = self.validate_post()
         return self.register_namespace(args)
