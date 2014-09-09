@@ -146,7 +146,7 @@ class Service(Parameterized):
 
     def start_workers(self, n=None):
         if self.language is None:
-            raise APIException('language of adapter not detected yet')
+            raise APIException('language of adapter not detected yet', 500)
         if n is None:
             n = Config.getint(
                 'workers', '{}_instances'.format(self.language))
