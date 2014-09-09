@@ -16,6 +16,7 @@ import pytest
 
 import adama.service
 from adama.tools import location_of
+from adama.docker import docker_output
 
 HERE = location_of(__file__)
 
@@ -126,3 +127,28 @@ def test_get_code_zip():
         os.path.join(a.temp_dir, 'user_code/main.rb')).read() == 'foo\n'
     assert open(
         os.path.join(a.temp_dir, 'user_code/dir/bar')).read() == 'bar\n'
+
+def test_workers():
+    a = adama.service.Service(
+        name='foo', version='x.y', url='http://example.com',
+        whitelist=[], description='', requirements=[], notify='',
+        adapter='main.py',
+        code=open(os.path.join(HERE, 'main.py')))
+    a.make_image()
+    out = docker_output('inspect', a.iden)
+    assert not out.startswith('Error')
+
+    a.start_workers(n=2)
+    assert len(a.workers) == 2
+
+    for worker in a.workers:
+        state = docker_output('inspect', '-f', '{{.State.Running}}',
+                              worker).strip()
+        assert state == 'true'
+
+    a.stop_workers()
+    for worker in a.workers:
+        state = docker_output('inspect', '-f', '{{.State.Running}}',
+                              worker).strip()
+        assert state == 'false'
+        docker_output('rm', '-f', worker)
