@@ -99,8 +99,11 @@ class Service(Parameterized):
         self.language = None
         self.workers = []
 
-    def register(self):
+    def extract_code(self):
         extract(self.adapter, self.code, into=self.temp_dir)
+
+    def register(self):
+        self.extract_code()
         self.language = self.detect_language()
         render_template(self.language, self.requirements, into=self.temp_dir)
         self.save_metadata()
