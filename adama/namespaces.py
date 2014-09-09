@@ -1,3 +1,5 @@
+import urlparse
+
 from flask import request
 from flask.ext import restful
 from flask.ext.restful import reqparse
@@ -6,7 +8,7 @@ from flask_restful_swagger import swagger
 from .api import APIException
 from .namespace import Namespace
 from .store import Store
-
+from .config import Config
 
 class NamespaceStore(Store):
     pass
@@ -71,7 +73,8 @@ class Namespaces(restful.Resource):
         namespace_store[name] = ns
         return {
             'status': 'success',
-            'result': name
+            'result': urlparse.urljoin(
+                Config.get('server', 'url'), name)
         }
 
     def validate_post(self):
