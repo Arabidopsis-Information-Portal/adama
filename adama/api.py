@@ -22,6 +22,10 @@ class RegisterException(Exception):
         self.failed_count = len(logs)
         self.logs = logs
 
+    def __str__(self):
+        s = super(RegisterException, self).__str__()
+        return s + '\n\nLogs:\n' + '\n'.join(self.logs)
+
 
 class MyApi(restful.Api):
 
