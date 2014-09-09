@@ -102,7 +102,9 @@ class Service(Parameterized):
     def extract_code(self):
         extract(self.adapter, self.code, into=self.temp_dir)
 
-    def register(self):
+    def make_image(self):
+        """Make a docker image for this service."""
+
         self.extract_code()
         self.language = self.detect_language()
         render_template(self.language, self.requirements, into=self.temp_dir)
