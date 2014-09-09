@@ -17,7 +17,7 @@ from .register import Register, Manage
 from .api import MyApi
 from .config import Config
 from .namespaces import Namespaces
-
+from .services import Services
 
 api = swagger.docs(MyApi(app),
                    apiVersion='0.1',
@@ -27,6 +27,8 @@ api = swagger.docs(MyApi(app),
                    api_spec_url='/api/spec')
 
 api.add_resource(Namespaces, '/adama')
+api.add_resource(Services, '/adama/<string:namespace>')
+
 api.add_resource(Query, '/query')
 api.add_resource(Register, '/register')
 api.add_resource(Manage, '/manage/<string:adapter>/<string:command>')
