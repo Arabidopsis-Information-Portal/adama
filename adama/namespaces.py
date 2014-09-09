@@ -83,5 +83,12 @@ class Namespaces(restful.Resource):
         args = parser.parse_args()
         return args
 
+    def get(self):
+        result = {name: ns.to_json()
+                  for (name, ns) in namespace_store.items()}
+        return {
+            'status': 'success',
+            'result': result
+        }
 
 namespace_store = NamespaceStore()
