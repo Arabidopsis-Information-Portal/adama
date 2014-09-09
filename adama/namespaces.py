@@ -11,7 +11,10 @@ from .store import Store
 from .config import Config
 
 class NamespaceStore(Store):
-    pass
+
+    def __init__(self):
+        # Use Redis db=1 for namespaces
+        super(NamespaceStore, self).__init__(db=1)
 
 
 @swagger.model

@@ -8,10 +8,10 @@ from .config import Config
 
 class Store(collections.MutableMapping):
 
-    def __init__(self):
+    def __init__(self, db=0):
         self._db = redis.StrictRedis(host=Config.get('store', 'host'),
                                      port=Config.getint('store', 'port'),
-                                     db=0)
+                                     db=db)
 
     def __getitem__(self, key):
         obj = self._db.get(key)
