@@ -78,6 +78,7 @@ def test_delete():
     for worker in workers:
         out = docker_output('inspect', '-f', '{{.State.Running}}', worker)
         assert out.startswith('false')
+        docker_output('rm', '-f', worker)
 
 def test_no_adapter():
     with pytest.raises(KeyError):
