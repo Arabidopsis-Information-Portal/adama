@@ -11,6 +11,7 @@ from .tools import RequestParser
 from .service import Service, identifier
 from .namespaces import namespace_store
 from .api import APIException
+from .config import Config
 
 
 class ServicesStore(Store):
