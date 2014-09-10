@@ -62,7 +62,7 @@ class Services(restful.Resource):
 
         args = parser.parse_args()
         args.adapter = args.code.filename
-        args.code = args.code.stream
+        args.code = args.code.stream.read()
 
         return args
 

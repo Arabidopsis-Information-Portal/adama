@@ -271,7 +271,7 @@ def extract(filename, code, into):
     ext = extension(filename)
     user_code_dir = os.path.join(into, 'user_code')
     os.mkdir(user_code_dir)
-    contents = code.read()
+    contents = code
 
     if ext in ZIPS:
         # it's a zip file
