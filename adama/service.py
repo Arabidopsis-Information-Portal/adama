@@ -10,6 +10,7 @@ import urlparse
 import zipfile
 
 from enum import Enum
+from flask.ext import restful
 import jinja2
 
 from .api import APIException, RegisterException
@@ -213,6 +214,18 @@ class Service(Parameterized):
 
         if logs:
             raise RegisterException(len(self.workers), logs)
+
+
+class ServiceResource(restful.Resource):
+
+    def get(self, namespace, service):
+        pass
+
+
+class ServiceQueryResource(restful.Resource):
+
+    def get(self, namespace, service):
+        pass
 
 
 def check(producer):
