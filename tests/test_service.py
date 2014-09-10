@@ -86,14 +86,14 @@ def test_adapter_detect_language():
     a = adama.service.Service(
         name='foo', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')))
+        adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')).read())
     a.extract_code()
     assert a.detect_language() == 'python'
 
     a = adama.service.Service(
         name='foo', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')))
+        adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read())
     a.extract_code()
     assert a.detect_language() == 'ruby'
 
@@ -101,7 +101,7 @@ def test_get_code_module():
     a = adama.service.Service(
         name='foo', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.py', code=StringIO.StringIO('foo'))
+        adapter='foo.py', code='foo')
     a.extract_code()
     assert open(
         os.path.join(a.temp_dir, 'user_code/foo.py')).read() == 'foo'
@@ -110,7 +110,7 @@ def test_get_code_tarball():
     a = adama.service.Service(
         name='foo', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')))
+        adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')).read())
     a.extract_code()
     assert open(
         os.path.join(a.temp_dir, 'user_code/main.py')).read() == 'foo\n'
@@ -121,7 +121,7 @@ def test_get_code_zip():
     a = adama.service.Service(
         name='foo', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')))
+        adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read())
     a.extract_code()
     assert open(
         os.path.join(a.temp_dir, 'user_code/main.rb')).read() == 'foo\n'
@@ -133,7 +133,7 @@ def test_workers():
         name='foo', version='x.y', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='main.py',
-        code=open(os.path.join(HERE, 'main.py')))
+        code=open(os.path.join(HERE, 'main.py')).read())
     a.make_image()
     out = docker_output('inspect', a.iden)
     assert not out.startswith('Error')
