@@ -89,7 +89,7 @@ class Service(Parameterized):
         super(Service, self).__init__(self.PARAMS, kwargs)
         self.code = code
 
-        self.iden = '{0}_v{1}'.format(self.name, self.version)
+        self.iden = identifier(**kwargs)
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
         self.validate_whitelist()
 
@@ -298,3 +298,7 @@ def extract(filename, code, into):
     else:
         raise APIException(
             'unknown extension: {0}'.format(filename), 400)
+
+
+def identifier(**kwargs):
+    return '{name}_v{version}'.format(**kwargs)
