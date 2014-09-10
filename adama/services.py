@@ -1,9 +1,7 @@
 import os
 import urlparse
 
-from flask import request
 from flask.ext import restful
-from flask.ext.restful import reqparse
 from werkzeug.datastructures import FileStorage
 
 from .store import Store
@@ -26,7 +24,7 @@ class Services(restful.Resource):
     def post(self, namespace):
         """Create new service"""
 
-        if not namespace in namespace_store:
+        if namespace not in namespace_store:
             raise APIException(
                 "unknown namespace '{}'".format(namespace), 400)
 
