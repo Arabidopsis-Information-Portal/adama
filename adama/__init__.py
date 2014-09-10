@@ -16,8 +16,11 @@ from .query import Query
 from .register import Register, Manage
 from .api import MyApi
 from .config import Config
-from .namespaces import Namespaces
-from .services import Services
+from .namespaces import NamespacesResource
+from .services import ServicesResource
+from .service import ServiceResource
+from .query import ServiceQueryResource
+
 
 api = swagger.docs(MyApi(app),
                    apiVersion='0.1',
@@ -26,8 +29,18 @@ api = swagger.docs(MyApi(app),
                    produces=["application/json", "text/html"],
                    api_spec_url='/api/spec')
 
-api.add_resource(Namespaces, '/adama')
-api.add_resource(Services, '/adama/<string:namespace>')
+api.add_resource(NamespacesResource, '/adama')
+api.add_resource(ServicesResource, '/adama/<string:namespace>/services')
+api.add_resource(
+    ServiceResource, '/adama/<string:namespace>/<string:service>',
+    endpoint='service')
+api.add_resource(
+    ServiceQueryResource, '/adama/<string:namespace>/<string:service>/search',
+    endpoint='search')
+
+# api.add_resource(
+#     ServiceResource, '/adama/<string:namespace>/<string:service>/search')
+
 
 api.add_resource(Query, '/query')
 api.add_resource(Register, '/register')

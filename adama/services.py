@@ -19,7 +19,7 @@ class ServicesStore(Store):
         super(ServicesStore, self).__init__(db=2)
 
 
-class Services(restful.Resource):
+class ServicesResource(restful.Resource):
 
     def post(self, namespace):
         """Create new service"""

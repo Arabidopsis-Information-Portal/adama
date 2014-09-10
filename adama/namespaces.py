@@ -26,7 +26,7 @@ class NamespacesResponse(object):
         'result': restful.fields.String
     }
 
-class Namespaces(restful.Resource):
+class NamespacesResource(restful.Resource):
 
     @swagger.operation(
         notes='Register a new namespace',
