@@ -1,9 +1,12 @@
+import multiprocessing
 import os
 import urlparse
 
+from flask import url_for
 from flask.ext import restful
 from werkzeug.datastructures import FileStorage
 
+from . import app
 from .store import Store
 from .tools import RequestParser
 from .service import Service, identifier
@@ -36,12 +39,22 @@ class ServicesResource(restful.Resource):
                                .format(iden, namespace), 400)
 
         service = Service(**args)
-        service_store[full_name] = service
+        proc = multiprocessing.Process(
+            name='Async Register {}'.format(full_name),
+            target=register, args=(namespace, service))
+        proc.start()
+        state_url = url_for('service', namespace=namespace, service=iden,
+                            _external=True)
+        search_url = url_for('search', namespace=namespace, service=iden,
+                             _external=True)
         return {
             'status': 'success',
-            'result': urlparse.urljoin(
-                Config.get('server', 'url'),
-                os.path.join(namespace, iden))
+            'message': 'registration started',
+            'result': {
+                'state': state_url,
+                'search': search_url,
+                'notification': service.notify
+            }
         }
 
     def validate_post(self):
@@ -85,6 +98,27 @@ def full_identifier(namespace, identifier):
 
 def namespace_of(full_identifier):
     return full_identifier.split('.')[0]
+
+
+def register(namespace, service):
+    try:
+        full_name = full_identifier(namespace, service.iden)
+        service_store[full_name] = service
+    except Exception as exc:
+        del service_store[service.iden]
+        data = {
+            'status': 'error',
+            'result': str(exc)
+        }
+    if service.notify:
+        try:
+            request.post(service.notify,
+                         headers={"Content-Type": "application/json"},
+                         data=json.dumps(data))
+        except Exception:
+            app.logger.warning(
+                "Could not notify url '{}' that '{}' is ready"
+                .format(service.notify, full_name))
 
 
 service_store = ServicesStore()
