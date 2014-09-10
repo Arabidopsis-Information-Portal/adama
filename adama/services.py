@@ -1,3 +1,4 @@
+import os
 import urlparse
 
 from flask import request
@@ -40,7 +41,8 @@ class Services(restful.Resource):
         return {
             'status': 'success',
             'result': urlparse.urljoin(
-                Config.get('server', 'url'), namespace, iden)
+                Config.get('server', 'url'),
+                os.path.join(namespace, iden))
         }
 
     def validate_post(self):
