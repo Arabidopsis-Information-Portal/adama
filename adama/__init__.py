@@ -18,8 +18,7 @@ from .api import MyApi
 from .config import Config
 from .namespaces import NamespacesResource
 from .services import ServicesResource
-from .service import ServiceResource
-from .query import ServiceQueryResource
+from .service import ServiceResource, ServiceQueryResource
 
 
 api = swagger.docs(MyApi(app),
