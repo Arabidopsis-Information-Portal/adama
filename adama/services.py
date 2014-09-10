@@ -1,3 +1,5 @@
+import urlparse
+
 from flask import request
 from flask.ext import restful
 from flask.ext.restful import reqparse
@@ -5,6 +7,9 @@ from werkzeug.datastructures import FileStorage
 
 from .store import Store
 from .tools import RequestParser
+from .service import Service, identifier
+from .namespaces import namespace_store
+from .api import APIException
 
 
 class ServicesStore(Store):
@@ -19,9 +24,24 @@ class Services(restful.Resource):
     def post(self, namespace):
         """Create new service"""
 
+        if not namespace in namespace_store:
+            raise APIException(
+                "unknown namespace '{}'".format(namespace), 400)
+
         args = self.validate_post()
-        print(args)
-        return {}
+        iden = identifier(**args)
+        full_name = full_identifier(namespace, iden)
+        if full_name in service_store:
+            raise APIException("service '{}' already exists in namespace {}"
+                               .format(iden, namespace), 400)
+
+        service = Service(**args)
+        service_store[full_name] = service
+        return {
+            'status': 'success',
+            'result': urlparse.urljoin(
+                Config.get('server', 'url'), namespace, iden)
+        }
 
     def validate_post(self):
         parser = RequestParser()
@@ -48,4 +68,22 @@ class Services(restful.Resource):
 
     def get(self, namespace):
         """List all services"""
-        pass
+
+        result = {srv.iden: srv.to_json()
+                  for name, srv in service_store.items()
+                  if namespace_of(name) == namespace}
+        return {
+            'status': 'success',
+            'result': result
+        }
+
+
+def full_identifier(namespace, identifier):
+    return '{}.{}'.format(namespace, identifier)
+
+
+def namespace_of(full_identifier):
+    return full_identifier.split('.')[0]
+
+
+service_store = ServicesStore()
