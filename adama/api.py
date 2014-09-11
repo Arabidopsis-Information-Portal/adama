@@ -7,7 +7,7 @@ from flask.ext import restful
 
 class APIException(Exception):
 
-    def __init__(self, message, code):
+    def __init__(self, message, code=400):
         Exception.__init__(self, message)
         self.message = message
         self.code = code
