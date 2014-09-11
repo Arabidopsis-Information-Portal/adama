@@ -26,9 +26,10 @@ class ServicesResource(restful.Resource):
         args = self.validate_post()
         iden = identifier(**args)
         full_name = full_identifier(namespace, iden)
-        if full_name in service_store:
-            raise APIException("service '{}' already exists in namespace {}"
-                               .format(iden, namespace), 400)
+        if full_name in service_store and \
+           not isinstance(service_store[full_name], basestring):
+            raise APIException("service '{}' already exists"
+                               .format(full_name), 400)
 
         service = Service(**args)
         proc = multiprocessing.Process(
