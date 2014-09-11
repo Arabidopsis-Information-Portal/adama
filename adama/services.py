@@ -12,14 +12,6 @@ from .tools import RequestParser
 from .service import Service, identifier
 from .namespaces import namespace_store
 from .api import APIException
-from .config import Config
-
-
-class ServicesStore(Store):
-
-    def __init__(self):
-        # Use Redis db=2 for services
-        super(ServicesStore, self).__init__(db=2)
 
 
 class ServicesResource(restful.Resource):
@@ -119,6 +111,3 @@ def register(namespace, service):
             app.logger.warning(
                 "Could not notify url '{}' that '{}' is ready"
                 .format(service.notify, full_name))
-
-
-service_store = ServicesStore()
