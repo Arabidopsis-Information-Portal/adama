@@ -1,4 +1,5 @@
 import glob
+import itertools
 import json
 import multiprocessing
 import os
@@ -10,6 +11,7 @@ import urlparse
 import zipfile
 
 from enum import Enum
+from flask import request, Response
 from flask.ext import restful
 import jinja2
 
@@ -17,7 +19,9 @@ from .api import APIException, RegisterException
 from .config import Config
 from .docker import docker_output, start_container, tail_logs
 from .firewall import Firewall
-from .tools import location_of, identifier, full_identifier, RequestParser
+from .tools import (location_of, identifier, full_identifier,
+                    interleave)
+from .tasks import Producer
 from .service_store import service_store
 
 
@@ -222,13 +226,28 @@ class ServiceQueryResource(restful.Resource):
 
     def get(self, namespace, service):
         args = self.validate_get()
-        print('args = {}'.format(args))
+        queue = service.iden
+        client = Producer(queue_host=Config.get('queue', 'host'),
+                          queue_port=Config.getint('queue', 'port'),
+                          queue_name=queue)
+        client.send(args)
+
+        def result_generator():
+            yield '{"result": [\n'
+            gen = itertools.imap(lambda x: json.dumps(x) + '\n',
+                                 client.receive())
+            for line in interleave([', '], gen):
+                yield line
+            yield '],\n'
+            yield '"metadata": {0},\n'.format(json.dumps(client.metadata))
+            yield '"status": "success"}\n'
+
+        return Response(result_generator(), mimetype='application/json')
 
     def validate_get(self):
-        parser = RequestParser()
-        parser.add_argument('locus', type=str)
-        parser.add_argument('page', type=int)
-        return parser.parse_args()
+        # no defined query language yet
+        # accept everything
+        return dict(request.args)
 
 
 class ServiceResource(restful.Resource):
