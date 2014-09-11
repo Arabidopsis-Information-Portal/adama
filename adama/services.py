@@ -24,14 +24,14 @@ class ServicesResource(restful.Resource):
                 "unknown namespace '{}'".format(namespace), 400)
 
         args = self.validate_post()
-        iden = identifier(**args)
+        iden = identifier(namespace=namespace, **args)
         full_name = full_identifier(namespace, iden)
         if full_name in service_store and \
            not isinstance(service_store[full_name], basestring):
             raise APIException("service '{}' already exists"
                                .format(full_name), 400)
 
-        service = Service(**args)
+        service = Service(namespace=namespace, **args)
         proc = multiprocessing.Process(
             name='Async Register {}'.format(full_name),
             target=register, args=(namespace, service))

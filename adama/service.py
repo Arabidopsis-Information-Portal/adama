@@ -79,6 +79,7 @@ class Service(Parameterized):
     PARAMS = [
         'name',
         'version',
+        'namespace',
         'url',
         'whitelist',
         'description',
