@@ -65,33 +65,33 @@ def test_log_started_and_failed():
 
 def test_adapter_detect_language():
     a = adama.service.Service(
-        name='foo', version='', url='http://example.com',
+        name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='foo.py', code=None)
     assert a.detect_language() == 'python'
 
     a = adama.service.Service(
-        name='foo', version='', url='http://example.com',
+        name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='foo.rb', code=None)
     assert a.detect_language() == 'ruby'
 
     a = adama.service.Service(
-        name='foo', version='', url='http://example.com',
+        name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='foo.spam', code=None)
     with pytest.raises(adama.service.APIException):
         a.detect_language()
 
     a = adama.service.Service(
-        name='foo', version='', url='http://example.com',
+        name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')).read())
     a.extract_code()
     assert a.detect_language() == 'python'
 
     a = adama.service.Service(
-        name='foo', version='', url='http://example.com',
+        name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read())
     a.extract_code()
@@ -99,7 +99,7 @@ def test_adapter_detect_language():
 
 def test_get_code_module():
     a = adama.service.Service(
-        name='foo', version='', url='http://example.com',
+        name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='foo.py', code='foo')
     a.extract_code()
@@ -108,7 +108,7 @@ def test_get_code_module():
 
 def test_get_code_tarball():
     a = adama.service.Service(
-        name='foo', version='', url='http://example.com',
+        name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')).read())
     a.extract_code()
@@ -119,7 +119,7 @@ def test_get_code_tarball():
 
 def test_get_code_zip():
     a = adama.service.Service(
-        name='foo', version='', url='http://example.com',
+        name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read())
     a.extract_code()
@@ -130,7 +130,7 @@ def test_get_code_zip():
 
 def test_workers():
     a = adama.service.Service(
-        name='foo', version='x.y', url='http://example.com',
+        name='foo', namespace='', version='x.y', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='main.py',
         code=open(os.path.join(HERE, 'main.py')).read())
