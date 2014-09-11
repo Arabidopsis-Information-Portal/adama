@@ -112,7 +112,7 @@ def register(namespace, service):
             }
         }
     except Exception as exc:
-        del service_store[full_name]
+        service_store[full_name] = 'Error: {}'.format(exc)
         data = {
             'status': 'error',
             'result': str(exc)
