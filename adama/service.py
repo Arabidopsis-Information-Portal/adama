@@ -281,15 +281,25 @@ def render_template(language, requirements, into):
 
     dockerfile_template = jinja2.Template(
         open(os.path.join(HERE, 'containers/Dockerfile.adapter')).read())
-    _, installer = LANGUAGES[language]
     requirement_cmds = (
-        'RUN ' + installer.format(package=requirements)
+        'RUN ' + requirements_installer(language, requirements)
         if requirements else '')
 
     dockerfile = dockerfile_template.render(
         language=language, requirement_cmds=requirement_cmds)
     with open(os.path.join(into, 'Dockerfile'), 'w') as f:
         f.write(dockerfile)
+
+
+def requirements_installer(language, requirements):
+    """Return the command to install requirements.
+
+    ``requirements`` is a list of packages to be installed in the
+    environment for ``language``.
+
+    """
+    _, installer = LANGUAGES[language]
+    return installer.format(package=' '.join(requirements))
 
 
 def extension(filename):
