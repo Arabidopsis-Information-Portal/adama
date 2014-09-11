@@ -1,14 +1,14 @@
+import json
 import multiprocessing
-import os
-import urlparse
 
 from flask import url_for
 from flask.ext import restful
 from werkzeug.datastructures import FileStorage
+import requests
 
 from . import app
-from .store import Store
-from .tools import RequestParser
+from .service_store import service_store
+from .tools import RequestParser, full_identifier, namespace_of
 from .service import Service, identifier
 from .namespaces import namespace_store
 from .api import APIException
@@ -84,29 +84,44 @@ class ServicesResource(restful.Resource):
         }
 
 
-def full_identifier(namespace, identifier):
-    return '{}.{}'.format(namespace, identifier)
-
-
-def namespace_of(full_identifier):
-    return full_identifier.split('.')[0]
-
-
 def register(namespace, service):
+    """Register a service in a namespace.
+
+    Create the proper image, launch workers, and save the service in
+    the store.
+
+    """
     try:
         full_name = full_identifier(namespace, service.iden)
+        service_store[full_name] = '[1/4] Empty service created'
+        service.make_image()
+        service_store[full_name] = '[2/4] Image for service created'
+        service.start_workers()
+        service_store[full_name] = '[3/4] Workers started'
+        service.check_health()
         service_store[full_name] = service
+        data = {
+            'status': 'success',
+            'result': {
+                'service': url_for('service',
+                                   namespace=namespace, service=service.iden,
+                                   _external=True),
+                'search': url_for('search',
+                                  namespace=namespace, service=service.iden,
+                                  _external=True)
+            }
+        }
     except Exception as exc:
-        del service_store[service.iden]
+        del service_store[full_name]
         data = {
             'status': 'error',
             'result': str(exc)
         }
     if service.notify:
         try:
-            request.post(service.notify,
-                         headers={"Content-Type": "application/json"},
-                         data=json.dumps(data))
+            requests.post(service.notify,
+                          headers={"Content-Type": "application/json"},
+                          data=json.dumps(data))
         except Exception:
             app.logger.warning(
                 "Could not notify url '{}' that '{}' is ready"
