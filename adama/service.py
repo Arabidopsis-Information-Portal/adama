@@ -217,16 +217,39 @@ class Service(Parameterized):
             raise RegisterException(len(self.workers), logs)
 
 
-class ServiceResource(restful.Resource):
-
-    def get(self, namespace, service):
-        pass
-
-
 class ServiceQueryResource(restful.Resource):
 
     def get(self, namespace, service):
         pass
+
+
+class ServiceResource(restful.Resource):
+
+    def get(self, namespace, service):
+        full_name = full_identifier(namespace, service)
+        try:
+            srv = service_store[full_name]
+            if isinstance(srv, basestring):
+                # Service creation ongoing
+                return {
+                    'status': 'success',
+                    'result': {
+                        'state': srv
+                    }
+                }
+            else:
+                return {
+                    'status': 'success',
+                    'result': {
+                        'service': srv.to_json(),
+                        'code': srv.code
+
+                    }
+                }
+        except KeyError:
+            raise APIException(
+                "service {}/{} not found"
+                .format(namespace, service))
 
 
 def check(producer):
