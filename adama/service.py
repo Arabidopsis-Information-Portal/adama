@@ -17,7 +17,8 @@ from .api import APIException, RegisterException
 from .config import Config
 from .docker import docker_output, start_container, tail_logs
 from .firewall import Firewall
-from .tools import location_of
+from .tools import location_of, identifier, full_identifier
+from .service_store import service_store
 
 
 LANGUAGES = {
@@ -311,7 +312,3 @@ def extract(filename, code, into):
     else:
         raise APIException(
             'unknown extension: {0}'.format(filename), 400)
-
-
-def identifier(**kwargs):
-    return '{name}_v{version}'.format(**kwargs)

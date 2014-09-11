@@ -54,3 +54,15 @@ class TimeoutFunction:
             if self.timeout:
                 signal.signal(signal.SIGALRM, old)
                 signal.setitimer(signal.ITIMER_REAL, 0, 0)
+
+
+def identifier(**kwargs):
+    return '{name}_v{version}'.format(**kwargs)
+
+
+def full_identifier(namespace, identifier):
+    return '{}/{}'.format(namespace, identifier)
+
+
+def namespace_of(full_identifier):
+    return full_identifier.split('/')[0]
