@@ -17,7 +17,7 @@ from .api import APIException, RegisterException
 from .config import Config
 from .docker import docker_output, start_container, tail_logs
 from .firewall import Firewall
-from .tools import location_of, identifier, full_identifier
+from .tools import location_of, identifier, full_identifier, RequestParser
 from .service_store import service_store
 
 
@@ -220,7 +220,14 @@ class Service(Parameterized):
 class ServiceQueryResource(restful.Resource):
 
     def get(self, namespace, service):
-        pass
+        args = self.validate_get()
+        print('args = {}'.format(args))
+
+    def validate_get(self):
+        parser = RequestParser()
+        parser.add_argument('locus', type=str)
+        parser.add_argument('page', type=int)
+        return parser.parse_args()
 
 
 class ServiceResource(restful.Resource):
@@ -243,7 +250,6 @@ class ServiceResource(restful.Resource):
                     'result': {
                         'service': srv.to_json(),
                         'code': srv.code
-
                     }
                 }
         except KeyError:
