@@ -8,7 +8,7 @@ import requests
 
 from . import app
 from .service_store import service_store
-from .tools import RequestParser, full_identifier, namespace_of
+from .tools import RequestParser, namespace_of
 from .service import Service, identifier
 from .namespaces import namespace_store
 from .api import APIException
@@ -25,11 +25,10 @@ class ServicesResource(restful.Resource):
 
         args = self.validate_post()
         iden = identifier(namespace=namespace, **args)
-        full_name = full_identifier(namespace, iden)
-        if full_name in service_store and \
-           not isinstance(service_store[full_name], basestring):
+        if iden in service_store and \
+           not isinstance(service_store[iden], basestring):
             raise APIException("service '{}' already exists"
-                               .format(full_name), 400)
+                               .format(iden), 400)
 
         service = Service(namespace=namespace, **args)
         proc = multiprocessing.Process(
@@ -93,7 +92,7 @@ def register(namespace, service):
 
     """
     try:
-        full_name = full_identifier(namespace, service.iden)
+        full_name = service.iden
         service_store[full_name] = '[1/4] Empty service created'
         service.make_image()
         service_store[full_name] = '[2/4] Image for service created'

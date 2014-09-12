@@ -19,7 +19,7 @@ from .api import APIException, RegisterException
 from .config import Config
 from .docker import docker_output, start_container, tail_logs
 from .firewall import Firewall
-from .tools import (location_of, identifier, full_identifier,
+from .tools import (location_of, identifier, service_iden,
                     interleave)
 from .tasks import Producer
 from .service_store import service_store
@@ -226,7 +226,13 @@ class ServiceQueryResource(restful.Resource):
 
     def get(self, namespace, service):
         args = self.validate_get()
-        queue = service.iden
+        try:
+            iden = service_iden(namespace, service)
+            srv = service_store[iden]
+        except KeyError:
+            raise APIException('service {}/{} not found'
+                               .format(namespace, service))
+        queue = srv.iden
         client = Producer(queue_host=Config.get('queue', 'host'),
                           queue_port=Config.getint('queue', 'port'),
                           queue_name=queue)
@@ -253,7 +259,7 @@ class ServiceQueryResource(restful.Resource):
 class ServiceResource(restful.Resource):
 
     def get(self, namespace, service):
-        full_name = full_identifier(namespace, service)
+        full_name = service_iden(namespace, service)
         try:
             srv = service_store[full_name]
             if isinstance(srv, basestring):

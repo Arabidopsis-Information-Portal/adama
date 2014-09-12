@@ -57,12 +57,13 @@ class TimeoutFunction:
 
 
 def identifier(**kwargs):
-    return '{namespace}.{name}_v{version}'.format(**kwargs)
+    return service_iden(kwargs['namespace'],
+                        '{}_v{}'.format(kwargs['name'], kwargs['version']))
 
 
-def full_identifier(namespace, identifier):
-    return identifier
+def service_iden(namespace, service):
+    return '{}.{}'.format(namespace, service)
 
 
-def namespace_of(full_identifier):
-    return full_identifier.split('.')[0]
+def namespace_of(identifier):
+    return identifier.split('.')[0]
