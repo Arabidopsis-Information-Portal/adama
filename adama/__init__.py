@@ -37,10 +37,6 @@ api.add_resource(
     ServiceQueryResource, '/adama/<string:namespace>/<string:service>/search',
     endpoint='search')
 
-# api.add_resource(
-#     ServiceResource, '/adama/<string:namespace>/<string:service>/search')
-
-
 api.add_resource(Query, '/query')
 api.add_resource(Register, '/register')
 api.add_resource(Manage, '/manage/<string:adapter>/<string:command>')
