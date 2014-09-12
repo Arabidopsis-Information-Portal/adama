@@ -11,3 +11,4 @@ Contributors
 ------------
 
 * Matt Vaughn <vaughn@tacc.utexas.edu>
+* Joe Stubbs <jstubbs@tacc.utexas.edu>
