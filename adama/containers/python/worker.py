@@ -44,6 +44,20 @@ class Worker(QueueConnection):
         self.consume_forever(self.callback)
 
 
+class ProcessWorker(QueueConnection):
+
+    def run(self):
+        self.consume_forever(self.callback)
+
+    def callback(self, message, responder):
+        try:
+            import main
+            out = main.process(json.loads(message))
+            responder(json.dumps(out))
+        except Exception as exc:
+            responder(json.dumps({'error': exc.message}))
+
+
 class Results(object):
 
     def __init__(self, responder):
@@ -86,22 +100,29 @@ def parse_args():
     parser.add_argument('--queue-name', metavar='NAME',
                         help='name of the queue this worker will use',
                         default=None)
+    parser.add_argument('--adapter-type', metavar='KIND',
+                        help='type of the adapter: "process" or "query"',
+                        default=None)
     parser.add_argument('-i', '--interactive', action='store_true',
                         help='run interactive console')
     return parser.parse_args()
 
 
-def main():
-    args = parse_args()
-    if args.interactive:
-        os.execlp('ipython', 'ipython')
-    worker = Worker(args.queue_host, args.queue_port, args.queue_name)
+def run_worker(worker_class, args):
+    worker = worker_class(args.queue_host, args.queue_port, args.queue_name)
     print('Worker v0.1.5 starting', file=sys.stderr)
     print('Listening in queue {}'.format(args.queue_name), file=sys.stderr)
     print('*** WORKER STARTED', file=sys.stderr)
     worker.run()
     # If worker stops consuming, it's because of an error
     print('*** WORKER ERROR', file=sys.stderr)
+
+
+def main():
+    args = parse_args()
+    if args.interactive:
+        os.execlp('ipython', 'ipython')
+    run_worker(args.adapter_type, args)
 
 
 if __name__ == '__main__':
