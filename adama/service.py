@@ -89,7 +89,8 @@ class Service(Parameterized):
         'description',
         'requirements',
         'notify',
-        'adapter'
+        'adapter',
+        'type'
     ]
 
     def __init__(self, code, **kwargs):
@@ -166,13 +167,15 @@ class Service(Parameterized):
 
     def start_worker(self):
         worker, iface, ip = start_container(
-            self.iden,
+            self.iden,          # image name
             '--queue-host',
             Config.get('queue', 'host'),
             '--queue-port',
             Config.get('queue', 'port'),
             '--queue-name',
-            self.iden)
+            self.iden,
+            '--adapter-type',
+            self.type)
         self.firewall.register(worker, iface)
         return worker
 
