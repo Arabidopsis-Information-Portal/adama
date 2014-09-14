@@ -18,7 +18,7 @@
 
 - name: Get adama code
   git:
-    repo: https://github.com/waltermoreira/adama
+    repo: https://github.com/Arabidopsis-Information-Portal/adama.git
     dest: /home/adama/adama
     version: "{{ branch | default(master) }}"
     update: yes
