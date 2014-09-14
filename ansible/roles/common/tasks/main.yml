@@ -7,7 +7,7 @@
   when: ansible_os_family == "RedHat"
 
 - name: Add user adama
-  user: name=adama generate_ssh_key=yes state=present
+  user: name=adama generate_ssh_key=yes state=present shell=/bin/bash
   sudo: yes
 
 - name: Add public keys to access user adama
