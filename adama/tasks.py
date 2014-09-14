@@ -90,7 +90,7 @@ class QueueConnection(AbstractQueueConnection):
                 if time.time() - start_t > self.TIMEOUT:
                     raise
                 time.sleep(0.5)
- 
+
     def send(self, message):
         """Send a message to the queue.
 
@@ -152,6 +152,8 @@ class Producer(QueueConnection):
     """
 
     def send(self, message):
+        """Send a dictionary as message."""
+
         super(Producer, self).send(json.dumps(message))
 
     def receive(self):
