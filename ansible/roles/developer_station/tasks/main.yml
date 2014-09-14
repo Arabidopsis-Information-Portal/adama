@@ -19,3 +19,20 @@
     src: tmux.conf
     dest: /etc/tmux.conf
   sudo: yes
+
+- name: Ensure there is a ipython config directory
+  file:
+    path: /home/adama/.ipython/profile_default
+    state: directory
+  sudo: yes
+  sudo_user: adama
+
+- name: Setup config file for ipython
+  lineinfile:
+    dest: /home/adama/.ipython/profile_default/ipython_config.py
+    create: yes
+    insertafter: EOF
+    line: "c = get_config()\nc.InteractiveShellApp.exec_lines = []\nc.InteractiveShellApp.exec_lines.append('%load_ext autoreload')\nc.InteractiveShellApp.exec_lines.append('%autoreload 2')\nc.InteractiveShellApp.exec_lines.append(r'print(\"\\n-- Autoreload extension activated\")')"
+    state: present
+  sudo: yes
+  sudo_user: adama
