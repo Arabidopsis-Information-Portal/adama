@@ -24,6 +24,7 @@
     update: yes
   sudo: yes
   sudo_user: adama
+  register: got_adama
   notify:
     - Rebuild containers
     - Reload adama server
@@ -32,13 +33,14 @@
   pip:
     requirements: /home/adama/adama/dev_requirements.txt
     executable: "{{ pip_executable }}"
+  when: got_adama|changed
   sudo: yes
 
 - name: Install adama itself
-  pip:
-    name: /home/adama/adama
-    executable: "{{ pip_executable }}"
-    extra_args: "-U"
+  command: python setup.py develop
+  args:
+    chdir: /home/adama/adama
+  when: got_adama|changed
   sudo: yes
 
 - name: Patch swagger ui
