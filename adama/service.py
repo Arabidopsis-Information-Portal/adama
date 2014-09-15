@@ -233,10 +233,8 @@ class ServiceQueryResource(restful.Resource):
             iden = service_iden(namespace, service)
             srv = service_store[iden]
         except KeyError:
-            raise APIException('service {}/{} not found'
-                               .format(namespace, service))
-
-        # Decide here what type of service is **FIX ME**
+            raise APIException('service {} not found'
+                               .format(service_iden(namespace, service)))
 
         queue = srv.iden
         client = Producer(queue_host=Config.get('queue', 'host'),
