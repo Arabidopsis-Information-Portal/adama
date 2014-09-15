@@ -23,11 +23,11 @@ class QueryWorker(QueueConnection):
         with Results(responder):
             try:
                 t = self.process(message)
-                responder(json.dumps({'time_in_main': t}))
             except Exception as exc:
                 print(json.dumps({'error': exc.message}))
+            finally:
                 print('END')
-                responder(json.dumps({'time_in_main': 0}))
+                responder(json.dumps({'time_in_main': t}))
 
     def process(self, body):
         import main

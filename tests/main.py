@@ -10,4 +10,3 @@ def process(args):
         'obj': 2,
         'args': args
     })
-    print 'END'
