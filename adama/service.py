@@ -237,22 +237,11 @@ class ServiceQueryResource(restful.Resource):
                                .format(service_iden(namespace, service)))
 
         queue = srv.iden
-        client = Producer(queue_host=Config.get('queue', 'host'),
-                          queue_port=Config.getint('queue', 'port'),
-                          queue_name=queue)
-        client.send(args)
 
-        def result_generator():
-            yield '{"result": [\n'
-            gen = itertools.imap(lambda x: json.dumps(x) + '\n',
-                                 client.receive())
-            for line in interleave([', '], gen):
-                yield line
-            yield '],\n'
-            yield '"metadata": {0},\n'.format(json.dumps(client.metadata))
-            yield '"status": "success"}\n'
-
-        return Response(result_generator(), mimetype='application/json')
+        if srv.type == 'QueryWorker':
+            return exec_query_worker(args, queue)
+        if srv.type == 'ProcessWorker':
+            return exec_process_worker(args, queue)
 
     def validate_get(self):
         # no defined query language yet
@@ -286,6 +275,31 @@ class ServiceResource(restful.Resource):
             raise APIException(
                 "service {}/{} not found"
                 .format(namespace, service))
+
+
+def exec_process_worker(args, queue):
+    pass
+
+
+def exec_query_worker(args, queue):
+    """Send ``args`` to ``queue`` in QueryWorker model."""
+
+    client = Producer(queue_host=Config.get('queue', 'host'),
+                      queue_port=Config.getint('queue', 'port'),
+                      queue_name=queue)
+    client.send(args)
+
+    def result_generator():
+        yield '{"result": [\n'
+        gen = itertools.imap(lambda x: json.dumps(x) + '\n',
+                             client.receive())
+        for line in interleave([', '], gen):
+            yield line
+        yield '],\n'
+        yield '"metadata": {0},\n'.format(json.dumps(client.metadata))
+        yield '"status": "success"}\n'
+
+    return Response(result_generator(), mimetype='application/json')
 
 
 def check(producer):
