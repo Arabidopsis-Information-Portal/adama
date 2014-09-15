@@ -16,6 +16,8 @@ gevent==1.0.1
 gnureadline==6.3.3
 greenlet==0.4.2
 gunicorn==18.0
+ijson==1.1
+ipdb==0.8
 ipython==2.1.0
 itsdangerous==0.24
 kombu==3.0.16
