@@ -109,6 +109,11 @@ class Service(Parameterized):
         self.language = None
         self.workers = []
 
+    def to_json(self):
+        obj = super(Service, self).to_json()
+        obj['language'] = self.language
+        return obj
+
     def extract_code(self):
         extract(self.adapter, self.code, into=self.temp_dir)
 
