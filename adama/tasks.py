@@ -17,13 +17,13 @@ class AbstractQueueConnection(object):
 
     """
 
-    TIMEOUT = 1 # second
+    TIMEOUT = 1  # second
 
     def connect(self):
         """Establish the connection.
 
-	This method should be able to retry the connection until TIMEOUT or
-	sleep and try at the end of the TIMEOUT period.  Lack of network
+        This method should be able to retry the connection until TIMEOUT or
+        sleep and try at the end of the TIMEOUT period.  Lack of network
         connection is NOT an error until the TIMEOUT period expires.
         """
         pass
