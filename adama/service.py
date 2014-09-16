@@ -14,6 +14,8 @@ from enum import Enum
 from flask import request, Response
 from flask.ext import restful
 import jinja2
+import requests
+import ijson
 
 from .api import APIException, RegisterException
 from .config import Config
@@ -241,7 +243,7 @@ class ServiceQueryResource(restful.Resource):
         if srv.type == 'QueryWorker':
             return exec_query_worker(args, queue)
         if srv.type == 'ProcessWorker':
-            return exec_process_worker(args, queue)
+            return exec_process_worker(srv, args, queue)
 
     def validate_get(self):
         # no defined query language yet
@@ -276,12 +278,66 @@ class ServiceResource(restful.Resource):
                 "service {}/{} not found"
                 .format(namespace, service))
 
+    def post(self, namespace, service):
+        import ipdb; ipdb.set_trace()
 
-def exec_process_worker(args, queue):
-    pass
+
+class FileLikeWrapper(object):
+
+    def __init__(self, response):
+        self.response = response
+        self.it = self.response.iter_content(chunk_size=1)
+        self.src = itertools.chain.from_iterable(self.it)
+
+    def read(self, n=512):
+        return ''.join(itertools.islice(self.src, None, n))
+
+
+def process_by_client(service, results):
+    client = Producer(
+        queue_host=Config.get('queue', 'host'),
+        queue_port=Config.getint('queue', 'port'),
+        queue_name=service.iden)
+    for result in results:
+        client.send(result)
+        for obj in client.receive():
+            yield json.dumps(obj)
+
+
+def exec_process_worker(service, args, queue):
+    """Forward request and process response.
+
+    Forward the request to the third party service, and map the
+    response through the ``process`` user function.
+
+    """
+    method = getattr(requests, request.method.lower())
+    import ipdb; ipdb.set_trace()
+    response = method(service.url,
+                      params=request.args,
+                      stream=True)
+    if response.ok:
+        results = ijson.items(FileLikeWrapper(response), 'results.item')
+
+        def result_generator(results):
+            yield '{"result": [\n'
+            for line in interleave(['\n, '], results):
+                yield line
+            yield '],\n'
+            yield '"metadata": {},\n'
+            yield '"status": "success"}\n'
+
+        return Response(
+            result_generator(process_by_client(service, results)),
+            mimetype='application/json')
+    else:
+        raise APIException('response from external service: {}'
+                           .format(response))
+
 
 
 def exec_query_worker(args, queue):
+
     """Send ``args`` to ``queue`` in QueryWorker model."""
 
     client = Producer(queue_host=Config.get('queue', 'host'),
