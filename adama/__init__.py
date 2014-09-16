@@ -20,6 +20,7 @@ from .namespaces import NamespacesResource
 from .services import ServicesResource
 from .service import ServiceResource, ServiceQueryResource
 
+PREFIX = Config.get('server', 'prefix')
 
 api = swagger.docs(MyApi(app),
                    apiVersion='0.1',
@@ -28,13 +29,19 @@ api = swagger.docs(MyApi(app),
                    produces=["application/json", "text/html"],
                    api_spec_url='/api/spec')
 
-api.add_resource(NamespacesResource, '/adama')
-api.add_resource(ServicesResource, '/adama/<string:namespace>/services')
 api.add_resource(
-    ServiceResource, '/adama/<string:namespace>/<string:service>',
+    NamespacesResource,
+    PREFIX)
+api.add_resource(
+    ServicesResource,
+    '{0}/<string:namespace>/services'.format(PREFIX))
+api.add_resource(
+    ServiceResource,
+    '{0}/<string:namespace>/<string:service>'.format(PREFIX),
     endpoint='service')
 api.add_resource(
-    ServiceQueryResource, '/adama/<string:namespace>/<string:service>/search',
+    ServiceQueryResource,
+    '{0}/<string:namespace>/<string:service>/search'.format(PREFIX),
     endpoint='search')
 
 api.add_resource(Query, '/query')
