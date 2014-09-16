@@ -1,5 +1,6 @@
 import pytest
 import requests
+import subprocess
 import time
 import os
 import json
@@ -12,6 +13,7 @@ HERE = location_of(__file__)
 URL = 'http://localhost/adama'
 NAMESPACE = 'foox'
 SERVICE = 'spam'
+PORT = 1234
 
 TIMEOUT = 120 # seconds
 
@@ -25,7 +27,6 @@ def test_register_namespace():
         URL, data={'name': NAMESPACE}).json()
     assert resp['status'] == 'error'
 
-
 def test_register_service():
     code = open(os.path.join(HERE, 'main.py')).read()
     resp = requests.post(URL+'/'+NAMESPACE+'/services',
@@ -34,6 +35,18 @@ def test_register_service():
                         'version': 1,
                         'type': 'QueryWorker',
                         'requirements': 'requests'},
+                  files={'code': ('main.py', code)})
+    response = resp.json()
+    assert response['status'] == 'success'
+
+def test_register_processor():
+    code = open(os.path.join(HERE, 'main2.py')).read()
+    resp = requests.post(URL+'/'+NAMESPACE+'/services',
+                  data={'name': SERVICE,
+                        'url': 'http://localhost:{}/json.json'.format(PORT),
+                        'version': 2,
+                        'type': 'ProcessWorker',
+                        'whitelist': ['127.0.0.1']},
                   files={'code': ('main.py', code)})
     response = resp.json()
     assert response['status'] == 'success'
@@ -67,9 +80,24 @@ def test_query():
     assert result[1]['obj'] == 2
     assert result[0]['args']['foo'] == ['3']
 
+def test_process():
+    server = subprocess.Popen('python -m SimpleHTTPServer {}'.format(PORT).split())
+    response = requests.get(
+        URL+'/{}/{}_v2/search?bar=4'.format(NAMESPACE, SERVICE)).json()
+    assert response['status'] == 'success'
+    result = response['result']
+    assert len(result) == 2
+    assert result[0]['other'] == 2
+    assert result[1]['other'] == 2
+    server.kill()
+
 def test_delete_service():
     resp = requests.delete(
         URL+'/{}/{}_v1'.format(NAMESPACE, SERVICE)).json()
+    assert resp['status'] == 'success'
+
+    resp = requests.delete(
+        URL+'/{}/{}_v2'.format(NAMESPACE, SERVICE)).json()
     assert resp['status'] == 'success'
 
 def test_delete_namespace():
