@@ -286,6 +286,23 @@ class ServiceResource(restful.Resource):
     def post(self, namespace, service):
         import ipdb; ipdb.set_trace()
 
+    def delete(self, namespace, service):
+        name = service_iden(namespace, service)
+        try:
+            srv = service_store[name]
+            try:
+                srv.stop_workers()
+                # TODO: need to clean up containers here too
+            except Exception:
+                # ignore any error while stopping and removing workers
+                pass
+            del service_store[name]
+        except KeyError:
+            pass
+        return {
+            'status': 'success'
+        }
+
 
 class FileLikeWrapper(object):
 
