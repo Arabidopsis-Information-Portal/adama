@@ -67,33 +67,35 @@ def test_adapter_detect_language():
     a = adama.service.Service(
         name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.py', code=None)
+        adapter='foo.py', code=None, type='QueryWorker')
     assert a.detect_language() == 'python'
 
     a = adama.service.Service(
         name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.rb', code=None)
+        adapter='foo.rb', code=None, type='QueryWorker')
     assert a.detect_language() == 'ruby'
 
     a = adama.service.Service(
         name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.spam', code=None)
+        adapter='foo.spam', code=None, type='QueryWorker')
     with pytest.raises(adama.service.APIException):
         a.detect_language()
 
     a = adama.service.Service(
         name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')).read())
+        adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')).read(),
+        type='QueryWorker')
     a.extract_code()
     assert a.detect_language() == 'python'
 
     a = adama.service.Service(
         name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read())
+        adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read(),
+        type='QueryWorker')
     a.extract_code()
     assert a.detect_language() == 'ruby'
 
@@ -101,7 +103,7 @@ def test_get_code_module():
     a = adama.service.Service(
         name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.py', code='foo')
+        adapter='foo.py', code='foo', type='QueryWorker')
     a.extract_code()
     assert open(
         os.path.join(a.temp_dir, 'user_code/foo.py')).read() == 'foo'
@@ -110,7 +112,8 @@ def test_get_code_tarball():
     a = adama.service.Service(
         name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')).read())
+        adapter='foo.tgz', code=open(os.path.join(HERE, 'foo.tgz')).read(),
+        type='QueryWorker')
     a.extract_code()
     assert open(
         os.path.join(a.temp_dir, 'user_code/main.py')).read() == 'foo\n'
@@ -121,7 +124,8 @@ def test_get_code_zip():
     a = adama.service.Service(
         name='foo', namespace='', version='', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
-        adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read())
+        adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read(),
+        type='QueryWorker')
     a.extract_code()
     assert open(
         os.path.join(a.temp_dir, 'user_code/main.rb')).read() == 'foo\n'
@@ -133,7 +137,7 @@ def test_workers():
         name='foo', namespace='', version='x.y', url='http://example.com',
         whitelist=[], description='', requirements=[], notify='',
         adapter='main.py',
-        code=open(os.path.join(HERE, 'main.py')).read())
+        code=open(os.path.join(HERE, 'main.py')).read(), type='QueryWorker')
     a.make_image()
     out = docker_output('inspect', a.iden)
     assert not out.startswith('Error')
