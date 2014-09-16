@@ -1,3 +1,9 @@
+from flask.ext import restful
+
+from .api import APIException
+from .namespace_store import namespace_store
+
+
 class Namespace(object):
 
     def __init__(self, name, url, description):
@@ -10,4 +16,27 @@ class Namespace(object):
             'name': self.name,
             'url': self.url,
             'description': self.description
+        }
+
+
+class NamespaceResource(restful.Resource):
+
+    def get(self, namespace):
+        try:
+            ns = namespace_store[namespace]
+            return {
+                'status': 'success',
+                'result': ns.to_json()
+            }
+        except KeyError:
+            raise APIException(
+                "namespace '{}' not found'".format(namespace))
+
+    def delete(self, namespace):
+        try:
+            del namespace_store[namespace]
+        except KeyError:
+            pass
+        return {
+            'status': 'success'
         }

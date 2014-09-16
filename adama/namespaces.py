@@ -7,14 +7,8 @@ from flask_restful_swagger import swagger
 
 from .api import APIException
 from .namespace import Namespace
-from .store import Store
+from .namespace_store import namespace_store
 from .config import Config
-
-class NamespaceStore(Store):
-
-    def __init__(self):
-        # Use Redis db=1 for namespaces
-        super(NamespaceStore, self).__init__(db=1)
 
 
 @swagger.model
@@ -96,5 +90,3 @@ class NamespacesResource(restful.Resource):
             'status': 'success',
             'result': result
         }
-
-namespace_store = NamespaceStore()

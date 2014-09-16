@@ -17,6 +17,7 @@ from .register import Register, Manage
 from .api import MyApi
 from .config import Config
 from .namespaces import NamespacesResource
+from .namespace import NamespaceResource
 from .services import ServicesResource
 from .service import ServiceResource, ServiceQueryResource
 
@@ -32,6 +33,10 @@ api = swagger.docs(MyApi(app),
 api.add_resource(
     NamespacesResource,
     PREFIX)
+api.add_resource(
+    NamespaceResource,
+    '{0}/<string:namespace>'.format(PREFIX),
+    endpoint='namespace')
 api.add_resource(
     ServicesResource,
     '{0}/<string:namespace>/services'.format(PREFIX))
