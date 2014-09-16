@@ -334,7 +334,6 @@ def exec_process_worker(service, args, queue):
 
     """
     method = getattr(requests, request.method.lower())
-    import ipdb; ipdb.set_trace()
     response = method(service.url,
                       params=request.args,
                       stream=True)
