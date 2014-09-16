@@ -32,7 +32,7 @@ class ServicesResource(restful.Resource):
 
         service = Service(namespace=namespace, **args)
         proc = multiprocessing.Process(
-            name='Async Register {}'.format(full_name),
+            name='Async Register {}'.format(iden),
             target=register, args=(namespace, service))
         proc.start()
         state_url = url_for('service', namespace=namespace, service=iden,
