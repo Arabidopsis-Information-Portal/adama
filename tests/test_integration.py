@@ -9,15 +9,30 @@ from adama.docker import docker_output
 from adama.tools import location_of
 HERE = location_of(__file__)
 
-URL = 'http://localhost:80'
+URL = 'http://localhost/adama'
+NAMESPACE = 'foox'
+SERVICE = 'spam'
 
 TIMEOUT = 120 # seconds
 
-def test_register():
+def test_register_namespace():
+    resp = requests.post(
+        URL, data={'name': NAMESPACE}).json()
+    assert resp['status'] == 'success'
+
+    # second time should fail
+    resp = requests.post(
+        URL, data={'name': NAMESPACE}).json()
+    assert resp['status'] == 'error'
+
+
+def test_register_service():
     code = open(os.path.join(HERE, 'main.py')).read()
-    resp = requests.post(URL+'/register',
-                  data={'name': 'foo',
+    resp = requests.post(URL+'/'+NAMESPACE+'/services',
+                  data={'name': SERVICE,
                         'url': URL,
+                        'version': 1,
+                        'type': 'QueryWorker',
                         'requirements': 'requests'},
                   files={'code': ('main.py', code)})
     response = resp.json()
@@ -28,58 +43,36 @@ def test_state():
     while True:
         if time.time() - start > TIMEOUT:
             assert False
-        response = requests.get(URL+'/manage/foo_v0.1/state').json()
+        response = requests.get(
+            URL+'/{}/{}_v1'.format(NAMESPACE, SERVICE)).json()
         assert response['status'] == 'success'
-        if response.get('state', None) == 'Ready':
+        if response['result'].get('service'):
             assert True
             return
         time.sleep(5)
 
 def test_language():
-    response = requests.get('http://localhost/register').json()
+    response = requests.get(
+        URL+'/{}/{}_v1'.format(NAMESPACE, SERVICE)).json()
     assert response['status'] == 'success'
-    adapters = response['adapters']
-    for adapter in adapters:
-        if adapter['identifier'] == 'foo_v0.1':
-            assert adapter['language'] == 'python'
-            return
-    assert False
+    assert response['result']['service']['language'] == 'python'
 
 def test_query():
-    resp = requests.post(URL+'/query',
-                 data=json.dumps({
-                     'serviceName': 'foo_v0.1',
-                     'query': {'foo': 3}
-                 }))
-    response = resp.json()
+    response = requests.get(
+        URL+'/{}/{}_v1/search?foo=3'.format(NAMESPACE, SERVICE)).json()
     assert response['status'] == 'success'
     result = response['result']
     assert len(result) == 2
     assert result[0]['obj'] == 1
     assert result[1]['obj'] == 2
-    assert result[0]['args']['query'] == {'foo': 3}
+    assert result[0]['args']['foo'] == ['3']
 
-def test_delete():
-    workers = requests.get(URL+'/register').json()
-    assert workers['status'] == 'success'
-    for adapter in workers['adapters']:
-        workers = adapter['workers']
-        if adapter['identifier'] == 'foo_v0.1':
-            break
-    else:
-        assert False
-
+def test_delete_service():
     resp = requests.delete(
-        URL+'/register',
-        data={'name': 'foo_v0.1'})
-    response = resp.json()
-    assert response['status'] == 'success'
+        URL+'/{}/{}_v1'.format(NAMESPACE, SERVICE)).json()
+    assert resp['status'] == 'success'
 
-    for worker in workers:
-        out = docker_output('inspect', '-f', '{{.State.Running}}', worker)
-        assert out.startswith('false')
-        docker_output('rm', '-f', worker)
-
-def test_no_adapter():
-    with pytest.raises(KeyError):
-        adapters['foo_v0.1']
+def test_delete_namespace():
+    resp = requests.delete(
+        URL+'/'+NAMESPACE).json()
+    assert resp['status'] == 'success'
