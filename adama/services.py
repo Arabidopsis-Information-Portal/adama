@@ -31,6 +31,7 @@ class ServicesResource(restful.Resource):
                                .format(iden), 400)
 
         service = Service(namespace=namespace, **args)
+        service_store[iden] = '[1/5] Empty service created'
         proc = multiprocessing.Process(
             name='Async Register {}'.format(iden),
             target=register, args=(namespace, service))
@@ -94,11 +95,11 @@ def register(namespace, service):
     """
     try:
         full_name = service.iden
-        service_store[full_name] = '[1/4] Empty service created'
+        service_store[full_name] = '[2/5] Async image creation started'
         service.make_image()
-        service_store[full_name] = '[2/4] Image for service created'
+        service_store[full_name] = '[3/5] Image for service created'
         service.start_workers()
-        service_store[full_name] = '[3/4] Workers started'
+        service_store[full_name] = '[4/5] Workers started'
         service.check_health()
         service_store[full_name] = service
         data = {
