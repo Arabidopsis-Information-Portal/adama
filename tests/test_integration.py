@@ -46,6 +46,7 @@ def test_register_processor():
                         'url': 'http://localhost:{}/json.json'.format(PORT),
                         'version': 2,
                         'type': 'ProcessWorker',
+                        'json_path': 'results',
                         'whitelist': ['127.0.0.1']},
                   files={'code': ('main.py', code)})
     response = resp.json()

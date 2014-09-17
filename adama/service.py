@@ -92,7 +92,8 @@ class Service(Parameterized):
         'requirements',
         'notify',
         'adapter',
-        'type'
+        'type',
+        'json_path'
     ]
 
     def __init__(self, code, **kwargs):
@@ -338,7 +339,8 @@ def exec_process_worker(service, args, queue):
                       params=request.args,
                       stream=True)
     if response.ok:
-        results = ijson.items(FileLikeWrapper(response), 'results.item')
+        path = '.'.join(filter(None, [service.json_path, 'item']))
+        results = ijson.items(FileLikeWrapper(response), path)
 
         def result_generator(results):
             yield '{"result": [\n'
