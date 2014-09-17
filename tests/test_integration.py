@@ -81,6 +81,8 @@ def test_query():
     assert result[0]['args']['foo'] == ['3']
 
 def test_process():
+    cwd = os.getcwd()
+    os.chdir(HERE)
     server = subprocess.Popen('python -m SimpleHTTPServer {}'.format(PORT).split())
     time.sleep(1)  # give some time to web server to start
     try:
@@ -93,6 +95,7 @@ def test_process():
         assert result[1]['other'] == 2
     finally:
         server.kill()
+        os.chdir(cwd)
 
 def test_delete_service():
     resp = requests.delete(
