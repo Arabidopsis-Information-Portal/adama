@@ -82,14 +82,17 @@ def test_query():
 
 def test_process():
     server = subprocess.Popen('python -m SimpleHTTPServer {}'.format(PORT).split())
-    response = requests.get(
-        URL+'/{}/{}_v2/search?bar=4'.format(NAMESPACE, SERVICE)).json()
-    assert response['status'] == 'success'
-    result = response['result']
-    assert len(result) == 2
-    assert result[0]['other'] == 2
-    assert result[1]['other'] == 2
-    server.kill()
+    time.sleep(1)  # give some time to web server to start
+    try:
+        response = requests.get(
+            URL+'/{}/{}_v2/search?bar=4'.format(NAMESPACE, SERVICE)).json()
+        assert response['status'] == 'success'
+        result = response['result']
+        assert len(result) == 2
+        assert result[0]['other'] == 2
+        assert result[1]['other'] == 2
+    finally:
+        server.kill()
 
 def test_delete_service():
     resp = requests.delete(
