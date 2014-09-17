@@ -317,6 +317,12 @@ class FileLikeWrapper(object):
 
 
 def process_by_client(service, results):
+    """Process results through a ProcessWorker.
+
+    Return a generator which produces JSON objects (as strings).
+
+    """
+
     client = Producer(
         queue_host=Config.get('queue', 'host'),
         queue_port=Config.getint('queue', 'port'),
