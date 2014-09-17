@@ -113,9 +113,12 @@ def parse_args():
 
 def run_worker(worker_class, args):
     worker_class_obj = globals()[worker_class]
-    worker = worker_class_obj(args.queue_host, args.queue_port, args.queue_name)
-    print('Worker of type {} v0.1.5 starting'.format(worker_class), file=sys.stderr)
-    print('Listening in queue {}'.format(args.queue_name), file=sys.stderr)
+    worker = worker_class_obj(
+        args.queue_host, args.queue_port, args.queue_name)
+    print('Worker of type {} v0.1.5 starting'.format(worker_class),
+          file=sys.stderr)
+    print('Listening in queue {}'.format(args.queue_name),
+          file=sys.stderr)
     print('*** WORKER STARTED', file=sys.stderr)
     worker.run()
     # If worker stops consuming, it's because of an error

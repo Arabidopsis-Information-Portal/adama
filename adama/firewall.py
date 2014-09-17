@@ -99,7 +99,6 @@ class Firewall(object):
         if insert is not None:
             self.insert(1, '0/0', iface, 'DROP')
 
-
     @staticmethod
     def is_drop_everything(rule):
         return rule[3:6] == ['DROP', '0.0.0.0/0', '0.0.0.0/0']

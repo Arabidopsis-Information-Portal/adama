@@ -1,6 +1,5 @@
 import urlparse
 
-from flask import request
 from flask.ext import restful
 from flask.ext.restful import reqparse
 from flask_restful_swagger import swagger
@@ -19,6 +18,7 @@ class NamespacesResponse(object):
         'status': restful.fields.String(attribute='success or failure'),
         'result': restful.fields.String
     }
+
 
 class NamespacesResource(restful.Resource):
 
@@ -59,8 +59,8 @@ class NamespacesResource(restful.Resource):
 
     def register_namespace(self, args):
         name = args['name']
-        url=args.get('url', None)
-        description=args.get('description', None)
+        url = args.get('url', None)
+        description = args.get('description', None)
 
         if name in namespace_store:
             raise APIException("namespace '{}' already exists"

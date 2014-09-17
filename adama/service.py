@@ -285,7 +285,7 @@ class ServiceResource(restful.Resource):
                 .format(namespace, service))
 
     def post(self, namespace, service):
-        import ipdb; ipdb.set_trace()
+        pass
 
     def delete(self, namespace, service):
         name = service_iden(namespace, service)
