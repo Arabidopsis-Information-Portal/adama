@@ -13,7 +13,6 @@ from flask_restful_swagger import swagger
 app = Flask(__name__)
 
 from .query import Query
-from .register import Register, Manage
 from .api import MyApi
 from .config import Config
 from .namespaces import NamespacesResource
@@ -48,10 +47,6 @@ api.add_resource(
     ServiceQueryResource,
     '{0}/<string:namespace>/<string:service>/search'.format(PREFIX),
     endpoint='search')
-
-api.add_resource(Query, '/query')
-api.add_resource(Register, '/register')
-api.add_resource(Manage, '/manage/<string:adapter>/<string:command>')
 
 app.debug = True
 app.debug_log_format = ('---\n'

@@ -5,7 +5,6 @@ import time
 import os
 import json
 
-from adama.adapters import adapters
 from adama.docker import docker_output
 from adama.tools import location_of
 HERE = location_of(__file__)
