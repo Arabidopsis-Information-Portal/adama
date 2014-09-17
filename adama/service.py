@@ -333,6 +333,25 @@ def process_by_client(service, results):
             yield json.dumps(obj)
 
 
+def result_generator(results, metadata):
+    """Construct JSON response from ``results``.
+
+    ``results`` is a generator that produces JSON objects, and
+    ``metadata`` is a function that returns extra information.
+
+    The reason for metadata being a function is to be able to collect
+    information after the ``results`` generator has been exhausted
+    (for example: timing).
+
+    """
+    yield '{"result": [\n'
+    for line in interleave(['\n, '], results):
+        yield line
+    yield '\n],\n'
+    yield '"metadata": {0},\n'.format(json.dumps(metadata()))
+    yield '"status": "success"}\n'
+
+
 def exec_process_worker(service, args, queue):
     """Forward request and process response.
 
@@ -348,21 +367,13 @@ def exec_process_worker(service, args, queue):
         path = '.'.join(filter(None, [service.json_path, 'item']))
         results = ijson.items(FileLikeWrapper(response), path)
 
-        def result_generator(results):
-            yield '{"result": [\n'
-            for line in interleave(['\n, '], results):
-                yield line
-            yield '],\n'
-            yield '"metadata": {},\n'
-            yield '"status": "success"}\n'
-
         return Response(
-            result_generator(process_by_client(service, results)),
+            result_generator(process_by_client(service, results),
+                             lambda: {}),
             mimetype='application/json')
     else:
         raise APIException('response from external service: {}'
                            .format(response))
-
 
 
 def exec_query_worker(args, queue):
@@ -373,18 +384,9 @@ def exec_query_worker(args, queue):
                       queue_port=Config.getint('queue', 'port'),
                       queue_name=queue)
     client.send(args)
-
-    def result_generator():
-        yield '{"result": [\n'
-        gen = itertools.imap(lambda x: json.dumps(x) + '\n',
-                             client.receive())
-        for line in interleave([', '], gen):
-            yield line
-        yield '],\n'
-        yield '"metadata": {0},\n'.format(json.dumps(client.metadata))
-        yield '"status": "success"}\n'
-
-    return Response(result_generator(), mimetype='application/json')
+    gen = itertools.imap(json.dumps, client.receive())
+    return Response(result_generator(gen, lambda: client.metadata),
+                    mimetype='application/json')
 
 
 def check(producer):
