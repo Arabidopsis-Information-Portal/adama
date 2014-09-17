@@ -12,7 +12,6 @@ from flask_restful_swagger import swagger
 
 app = Flask(__name__)
 
-from .query import Query
 from .api import MyApi
 from .config import Config
 from .namespaces import NamespacesResource
