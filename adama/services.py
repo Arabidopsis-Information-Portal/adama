@@ -12,7 +12,7 @@ from .requestparser import RequestParser
 from .tools import namespace_of
 from .service import Service, identifier
 from .namespaces import namespace_store
-from .api import APIException
+from .api import APIException, ok, error
 
 
 class ServicesResource(restful.Resource):
@@ -41,15 +41,14 @@ class ServicesResource(restful.Resource):
                             _external=True)
         search_url = url_for('search', namespace=namespace, service=iden,
                              _external=True)
-        return {
-            'status': 'success',
+        return ok({
             'message': 'registration started',
             'result': {
                 'state': state_url,
                 'search': search_url,
                 'notification': service.notify
             }
-        }
+        })
 
     def validate_post(self):
         parser = RequestParser()
@@ -82,10 +81,7 @@ class ServicesResource(restful.Resource):
         result = {srv.iden: srv.to_json()
                   for name, srv in service_store.items()
                   if namespace_of(name) == namespace}
-        return {
-            'status': 'success',
-            'result': result
-        }
+        return ok({'result': result})
 
 
 def register(namespace, service):
@@ -104,8 +100,7 @@ def register(namespace, service):
         service_store[full_name] = '[4/5] Workers started'
         service.check_health()
         service_store[full_name] = service
-        data = {
-            'status': 'success',
+        data = ok({
             'result': {
                 'service': url_for('service',
                                    namespace=namespace, service=service.iden,
@@ -114,13 +109,10 @@ def register(namespace, service):
                                   namespace=namespace, service=service.iden,
                                   _external=True)
             }
-        }
+        })
     except Exception as exc:
         service_store[full_name] = 'Error: {}'.format(exc)
-        data = {
-            'status': 'error',
-            'result': str(exc)
-        }
+        data = error({'result': str(exc)})
     if service.notify:
         try:
             requests.post(service.notify,

@@ -17,7 +17,7 @@ import jinja2
 import requests
 import ijson
 
-from .api import APIException, RegisterException
+from .api import APIException, RegisterException, ok
 from .config import Config
 from .docker import docker_output, start_container, tail_logs
 from .firewall import Firewall
@@ -265,20 +265,18 @@ class ServiceResource(restful.Resource):
             srv = service_store[full_name]
             if isinstance(srv, basestring):
                 # Service creation ongoing
-                return {
-                    'status': 'success',
+                return ok({
                     'result': {
                         'state': srv
                     }
-                }
+                })
             else:
-                return {
-                    'status': 'success',
+                return ok({
                     'result': {
                         'service': srv.to_json(),
                         'code': srv.code
                     }
-                }
+                })
         except KeyError:
             raise APIException(
                 "service {}/{} not found"
@@ -300,9 +298,7 @@ class ServiceResource(restful.Resource):
             del service_store[name]
         except KeyError:
             pass
-        return {
-            'status': 'success'
-        }
+        return ok({})
 
 
 class FileLikeWrapper(object):

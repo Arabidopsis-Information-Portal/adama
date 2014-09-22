@@ -1,6 +1,6 @@
 from flask.ext import restful
 
-from .api import APIException
+from .api import APIException, ok
 from .namespace_store import namespace_store
 
 
@@ -24,10 +24,7 @@ class NamespaceResource(restful.Resource):
     def get(self, namespace):
         try:
             ns = namespace_store[namespace]
-            return {
-                'status': 'success',
-                'result': ns.to_json()
-            }
+            return ok({'result': ns.to_json()})
         except KeyError:
             raise APIException(
                 "namespace '{}' not found'".format(namespace))
@@ -37,6 +34,4 @@ class NamespaceResource(restful.Resource):
             del namespace_store[namespace]
         except KeyError:
             pass
-        return {
-            'status': 'success'
-        }
+        return ok({})

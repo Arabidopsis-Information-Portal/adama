@@ -3,7 +3,7 @@ import urlparse
 from flask.ext import restful
 from flask_restful_swagger import swagger
 
-from .api import APIException
+from .api import APIException, ok
 from .requestparser import RequestParser
 from .namespace import Namespace
 from .namespace_store import namespace_store
@@ -68,11 +68,10 @@ class NamespacesResource(restful.Resource):
 
         ns = Namespace(name=name, url=url, description=description)
         namespace_store[name] = ns
-        return {
-            'status': 'success',
+        return ok({
             'result': urlparse.urljoin(
                 Config.get('server', 'url'), name)
-        }
+        })
 
     def validate_post(self):
         parser = RequestParser()
@@ -86,7 +85,4 @@ class NamespacesResource(restful.Resource):
     def get(self):
         result = {name: ns.to_json()
                   for (name, ns) in namespace_store.items()}
-        return {
-            'status': 'success',
-            'result': result
-        }
+        return ok({'result': result})
