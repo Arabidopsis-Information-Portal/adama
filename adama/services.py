@@ -8,7 +8,8 @@ import requests
 
 from . import app
 from .service_store import service_store
-from .tools import RequestParser, namespace_of
+from .requestparser import RequestParser
+from .tools import namespace_of
 from .service import Service, identifier
 from .namespaces import namespace_store
 from .api import APIException

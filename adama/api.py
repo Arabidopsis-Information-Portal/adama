@@ -3,6 +3,10 @@ import textwrap
 import traceback
 
 from flask.ext import restful
+from flask_restful_swagger import swagger
+
+from . import __version__, app
+from .config import Config
 
 
 class APIException(Exception):
@@ -60,3 +64,11 @@ class MyApi(restful.Api):
                                        'trace': trace,
                                        'worker_trace': child_tb,
                                        'message': exc.message}, 500)
+
+
+api = swagger.docs(MyApi(app),
+                   apiVersion=__version__,
+                   basePath=Config.get('server', 'url'),
+                   resourcePath='/',
+                   produces=["application/json", "text/html"],
+                   api_spec_url='/api/spec')

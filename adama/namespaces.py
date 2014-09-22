@@ -1,10 +1,10 @@
 import urlparse
 
 from flask.ext import restful
-from flask.ext.restful import reqparse
 from flask_restful_swagger import swagger
 
 from .api import APIException
+from .requestparser import RequestParser
 from .namespace import Namespace
 from .namespace_store import namespace_store
 from .config import Config
@@ -75,7 +75,7 @@ class NamespacesResource(restful.Resource):
         }
 
     def validate_post(self):
-        parser = reqparse.RequestParser()
+        parser = RequestParser()
         parser.add_argument('name', type=str, required=True,
                             help='name of namespace is required')
         parser.add_argument('url', type=str)

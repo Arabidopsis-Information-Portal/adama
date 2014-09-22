@@ -3,6 +3,7 @@
 import subprocess
 import sys
 
+import adama.routes
 from adama import app
 from adama.config import Config
 from adama.docker import check_docker
