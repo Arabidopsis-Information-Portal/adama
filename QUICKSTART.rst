@@ -238,6 +238,7 @@ Current endpoints for Adama:
 
 - ``$API/<namespace>/services``
 
+  + ``GET``: list all services
   + ``POST``: create a service
 
 - ``$API/<namespace>/<service>``
