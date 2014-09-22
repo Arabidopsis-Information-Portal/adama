@@ -9,7 +9,7 @@ import requests
 from . import app
 from .service_store import service_store
 from .requestparser import RequestParser
-from .tools import namespace_of
+from .tools import namespace_of, adapter_iden
 from .service import Service, identifier
 from .namespaces import namespace_store
 from .api import APIException, ok, error
@@ -26,6 +26,7 @@ class ServicesResource(restful.Resource):
 
         args = self.validate_post()
         iden = identifier(namespace=namespace, **args)
+        adapter_name = adapter_iden(**args)
         if iden in service_store and \
            not isinstance(service_store[iden], basestring):
             raise APIException("service '{}' already exists"
@@ -37,10 +38,12 @@ class ServicesResource(restful.Resource):
             name='Async Register {}'.format(iden),
             target=register, args=(namespace, service))
         proc.start()
-        state_url = url_for('service', namespace=namespace, service=iden,
-                            _external=True)
-        search_url = url_for('search', namespace=namespace, service=iden,
-                             _external=True)
+        state_url = url_for(
+            'service', namespace=namespace, service=adapter_name,
+            _external=True)
+        search_url = url_for(
+            'search', namespace=namespace, service=adapter_name,
+            _external=True)
         return ok({
             'message': 'registration started',
             'result': {
