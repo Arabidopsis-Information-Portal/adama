@@ -103,7 +103,7 @@ For example:
 
 This function can be tested in the Python interpreter:
 
-.. code-block:: python
+.. code-block:: pycon
 
    >>> import main
    >>> main.query({'x': 5})
