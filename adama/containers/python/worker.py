@@ -36,7 +36,7 @@ class QueryWorker(QueueConnection):
         d['worker'] = os.uname()[1]
         body = json.dumps(d)
         t_start = time.time()
-        main.process(json.loads(body))
+        main.query(json.loads(body))
         t_end = time.time()
         return t_end - t_start
 

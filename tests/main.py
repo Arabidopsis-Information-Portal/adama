@@ -1,6 +1,6 @@
 import json
 
-def process(args):
+def query(args):
     print json.dumps({
         'obj': 1,
         'args': args
