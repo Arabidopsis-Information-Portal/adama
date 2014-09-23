@@ -87,10 +87,10 @@ class ServicesResource(restful.Resource):
     def get(self, namespace):
         """List all services"""
 
-        result = {srv.iden: srv.to_json()
+        result = [srv.to_json()
                   for name, srv in service_store.items()
                   if namespace_of(name) == namespace and
-                  not isinstance(srv, basestring)}
+                  not isinstance(srv, basestring)]
         return ok({'result': result})
 
 
