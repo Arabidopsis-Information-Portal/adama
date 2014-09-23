@@ -45,7 +45,7 @@ Namespaces allow Adama to group adapters. Create a new namespace with:
 
 .. code-block:: bash
 
-   $ curl -X POST $API -Fname=tacc -Fdescription"TACC namespace" \
+   $ curl -X POST $API -Fname=tacc -Fdescription="TACC namespace" \
       -H "Authorization: Bearer $TOKEN"
    {
        "result": "https://api.araport.org/collective/v0.3/tacc",
