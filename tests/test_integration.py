@@ -14,7 +14,7 @@ NAMESPACE = 'foox'
 SERVICE = 'spam'
 PORT = 1234
 
-TIMEOUT = 120 # seconds
+TIMEOUT = 60 # seconds
 
 def test_register_namespace():
     resp = requests.post(
@@ -32,7 +32,7 @@ def test_register_service():
                   data={'name': SERVICE,
                         'url': URL,
                         'version': 1,
-                        'type': 'QueryWorker',
+                        'type': 'query',
                         'requirements': 'requests'},
                   files={'code': ('main.py', code)})
     response = resp.json()
@@ -44,7 +44,7 @@ def test_register_service_wrong_name():
                   data={'name': 'NotValid',
                         'url': URL,
                         'version': 1,
-                        'type': 'QueryWorker',
+                        'type': 'query',
                         'requirements': 'requests'},
                   files={'code': ('main.py', code)})
     response = resp.json()
@@ -56,7 +56,7 @@ def test_register_processor():
                   data={'name': SERVICE,
                         'url': 'http://localhost:{}/json.json'.format(PORT),
                         'version': 2,
-                        'type': 'ProcessWorker',
+                        'type': 'map',
                         'json_path': 'results',
                         'whitelist': ['127.0.0.1']},
                   files={'code': ('main.py', code)})

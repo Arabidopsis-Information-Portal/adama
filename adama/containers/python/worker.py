@@ -114,11 +114,21 @@ def parse_args():
     return parser.parse_args()
 
 
-def run_worker(worker_class, args):
-    worker_class_obj = globals()[worker_class]
-    worker = worker_class_obj(
+def get_class_for(kind):
+    """Map the type of adapter to the proper class."""
+
+    map = {
+        'map': ProcessWorker,
+        'query': QueryWorker
+    }
+    return map[kind]
+
+
+def run_worker(worker_type, args):
+    worker_class = get_class_for(worker_type)
+    worker = worker_class(
         args.queue_host, args.queue_port, args.queue_name)
-    print('Worker of type {} v0.1.5 starting'.format(worker_class),
+    print('Worker of type {} v0.1.5 starting'.format(worker_type),
           file=sys.stderr)
     print('Listening in queue {}'.format(args.queue_name),
           file=sys.stderr)

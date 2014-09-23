@@ -246,10 +246,10 @@ class ServiceQueryResource(restful.Resource):
 
         queue = srv.iden
 
-        if srv.type == 'QueryWorker':
+        if srv.type == 'query':
             args['endpoint'] = 'search'
             return exec_query_worker(args, queue)
-        if srv.type == 'ProcessWorker':
+        if srv.type == 'map':
             return exec_process_worker(srv, args, queue)
 
     def validate_get(self):
@@ -271,7 +271,7 @@ class ServiceListResource(restful.Resource):
 
         queue = srv.iden
 
-        if srv.type == 'QueryWorker':
+        if srv.type == 'query':
             args['endpoint'] = 'list'
             return exec_query_worker(args, queue)
         else:

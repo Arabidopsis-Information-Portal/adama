@@ -67,7 +67,7 @@ class ServicesResource(restful.Resource):
         parser.add_argument('requirements', type=str, action='append',
                             default=[])
         parser.add_argument('notify', type=str, default='')
-        parser.add_argument('type', type=str, default='QueryWorker')
+        parser.add_argument('type', type=str, default='query')
         parser.add_argument('json_path', type=str, default='')
         parser.add_argument('code', type=FileStorage, required=True,
                             location='files',
