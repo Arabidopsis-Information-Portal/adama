@@ -247,6 +247,7 @@ class ServiceQueryResource(restful.Resource):
         queue = srv.iden
 
         if srv.type == 'QueryWorker':
+            args['endpoint'] = 'search'
             return exec_query_worker(args, queue)
         if srv.type == 'ProcessWorker':
             return exec_process_worker(srv, args, queue)

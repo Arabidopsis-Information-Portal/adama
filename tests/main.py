@@ -1,6 +1,6 @@
 import json
 
-def query(args):
+def search(args):
     print json.dumps({
         'obj': 1,
         'args': args

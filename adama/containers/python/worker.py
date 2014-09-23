@@ -22,21 +22,24 @@ class QueryWorker(QueueConnection):
         t = None
         with Results(responder):
             try:
-                t = self.process(message)
+                t = self.operation(message)
             except Exception as exc:
                 print(json.dumps({'error': exc.message}))
             finally:
                 print('END')
                 responder(json.dumps({'time_in_main': t}))
 
-    def process(self, body):
+    def operation(self, body):
         import main
         metadata = json.load(open(os.path.join(HERE, 'metadata.json')))
         d = json.loads(body)
         d['worker'] = os.uname()[1]
+        endpoint = d['endpoint']
         body = json.dumps(d)
         t_start = time.time()
-        main.query(json.loads(body))
+
+        getattr(main, endpoint)(json.loads(body))
+
         t_end = time.time()
         return t_end - t_start
 
