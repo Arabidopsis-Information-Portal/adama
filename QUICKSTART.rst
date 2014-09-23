@@ -132,7 +132,7 @@ Using curl_:
 
 .. code-block:: bash
 
-   $ curl -L -X POST $API/services \
+   $ curl -L -X POST $API/tacc/services \
        -F "name=example" -F "url=http://example.com" -F code=@main.py \
        -F "notify=https://my.url" \
        -H "Authorization: Bearer $TOKEN"
