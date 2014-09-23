@@ -10,3 +10,8 @@ def search(args):
         'obj': 2,
         'args': args
     })
+
+def list(args):
+    for i in range(3):
+        print json.dumps({'i': i})
+        print '---'

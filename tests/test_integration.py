@@ -80,6 +80,15 @@ def test_query():
     assert result[1]['obj'] == 2
     assert result[0]['args']['foo'] == ['3']
 
+def test_list():
+    response = requests.get(
+        URL+'/{}/{}_v1/list?foo=3'.format(NAMESPACE, SERVICE)).json()
+    assert response['status'] == 'success'
+    result = response['result']
+    assert len(result) == 3
+    for i in range(3):
+        assert result[i]['i'] == i
+
 def test_process():
     cwd = os.getcwd()
     os.chdir(HERE)

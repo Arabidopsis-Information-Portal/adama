@@ -258,6 +258,30 @@ class ServiceQueryResource(restful.Resource):
         return dict(request.args)
 
 
+class ServiceListResource(restful.Resource):
+
+    def get(self, namespace, service):
+        args = self.validate_get()
+        try:
+            iden = service_iden(namespace, service)
+            srv = service_store[iden]
+        except KeyError:
+            raise APIException('service {} not found'
+                               .format(service_iden(namespace, service)))
+
+        queue = srv.iden
+
+        if srv.type == 'QueryWorker':
+            args['endpoint'] = 'list'
+            return exec_query_worker(args, queue)
+        else:
+            raise APIException("service of type 'process' does "
+                               "not support /list")
+
+    def validate_get(self):
+        return dict(request.args)
+
+
 class ServiceResource(restful.Resource):
 
     def get(self, namespace, service):

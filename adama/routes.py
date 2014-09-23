@@ -6,7 +6,8 @@ from .config import Config
 from .namespaces import NamespacesResource
 from .namespace import NamespaceResource
 from .services import ServicesResource
-from .service import ServiceResource, ServiceQueryResource
+from .service import (ServiceResource, ServiceQueryResource,
+                      ServiceListResource)
 from .status import StatusResource
 
 
@@ -30,6 +31,9 @@ api.add_resource(ServiceResource, url('/<string:namespace>/<string:service>'),
 api.add_resource(ServiceQueryResource,
                  url('/<string:namespace>/<string:service>/search'),
                  endpoint='search')
+api.add_resource(ServiceListResource,
+                 url('/<string:namespace>/<string:service>/list'),
+                 endpoint='list')
 
 
 @app.route('/home')
