@@ -38,6 +38,18 @@ def test_register_service():
     response = resp.json()
     assert response['status'] == 'success'
 
+def test_register_service_wrong_name():
+    code = open(os.path.join(HERE, 'main.py')).read()
+    resp = requests.post(URL+'/'+NAMESPACE+'/services',
+                  data={'name': 'NotValid',
+                        'url': URL,
+                        'version': 1,
+                        'type': 'QueryWorker',
+                        'requirements': 'requests'},
+                  files={'code': ('main.py', code)})
+    response = resp.json()
+    assert response['status'] == 'error'
+
 def test_register_processor():
     code = open(os.path.join(HERE, 'main2.py')).read()
     resp = requests.post(URL+'/'+NAMESPACE+'/services',

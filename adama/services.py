@@ -1,5 +1,6 @@
 import json
 import multiprocessing
+import re
 
 from flask import url_for
 from flask.ext import restful
@@ -76,6 +77,11 @@ class ServicesResource(restful.Resource):
         args.adapter = args.code.filename
         args.code = args.code.stream.read()
 
+        if not valid_image_name(args.name):
+            raise APIException("'{}' is not a valid service name.\n"
+                               "Allowed characters: [a-z0-9_.-]"
+                               .format(args.name))
+
         return args
 
     def get(self, namespace):
@@ -85,6 +91,10 @@ class ServicesResource(restful.Resource):
                   for name, srv in service_store.items()
                   if namespace_of(name) == namespace}
         return ok({'result': result})
+
+
+def valid_image_name(name):
+    return re.search(r'[^a-z0-9-_.]', name) is None
 
 
 def register(namespace, service):
