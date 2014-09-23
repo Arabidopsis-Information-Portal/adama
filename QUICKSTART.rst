@@ -96,7 +96,7 @@ For example:
 
    import json
 
-   def query(args):
+   def search(args):
        print json.dumps({'obj': 1, 'args': args})
        print "---"
        print json.dumps({'obj': 2, 'args': args})
@@ -106,7 +106,7 @@ This function can be tested in the Python interpreter:
 .. code-block:: pycon
 
    >>> import main
-   >>> main.query({'x': 5})
+   >>> main.search({'x': 5})
    {"args": {"x": 5}, "obj": 1}
    ---
    {"args": {"x": 5}, "obj": 2}
