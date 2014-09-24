@@ -300,7 +300,6 @@ class ServiceResource(restful.Resource):
                 return ok({
                     'result': {
                         'service': srv.to_json(),
-                        'code': srv.code
                     }
                 })
         except KeyError:
