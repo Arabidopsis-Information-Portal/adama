@@ -84,13 +84,14 @@ def test_language():
 
 def test_query():
     response = requests.get(
-        URL+'/{}/{}_v1/search?foo=3'.format(NAMESPACE, SERVICE)).json()
+        URL+'/{}/{}_v1/search?foo=3&bar=baz'.format(NAMESPACE, SERVICE)).json()
     assert response['status'] == 'success'
     result = response['result']
     assert len(result) == 2
     assert result[0]['obj'] == 1
     assert result[1]['obj'] == 2
     assert result[0]['args']['foo'] == '3'
+    assert result[0]['args']['bar'] == 'baz'
 
 def test_list():
     response = requests.get(
