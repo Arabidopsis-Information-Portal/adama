@@ -56,7 +56,8 @@ class ProcessWorker(QueueConnection):
         try:
             import main
             out = main.process(json.loads(message))
-            responder(json.dumps(out))
+            if out is not None:
+                responder(json.dumps(out))
         except Exception as exc:
             responder(json.dumps({'error': exc.message}))
         finally:
