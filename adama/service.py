@@ -256,7 +256,7 @@ class ServiceQueryResource(restful.Resource):
     def validate_get(self):
         # no defined query language yet
         # accept everything
-        return dict(request.args)
+        return {key: val[0] for key, val in request.args.items()}
 
 
 class ServiceListResource(restful.Resource):

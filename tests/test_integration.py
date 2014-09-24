@@ -90,7 +90,7 @@ def test_query():
     assert len(result) == 2
     assert result[0]['obj'] == 1
     assert result[1]['obj'] == 2
-    assert result[0]['args']['foo'] == ['3']
+    assert result[0]['args']['foo'] == '3'
 
 def test_list():
     response = requests.get(
