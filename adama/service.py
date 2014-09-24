@@ -3,6 +3,7 @@ import itertools
 import json
 import multiprocessing
 import os
+import ssl
 import socket
 import tarfile
 import tempfile
@@ -373,6 +374,28 @@ def result_generator(results, metadata):
     yield '"status": "success"}\n'
 
 
+def is_https(url):
+    return urlparse.urlparse(url).scheme == 'https'
+
+
+class TLSv1Adapter(requests.adapters.HTTPAdapter):
+    """Adapter to support TLSv1 in requests."""
+
+    def init_poolmanager(self, connections, maxsize, block=False):
+        self.poolmanager = requests.packages.urllib3.poolmanager.PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_version=ssl.PROTOCOL_TLSv1)
+
+
+def tls1_get(*args, **kwargs):
+    session = requests.Session()
+    session.mount('https://', TLSv1Adapter())
+    kwargs['verify'] = False
+    return session.get(*args, **kwargs)
+
+
 def exec_process_worker(service, args, queue):
     """Forward request and process response.
 
@@ -380,7 +403,10 @@ def exec_process_worker(service, args, queue):
     response through the ``process`` user function.
 
     """
-    method = getattr(requests, request.method.lower())
+    if is_https(service.url) and request.method == 'GET':
+        method = tls1_get
+    else:
+        method = getattr(requests, request.method.lower())
     response = method(service.url,
                       params=request.args,
                       stream=True)
