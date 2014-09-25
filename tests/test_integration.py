@@ -63,6 +63,18 @@ def test_register_processor():
     response = resp.json()
     assert response['status'] == 'success'
 
+    code = open(os.path.join(HERE, 'main3.py')).read()
+    resp = requests.post(URL+'/'+NAMESPACE+'/services',
+                  data={'name': SERVICE,
+                        'url': 'http://localhost:{}/json.json'.format(PORT),
+                        'version': 3,
+                        'type': 'map',
+                        'json_path': 'results',
+                        'whitelist': ['127.0.0.1']},
+                  files={'code': ('main.py', code)})
+    response = resp.json()
+    assert response['status'] == 'success'
+
 def test_state():
     start = time.time()
     while True:
@@ -115,6 +127,13 @@ def test_process():
         assert len(result) == 2
         assert result[0]['other'] == 2
         assert result[1]['other'] == 2
+
+        response = requests.get(
+            URL+'/{}/{}_v3/search?bar=4'.format(NAMESPACE, SERVICE)).json()
+        assert response['status'] == 'success'
+        result = response['result']
+        assert len(result) == 1
+        assert 'error' in result[0]
     finally:
         server.kill()
         os.chdir(cwd)
@@ -126,6 +145,10 @@ def test_delete_service():
 
     resp = requests.delete(
         URL+'/{}/{}_v2'.format(NAMESPACE, SERVICE)).json()
+    assert resp['status'] == 'success'
+
+    resp = requests.delete(
+        URL+'/{}/{}_v3'.format(NAMESPACE, SERVICE)).json()
     assert resp['status'] == 'success'
 
 def test_delete_namespace():

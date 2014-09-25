@@ -352,6 +352,9 @@ def process_by_client(service, results):
         client.send(result)
         for obj in client.receive():
             yield json.dumps(obj)
+            if 'error' in obj:
+                # abort as soon as there is an error
+                return
 
 
 def result_generator(results, metadata):
