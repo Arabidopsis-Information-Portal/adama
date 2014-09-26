@@ -27,7 +27,7 @@ class NamespaceResource(restful.Resource):
             return ok({'result': ns.to_json()})
         except KeyError:
             raise APIException(
-                "namespace '{}' not found'".format(namespace))
+                "namespace not found: {}'".format(namespace), 404)
 
     def delete(self, namespace):
         try:

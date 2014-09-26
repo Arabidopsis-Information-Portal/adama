@@ -242,8 +242,9 @@ class ServiceQueryResource(restful.Resource):
             iden = service_iden(namespace, service)
             srv = service_store[iden]
         except KeyError:
-            raise APIException('service {} not found'
-                               .format(service_iden(namespace, service)))
+            raise APIException('service not found: {}'
+                               .format(service_iden(namespace, service)),
+                               404)
 
         queue = srv.iden
 
@@ -267,8 +268,9 @@ class ServiceListResource(restful.Resource):
             iden = service_iden(namespace, service)
             srv = service_store[iden]
         except KeyError:
-            raise APIException('service {} not found'
-                               .format(service_iden(namespace, service)))
+            raise APIException('service not found: {}'
+                               .format(service_iden(namespace, service)),
+                               404)
 
         queue = srv.iden
 
@@ -304,8 +306,9 @@ class ServiceResource(restful.Resource):
                 })
         except KeyError:
             raise APIException(
-                "service {}/{} not found"
-                .format(namespace, service))
+                "service not found: {}/{}"
+                .format(namespace, service),
+                404)
 
     def post(self, namespace, service):
         pass

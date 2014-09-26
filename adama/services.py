@@ -23,7 +23,7 @@ class ServicesResource(restful.Resource):
 
         if namespace not in namespace_store:
             raise APIException(
-                "unknown namespace '{}'".format(namespace), 400)
+                "namespace not found: {}".format(namespace), 404)
 
         args = self.validate_post()
         iden = identifier(namespace=namespace, **args)
