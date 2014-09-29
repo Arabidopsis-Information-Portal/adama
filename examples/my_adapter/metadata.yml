@@ -5,7 +5,7 @@ namespace: my_namespace
 type: map
 code_dir: /tmp/foo
 
-version: 0.1
+version: 0.4
 #url: ''
 whitelist: []
 description: ''
