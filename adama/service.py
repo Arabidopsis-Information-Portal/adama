@@ -82,6 +82,7 @@ class Service(object):
         ('requirements', False, []),
         ('notify', False, ''),
         ('json_path', False, ''),
+        ('main_module', False, 'main')
     ]
 
     def __init__(self, **kwargs):
@@ -99,7 +100,8 @@ class Service(object):
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
         self.validate_whitelist()
 
-        self.language = self.detect_language()
+        self.main_module_path = self.find_main_module()
+        self.language = self.detect_language(self.main_module_path)
         self.state = None
         self.workers = []
         self.firewall = None
@@ -114,8 +116,7 @@ class Service(object):
                 setattr(self, param[0], param[2])
 
     def to_json(self):
-        obj['language'] = self.language
-        return obj
+        return {key: getattr(self, key) for key in self.PARAMS}
 
     def make_image(self):
         """Make a docker image for this service."""
@@ -126,18 +127,24 @@ class Service(object):
         self.save_metadata()
         self.build()
 
-    def detect_language(self):
-        ext = extension(self.adapter)
+    def find_main_module(self):
+        """Find the path to the ``main_module``."""
+
+        directory, basename = os.path.split(self.main_module)
+        module, _ = os.path.splitext(basename)
+
+        found = glob.glob(os.path.join(self.code_dir, directory, module+'.*'))
+        if not found:
+            raise APIException('module not found: {}'
+                               .format(self.main_module), 400)
+
+        return found[0]
+
+    def detect_language(self, module):
+        _, ext = os.path.splitext(module)
         try:
             return EXTENSIONS[ext]
         except KeyError:
-            if ext in TARBALLS + ZIPS:
-                main = os.path.join(self.temp_dir, 'user_code/main.*')
-                try:
-                    ext = extension(glob.glob(main)[0])
-                    return EXTENSIONS[ext]
-                except IndexError:
-                    raise APIException('did not find a "main" module', 400)
             raise APIException('unknown extension {0}'.format(ext), 400)
 
     def validate_whitelist(self):
@@ -489,11 +496,6 @@ def requirements_installer(language, requirements):
     return installer.format(package=' '.join(requirements))
 
 
-def extension(filename):
-    _, ext = os.path.splitext(filename)
-    return ext
-
-
 def extract(filename, code, into):
     """Extract code from file object ``code``.
 
@@ -502,7 +504,7 @@ def extract(filename, code, into):
 
     """
 
-    ext = extension(filename)
+    ext = os.path.splitext(filename)
     user_code_dir = os.path.join(into, 'user_code')
     os.mkdir(user_code_dir)
     contents = code
