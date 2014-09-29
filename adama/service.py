@@ -117,9 +117,7 @@ class Service(object):
         """Make a docker image for this service."""
 
         self.firewall = Firewall(self.whitelist)
-        self.language = self.detect_language()
-        render_template(self.language, self.requirements, into=self.temp_dir)
-        self.save_metadata()
+        render_template(self.language, self.requirements, into=self.code_dir)
         self.build()
 
     def find_main_module(self):
@@ -155,7 +153,7 @@ class Service(object):
 
     def build(self):
         prev_cwd = os.getcwd()
-        os.chdir(self.temp_dir)
+        os.chdir(self.code_dir)
         try:
             output = docker_output('build', '-t', self.iden, '.')
             print(output)
