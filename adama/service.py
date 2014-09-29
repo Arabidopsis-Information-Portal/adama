@@ -116,7 +116,7 @@ class Service(object):
                 setattr(self, param[0], param[2])
 
     def to_json(self):
-        return {key: getattr(self, key) for key in self.PARAMS}
+        return {key[0]: getattr(self, key[0]) for key in self.PARAMS}
 
     def make_image(self):
         """Make a docker image for this service."""
