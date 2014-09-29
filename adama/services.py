@@ -26,9 +26,7 @@ class ServicesResource(restful.Resource):
                 "namespace not found: {}".format(namespace), 404)
 
         args = self.validate_post()
-
-
-        iden = identifier(namespace=namespace, **args)
+        iden = identifier(namespace, args.name, args.version)
         adapter_name = adapter_iden(**args)
         if iden in service_store and \
            not isinstance(service_store[iden], basestring):

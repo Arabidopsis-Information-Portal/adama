@@ -41,12 +41,12 @@ class TimeoutFunction:
                 signal.setitimer(signal.ITIMER_REAL, 0, 0)
 
 
-def identifier(**kwargs):
-    return service_iden(kwargs['namespace'], adapter_iden(**kwargs))
+def identifier(namespace, name, version):
+    return service_iden(namespace, adapter_iden(name, version))
 
 
-def adapter_iden(**kwargs):
-    return '{}_v{}'.format(kwargs['name'], kwargs['version'])
+def adapter_iden(name, version):
+    return '{}_v{}'.format(name, version)
 
 
 def service_iden(namespace, service):

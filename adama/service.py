@@ -91,7 +91,9 @@ class Service(object):
         self.__dict__.update(kwargs)
         self.validate_args()
 
-        self.iden = identifier(**self.__dict__)
+        self.iden = identifier(self.namespace,
+                               self.name,
+                               self.version)
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
         self.validate_whitelist()
 
