@@ -6,7 +6,6 @@ import os
 import ssl
 import socket
 import tarfile
-import tempfile
 import threading
 import urlparse
 import zipfile
@@ -61,10 +60,6 @@ HERE = location_of(__file__)
 class WorkerState(Enum):
     started = 1
     error = 2
-
-
-class ParameterizedError(Exception):
-    pass
 
 
 class Service(object):
@@ -157,10 +152,6 @@ class Service(object):
                 raise APIException(
                     "'{}' does not look like an ip or domain name"
                     .format(addr), 400)
-
-    def save_metadata(self):
-        with open(os.path.join(self.temp_dir, 'metadata.json'), 'w') as f:
-            f.write(json.dumps(self.to_json()))
 
     def build(self):
         prev_cwd = os.getcwd()
@@ -459,10 +450,6 @@ def check(producer):
         if line.startswith('*** WORKER STARTED'):
             state = WorkerState.started
     return state
-
-
-def create_temp_dir():
-        return tempfile.mkdtemp()
 
 
 def render_template(language, requirements, into):
