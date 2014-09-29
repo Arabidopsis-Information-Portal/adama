@@ -17,6 +17,7 @@ from flask.ext import restful
 import jinja2
 import requests
 import ijson
+import yaml
 
 from .api import APIException, RegisterException, ok
 from .config import Config
@@ -66,63 +67,60 @@ class ParameterizedError(Exception):
     pass
 
 
-class Parameterized(object):
-
-    def __init__(self, params, dic):
-        self._params = set(params)
-        keys = set(dic.keys())
-        if not self._params.issubset(keys):
-            raise ParameterizedError(
-                'missing parameters: {}'.
-                format(', '.join(self._params - keys)))
-        self.__dict__.update(dic)
-
-    def to_json(self):
-        return {key: getattr(self, key) for key in self._params}
-
-
-class Service(Parameterized):
+class Service(object):
 
     PARAMS = [
-        'name',
-        'version',
-        'namespace',
-        'url',
-        'whitelist',
-        'description',
-        'requirements',
-        'notify',
-        'adapter',
-        'type',
-        'json_path'
+        # parameter, mandatory?, default
+        ('name', True),
+        ('namespace', True),
+        ('type', True),
+        ('code_dir', True),
+        ('version', False, '0.1'),
+        ('url', False, None),
+        ('whitelist', False, []),
+        ('description', False, ''),
+        ('requirements', False, []),
+        ('notify', False, ''),
+        ('json_path', False, ''),
     ]
 
-    def __init__(self, code, **kwargs):
-        super(Service, self).__init__(self.PARAMS, kwargs)
-        self.code = code
+    def __init__(self, **kwargs):
+        """Initialize service.
 
-        self.iden = identifier(**kwargs)
+        First get metadata from ``code_dir`` and then use ``kwargs``.
+
+        """
+        code_dir = kwargs['code_dir']
+        self.__dict__.update(get_metadata_from(code_dir))
+        self.__dict__.update(kwargs)
+        self.validate_args()
+
+        self.iden = identifier(**self.__dict__)
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
         self.validate_whitelist()
 
-        self.temp_dir = create_temp_dir()
-        self.firewall = Firewall(self.whitelist)
+        self.language = self.detect_language()
         self.state = None
-        self.language = None
         self.workers = []
+        self.firewall = None
+
+    def validate_args(self):
+        for param in self.PARAMS:
+            try:
+                getattr(self, param[0])
+            except AttributeError:
+                if param[1]:
+                    raise
+                setattr(self, param[0], param[2])
 
     def to_json(self):
-        obj = super(Service, self).to_json()
         obj['language'] = self.language
         return obj
-
-    def extract_code(self):
-        extract(self.adapter, self.code, into=self.temp_dir)
 
     def make_image(self):
         """Make a docker image for this service."""
 
-        self.extract_code()
+        self.firewall = Firewall(self.whitelist)
         self.language = self.detect_language()
         render_template(self.language, self.requirements, into=self.temp_dir)
         self.save_metadata()
@@ -534,3 +532,24 @@ def extract(filename, code, into):
     else:
         raise APIException(
             'unknown extension: {0}'.format(filename), 400)
+
+
+def get_metadata_from(directory):
+    """Return a dictionary from the metadata file in ``directory``.
+
+    Try to read the file ``metadata.yml`` or ``metadata.json`` at the root
+    of the directory.
+
+    Return an empty dict if no file is found.
+
+    """
+    for filename in ['metadata.yml', 'metadata.json']:
+        try:
+            f = open(os.path.join(directory, filename))
+            break
+        except IOError:
+            pass
+    else:
+        # tried all files, give up and return empty
+        return {}
+    return yaml.load(f.read())
