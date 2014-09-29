@@ -26,6 +26,8 @@ class ServicesResource(restful.Resource):
                 "namespace not found: {}".format(namespace), 404)
 
         args = self.validate_post()
+
+
         iden = identifier(namespace=namespace, **args)
         adapter_name = adapter_iden(**args)
         if iden in service_store and \
@@ -58,20 +60,27 @@ class ServicesResource(restful.Resource):
         parser = RequestParser()
         parser.add_argument('name', type=str, required=True,
                             help='name of service is required')
-        parser.add_argument('version', type=str, default='0.1')
-        parser.add_argument('url', type=str, required=True,
-                            help='url of data source is required')
+        parser.add_argument('type', type=str,
+                            default='query')
+        parser.add_argument('version', type=str,
+                            default='0.1')
+        parser.add_argument('url', type=str,
+                            default='http://localhost')
         parser.add_argument('whitelist', type=str, action='append',
                             default=[])
-        parser.add_argument('description', type=str, default='')
+        parser.add_argument('description', type=str,
+                            default='')
         parser.add_argument('requirements', type=str, action='append',
                             default=[])
-        parser.add_argument('notify', type=str, default='')
-        parser.add_argument('type', type=str, default='query')
-        parser.add_argument('json_path', type=str, default='')
-        parser.add_argument('code', type=FileStorage, required=True,
-                            location='files',
-                            help='a file, tarball, or zip, must be uploaded')
+        parser.add_argument('notify', type=str,
+                            default='')
+        parser.add_argument('json_path', type=str,
+                            default='')
+        parser.add_argument('main_module', type=str,
+                            default='main')
+        # The following two options are exclusive
+        parser.add_argument('code', type=FileStorage, location='files')
+        parser.add_argument('git_repository', type=str)
 
         args = parser.parse_args()
         args.adapter = args.code.filename
