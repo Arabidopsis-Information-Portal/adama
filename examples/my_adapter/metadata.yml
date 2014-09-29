@@ -1,0 +1,14 @@
+---
+
+name: my_name
+namespace: my_namespace
+type: map
+code_dir: /tmp/foo
+
+version: 0.1
+#url: ''
+whitelist: []
+description: ''
+requirements: []
+notify: ''
+json_path: ''
