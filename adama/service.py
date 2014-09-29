@@ -76,7 +76,7 @@ class Service(object):
         ('type', True),
         ('code_dir', True),
         ('version', False, '0.1'),
-        ('url', False, None),
+        ('url', False, 'http://localhost'),
         ('whitelist', False, []),
         ('description', False, ''),
         ('requirements', False, []),
