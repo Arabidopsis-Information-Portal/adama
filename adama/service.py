@@ -23,7 +23,7 @@ from .config import Config
 from .docker import docker_output, start_container, tail_logs
 from .firewall import Firewall
 from .tools import (location_of, identifier, service_iden,
-                    interleave)
+                    adapter_iden, interleave)
 from .tasks import Producer
 from .service_store import service_store
 
