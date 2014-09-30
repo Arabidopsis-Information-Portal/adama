@@ -15,7 +15,7 @@ from . import app
 from .service_store import service_store
 from .requestparser import RequestParser
 from .tools import namespace_of, adapter_iden
-from .service import Service, identifier
+from .service import Service, identifier, EXTENSIONS
 from .namespaces import namespace_store
 from .api import APIException, ok, error
 
