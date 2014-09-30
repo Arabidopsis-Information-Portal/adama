@@ -26,6 +26,18 @@ class ServicesResource(restful.Resource):
                 "namespace not found: {}".format(namespace), 404)
 
         args = self.validate_post()
+        if args.code and args.git_repository:
+            raise APIException(
+                'cannot have code and git repository at '
+                'the same time')
+
+        if args.code:
+            return register_code(args, namespace)
+
+        if args.git_repository:
+            return register_git_repository(args, namespace)
+
+
         iden = identifier(namespace, args.name, args.version)
         adapter_name = adapter_iden(**args)
         if iden in service_store and \
@@ -104,6 +116,14 @@ class ServicesResource(restful.Resource):
 
 def valid_image_name(name):
     return re.search(r'[^a-z0-9-_.]', name) is None
+
+
+def register_code(args, namespace):
+    pass
+
+
+def register_git_repository(args, namespace):
+    pass
 
 
 def register(namespace, service):
