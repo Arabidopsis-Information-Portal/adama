@@ -23,14 +23,6 @@ from .api import APIException, ok, error
 TARBALLS = ['.tar', '.gz', '.tgz']
 ZIPS = ['.zip']
 
-EXTENSIONS = {
-    '.py': 'python',
-    '.js': 'javascript',
-    '.rb': 'ruby',
-    '.jar': 'java',
-    '.lua': 'lua'
-}
-
 
 class ServicesResource(restful.Resource):
 

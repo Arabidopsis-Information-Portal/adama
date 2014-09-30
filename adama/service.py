@@ -36,6 +36,14 @@ LANGUAGES = {
     'java': ('jar', None)
 }
 
+EXTENSIONS = {
+    '.py': 'python',
+    '.js': 'javascript',
+    '.rb': 'ruby',
+    '.jar': 'java',
+    '.lua': 'lua'
+}
+
 # Timeout to wait for output of containers at start up, before
 # declaring them dead
 TIMEOUT = 3  # second
