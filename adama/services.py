@@ -1,6 +1,10 @@
 import json
 import multiprocessing
+import os
+import tarfile
+import tempfile
 import re
+import zipfile
 
 from flask import url_for
 from flask.ext import restful
@@ -49,65 +53,24 @@ class ServicesResource(restful.Resource):
         if args.git_repository:
             return register_git_repository(args, namespace)
 
-
-        iden = identifier(namespace, args.name, args.version)
-        adapter_name = adapter_iden(**args)
-        if iden in service_store and \
-           not isinstance(service_store[iden], basestring):
-            raise APIException("service '{}' already exists"
-                               .format(iden), 400)
-
-        service = Service(namespace=namespace, **args)
-        service_store[iden] = '[1/5] Empty service created'
-        proc = multiprocessing.Process(
-            name='Async Register {}'.format(iden),
-            target=register, args=(namespace, service))
-        proc.start()
-        state_url = url_for(
-            'service', namespace=namespace, service=adapter_name,
-            _external=True)
-        search_url = url_for(
-            'search', namespace=namespace, service=adapter_name,
-            _external=True)
-        return ok({
-            'message': 'registration started',
-            'result': {
-                'state': state_url,
-                'search': search_url,
-                'notification': service.notify
-            }
-        })
-
     @staticmethod
     def validate_post():
         parser = RequestParser()
-        parser.add_argument('name', type=str, required=True,
-                            help='name of service is required')
-        parser.add_argument('type', type=str,
-                            default='query')
-        parser.add_argument('version', type=str,
-                            default='0.1')
-        parser.add_argument('url', type=str,
-                            default='http://localhost')
-        parser.add_argument('whitelist', type=str, action='append',
-                            default=[])
-        parser.add_argument('description', type=str,
-                            default='')
-        parser.add_argument('requirements', type=str, action='append',
-                            default=[])
-        parser.add_argument('notify', type=str,
-                            default='')
-        parser.add_argument('json_path', type=str,
-                            default='')
-        parser.add_argument('main_module', type=str,
-                            default='main')
+        parser.add_argument('name', type=str)
+        parser.add_argument('type', type=str)
+        parser.add_argument('version', type=str)
+        parser.add_argument('url', type=str)
+        parser.add_argument('whitelist', type=str, action='append')
+        parser.add_argument('description', type=str)
+        parser.add_argument('requirements', type=str, action='append')
+        parser.add_argument('notify', type=str)
+        parser.add_argument('json_path', type=str)
+        parser.add_argument('main_module', type=str)
         # The following two options are exclusive
         parser.add_argument('code', type=FileStorage, location='files')
         parser.add_argument('git_repository', type=str)
 
         args = parser.parse_args()
-        args.adapter = args.code.filename
-        args.code = args.code.stream.read()
 
         if not valid_image_name(args.name):
             raise APIException("'{}' is not a valid service name.\n"
@@ -131,42 +94,120 @@ def valid_image_name(name):
 
 
 def register_code(args, namespace):
-    pass
+    filename = args.code.filename
+    code = args.code.stream.read()
+    tempdir = tempfile.mkdtemp()
+    user_code = extract(filename, code, tempdir)
+    return register(args, namespace, user_code)
 
 
 def register_git_repository(args, namespace):
+    # check out code
+    # call register (args, namespace, checkout)
     pass
 
 
-def register(namespace, service):
+def register(args, namespace, user_code):
     """Register a service in a namespace.
+
+    ``args`` is a dictionary with POST parameters. ``user_code`` is the
+    directory where the user's code is checked out.
 
     Create the proper image, launch workers, and save the service in
     the store.
 
     """
+    service = Service(namespace=namespace, code_dir=user_code, **dict(args))
     try:
-        full_name = service.iden
-        service_store[full_name] = '[2/5] Async image creation started'
+        slot = service_store[service.iden]['slot']
+    except KeyError:
+        slot = 'free'
+
+    if slot != 'free':
+        raise APIException("service slot not available: {}\n"
+                           "Current state: {}"
+                           .format(service.iden, slot), 400)
+
+    service_store[service.iden] = {
+        'slot': 'busy',
+        'msg': 'Empty service created',
+        'stage': 1,
+        'total_stages': 5,
+        'service': None
+    }
+
+    _async_register(service)
+    return ok({
+        'message': 'registration started',
+        'result': {
+            'state_url': url_for(
+                'service',
+                namespace=service.namespace,
+                service=service.adapter_name,
+                _external=True),
+            'search_url': url_for(
+                'search',
+                namespace=service.namespace,
+                service=service.adapter_name,
+                _external=True),
+            'list_url': url_for(
+                'list',
+                namespace=service.namespace,
+                service=service.adapter_name,
+                _external=True),
+            'notification': service.notify
+        }
+    })
+
+
+def _async_register(service):
+    proc = multiprocessing.Process(
+        name='Async Registration {}'.format(service.iden),
+        target=_register, args=(service,))
+    proc.start()
+
+
+def _register(service):
+    full_name = service.iden
+    slot = service_store[full_name]
+    try:
+        slot['msg'] = 'Async image creation started'
+        slot['stage'] = 2
+        service_store[full_name] = slot
+
         service.make_image()
-        service_store[full_name] = '[3/5] Image for service created'
+
+        slot['msg'] = 'Image for service created'
+        slot['stage'] = 3
+        service_store[full_name] = slot
+
         service.start_workers()
-        service_store[full_name] = '[4/5] Workers started'
+
+        slot['msg'] = 'Workers started'
+        slot['stage'] = 4
+        service_store[full_name] = slot
+
         service.check_health()
-        service_store[full_name] = service
+
+        slot['msg'] = 'Service ready'
+        slot['stage'] = 5
+        slot['slot'] = 'ready'
+        service_store[full_name] = slot
+
         data = ok({
             'result': {
                 'service': url_for('service',
-                                   namespace=namespace, service=service.iden,
-                                   _external=True),
-                'search': url_for('search',
-                                  namespace=namespace, service=service.iden,
-                                  _external=True)
+                                   namespace=namespace,
+                                   service=service.adapter_name,
+                                   _external=True)
             }
         })
     except Exception as exc:
-        service_store[full_name] = 'Error: {}'.format(exc)
+        slot['msg'] = 'Error: {}'.format(exc)
+        slot['slot'] = 'error'
+        service_store[full_name] = slot
         data = error({'result': str(exc)})
+
     if service.notify:
         try:
             requests.post(service.notify,
