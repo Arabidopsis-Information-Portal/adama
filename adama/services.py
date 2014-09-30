@@ -224,7 +224,7 @@ def extract(filename, code, into):
 
     """
 
-    ext = os.path.splitext(filename)
+    _, ext = os.path.splitext(filename)
     user_code_dir = os.path.join(into, 'user_code')
     os.mkdir(user_code_dir)
     contents = code
