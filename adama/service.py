@@ -94,6 +94,7 @@ class Service(object):
         self.iden = identifier(self.namespace,
                                self.name,
                                self.version)
+        self.adapter_name = adapter_iden(self.name, self.version)
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
         self.validate_whitelist()
 
