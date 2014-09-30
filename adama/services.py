@@ -54,7 +54,8 @@ class ServicesResource(restful.Resource):
             }
         })
 
-    def validate_post(self):
+    @staticmethod
+    def validate_post():
         parser = RequestParser()
         parser.add_argument('name', type=str, required=True,
                             help='name of service is required')
