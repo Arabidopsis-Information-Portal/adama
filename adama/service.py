@@ -36,17 +36,6 @@ LANGUAGES = {
     'java': ('jar', None)
 }
 
-EXTENSIONS = {
-    '.py': 'python',
-    '.js': 'javascript',
-    '.rb': 'ruby',
-    '.jar': 'java',
-    '.lua': 'lua'
-}
-
-TARBALLS = ['.tar', '.gz', '.tgz']
-ZIPS = ['.zip']
-
 # Timeout to wait for output of containers at start up, before
 # declaring them dead
 TIMEOUT = 3  # second
@@ -482,46 +471,6 @@ def requirements_installer(language, requirements):
     """
     _, installer = LANGUAGES[language]
     return installer.format(package=' '.join(requirements))
-
-
-def extract(filename, code, into):
-    """Extract code from file object ``code``.
-
-    ``filename`` is the name of the uploaded file.  Extract the code
-    in directory ``into``.
-
-    """
-
-    ext = os.path.splitext(filename)
-    user_code_dir = os.path.join(into, 'user_code')
-    os.mkdir(user_code_dir)
-    contents = code
-
-    if ext in ZIPS:
-        # it's a zip file
-        zip_file = os.path.join(into, 'contents.zip')
-        with open(zip_file, 'w') as f:
-            f.write(contents)
-        zip = zipfile.ZipFile(zip_file)
-        zip.extractall(user_code_dir)
-
-    elif ext in TARBALLS:
-        # it's a tarball
-        tarball = os.path.join(into, 'contents.tgz')
-        with open(tarball, 'w') as f:
-            f.write(contents)
-        tar = tarfile.open(tarball)
-        tar.extractall(user_code_dir)
-
-    elif ext in EXTENSIONS.keys():
-        # it's a module
-        module = os.path.join(user_code_dir, filename)
-        with open(module, 'w') as f:
-            f.write(contents)
-
-    else:
-        raise APIException(
-            'unknown extension: {0}'.format(filename), 400)
 
 
 def get_metadata_from(directory):

@@ -16,6 +16,18 @@ from .namespaces import namespace_store
 from .api import APIException, ok, error
 
 
+TARBALLS = ['.tar', '.gz', '.tgz']
+ZIPS = ['.zip']
+
+EXTENSIONS = {
+    '.py': 'python',
+    '.js': 'javascript',
+    '.rb': 'ruby',
+    '.jar': 'java',
+    '.lua': 'lua'
+}
+
+
 class ServicesResource(restful.Resource):
 
     def post(self, namespace):
@@ -164,3 +176,50 @@ def register(namespace, service):
             app.logger.warning(
                 "Could not notify url '{}' that '{}' is ready"
                 .format(service.notify, full_name))
+
+
+def extract(filename, code, into):
+    """Extract code from string ``code``.
+
+    ``filename`` is the name of the uploaded file.  Extract the code
+    in directory ``into``.
+
+    Return the directory where the user code is extracted (may differ from
+    the original ``into``).
+
+    """
+
+    ext = os.path.splitext(filename)
+    user_code_dir = os.path.join(into, 'user_code')
+    os.mkdir(user_code_dir)
+    contents = code
+
+    if ext in ZIPS:
+        # it's a zip file
+        zip_file = os.path.join(into, 'contents.zip')
+        with open(zip_file, 'w') as f:
+            f.write(contents)
+        zip = zipfile.ZipFile(zip_file)
+        zip.extractall(user_code_dir)
+
+    elif ext in TARBALLS:
+        # it's a tarball
+        tarball = os.path.join(into, 'contents.tgz')
+        with open(tarball, 'w') as f:
+            f.write(contents)
+        tar = tarfile.open(tarball)
+        tar.extractall(user_code_dir)
+
+    elif ext in EXTENSIONS.keys():
+        # it's a module
+        module = os.path.join(user_code_dir, filename)
+        with open(module, 'w') as f:
+            f.write(contents)
+
+    else:
+        raise APIException(
+            'unknown extension: {0}'.format(filename), 400)
+
+    return user_code_dir
+
+
