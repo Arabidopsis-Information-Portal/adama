@@ -14,8 +14,8 @@ import requests
 from . import app
 from .service_store import service_store
 from .requestparser import RequestParser
-from .tools import namespace_of, adapter_iden
-from .service import Service, identifier, EXTENSIONS
+from .tools import namespace_of
+from .service import Service, EXTENSIONS
 from .namespaces import namespace_store
 from .api import APIException, ok, error
 
@@ -40,10 +40,34 @@ class ServicesResource(restful.Resource):
                 'the same time')
 
         if args.code:
-            return register_code(args, namespace)
+            service = register_code(args, namespace, post_notifier)
+        elif args.git_repository:
+            service = register_git_repository(args, namespace, post_notifier)
+        else:
+            raise APIException(
+                'no code or git repository specified')
 
-        if args.git_repository:
-            return register_git_repository(args, namespace)
+        return ok({
+            'message': 'registration started',
+            'result': {
+                'state_url': url_for(
+                    'service',
+                    namespace=service.namespace,
+                    service=service.adapter_name,
+                    _external=True),
+                'search_url': url_for(
+                    'search',
+                    namespace=service.namespace,
+                    service=service.adapter_name,
+                    _external=True),
+                'list_url': url_for(
+                    'list',
+                    namespace=service.namespace,
+                    service=service.adapter_name,
+                    _external=True),
+                'notification': service.notify
+            }
+        })
 
     @staticmethod
     def validate_post():
@@ -85,21 +109,23 @@ def valid_image_name(name):
     return re.search(r'[^a-z0-9-_.]', name) is None
 
 
-def register_code(args, namespace):
+def register_code(args, namespace, notifier=None):
+    """Register code that comes in the POST request."""
+
     filename = args.code.filename
     code = args.code.stream.read()
     tempdir = tempfile.mkdtemp()
     user_code = extract(filename, code, tempdir)
-    return register(args, namespace, user_code)
+    return register(args, namespace, user_code, notifier)
 
 
-def register_git_repository(args, namespace):
+def register_git_repository(args, namespace, notifier=None):
     # check out code
     # call register (args, namespace, checkout)
     pass
 
 
-def register(args, namespace, user_code):
+def register(args, namespace, user_code, notifier=None):
     """Register a service in a namespace.
 
     ``args`` is a dictionary with POST parameters. ``user_code`` is the
@@ -129,38 +155,22 @@ def register(args, namespace, user_code):
         'service': None
     }
 
-    _async_register(service)
-    return ok({
-        'message': 'registration started',
-        'result': {
-            'state_url': url_for(
-                'service',
-                namespace=service.namespace,
-                service=service.adapter_name,
-                _external=True),
-            'search_url': url_for(
-                'search',
-                namespace=service.namespace,
-                service=service.adapter_name,
-                _external=True),
-            'list_url': url_for(
-                'list',
-                namespace=service.namespace,
-                service=service.adapter_name,
-                _external=True),
-            'notification': service.notify
-        }
-    })
+    _async_register(service, notifier=None)
+    return service
 
 
-def _async_register(service):
+def _async_register(service, notifier):
+    """Launch async process for actual registration."""
+
     proc = multiprocessing.Process(
         name='Async Registration {}'.format(service.iden),
-        target=_register, args=(service,))
+        target=_register, args=(service, notifier))
     proc.start()
 
 
-def _register(service):
+def _register(service, notifier=None):
+    """Register and start a service."""
+
     full_name = service.iden
     slot = service_store[full_name]
     try:
@@ -188,29 +198,56 @@ def _register(service):
         slot['service'] = service
         service_store[full_name] = slot
 
-        data = ok({
-            'result': {
-                'service': url_for('service',
-                                   namespace=service.namespace,
-                                   service=service.adapter_name,
-                                   _external=True)
-            }
-        })
+        result = ok
+        data = service
     except Exception as exc:
         slot['msg'] = 'Error: {}'.format(exc)
         slot['slot'] = 'error'
         service_store[full_name] = slot
-        data = error({'result': str(exc)})
 
-    if service.notify:
-        try:
-            requests.post(service.notify,
-                          headers={"Content-Type": "application/json"},
-                          data=json.dumps(data))
-        except Exception:
-            app.logger.warning(
-                "Could not notify url '{}' that '{}' is ready"
-                .format(service.notify, full_name))
+        result = error
+        data = str(exc)
+
+    if service.notify and notifier is not None:
+        notifier(service.notify, result, data)
+
+
+def post_notifier(url, result, data):
+    """Do a post notification to ``url``.
+
+    ``result`` is a function, and ``data`` an object.
+
+    """
+    if result is ok:
+        content = result({
+            'message': 'Registration successful',
+            'result': {
+                'search': url_for(
+                    'service',
+                    namespace=data.namespace,
+                    service=data.adapter_name,
+                    _external=True)
+            }
+        })
+    else:
+        content = result({
+            'message': 'Registration failed',
+            'result': {
+                'error': data
+            }
+        })
+    try:
+        requests.post(url,
+                      headers={"Content-Type": "application/json"},
+                      data=json.dumps(content))
+    except Exception:
+        app.logger.warning(
+            "Could not notify url '{}'"
+            .format(url))
+
+
+def debug_notifier(url, result, data):
+    print(url, result, data)
 
 
 def extract(filename, code, into):
@@ -256,5 +293,3 @@ def extract(filename, code, into):
             'unknown extension: {0}'.format(filename), 400)
 
     return user_code_dir
-
-
