@@ -185,12 +185,13 @@ def _register(service):
         slot['msg'] = 'Service ready'
         slot['stage'] = 5
         slot['slot'] = 'ready'
+        slot['service'] = service
         service_store[full_name] = slot
 
         data = ok({
             'result': {
                 'service': url_for('service',
-                                   namespace=namespace,
+                                   namespace=service.namespace,
                                    service=service.adapter_name,
                                    _external=True)
             }
