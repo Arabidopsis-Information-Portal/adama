@@ -1,0 +1,13 @@
+---
+
+name: foo
+namespace: my_namespace
+type: query
+main_module: src/main
+version: 0.4
+url: 'http://example.com'
+whitelist: []
+description: ''
+requirements: []
+notify: ''
+json_path: ''
