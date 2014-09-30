@@ -115,7 +115,8 @@ def register(args, namespace, user_code):
     except KeyError:
         slot = 'free'
 
-    if slot != 'free':
+    # make sure to only use free or errored out slots
+    if slot not in ('free', 'error'):
         raise APIException("service slot not available: {}\n"
                            "Current state: {}"
                            .format(service.iden, slot), 400)
