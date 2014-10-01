@@ -88,6 +88,32 @@ def test_state():
             return
         time.sleep(5)
 
+def test_register_wrong_requirements():
+    code = open(os.path.join(HERE, 'main4.py')).read()
+    resp = requests.post(URL+'/'+NAMESPACE+'/services',
+                  data={'name': SERVICE,
+                        'url': 'http://localhost:{}/json.json'.format(PORT),
+                        'version': 4,
+                        'type': 'query',
+                        'json_path': 'results',
+                        'whitelist': ['127.0.0.1']},
+                  files={'code': ('main.py', code)})
+    response = resp.json()
+    assert response['status'] == 'success'
+
+    start = time.time()
+    while True:
+        if time.time() - start > TIMEOUT:
+            assert False
+        response = requests.get(
+            URL+'/{}/{}_v4'.format(NAMESPACE, SERVICE)).json()
+        assert response['status'] == 'success'
+        if response['result'].get('slot') == 'error':
+            assert True
+            return
+        time.sleep(5)
+
+
 def test_language():
     response = requests.get(
         URL+'/{}/{}_v1'.format(NAMESPACE, SERVICE)).json()
@@ -139,17 +165,10 @@ def test_process():
         os.chdir(cwd)
 
 def test_delete_service():
-    resp = requests.delete(
-        URL+'/{}/{}_v1'.format(NAMESPACE, SERVICE)).json()
-    assert resp['status'] == 'success'
-
-    resp = requests.delete(
-        URL+'/{}/{}_v2'.format(NAMESPACE, SERVICE)).json()
-    assert resp['status'] == 'success'
-
-    resp = requests.delete(
-        URL+'/{}/{}_v3'.format(NAMESPACE, SERVICE)).json()
-    assert resp['status'] == 'success'
+    for i in range(3):
+        resp = requests.delete(
+            URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
+        assert resp['status'] == 'success'
 
 def test_delete_namespace():
     resp = requests.delete(

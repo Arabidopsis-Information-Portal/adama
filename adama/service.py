@@ -120,7 +120,12 @@ class Service(object):
         """Make a docker image for this service."""
 
         self.firewall = Firewall(self.whitelist)
-        render_template(self.language, self.requirements, into=self.code_dir)
+        render_template(
+            os.path.dirname(self.main_module),
+            os.path.basename(self.main_module_path),
+            self.language,
+            self.requirements,
+            into=self.code_dir)
         self.build()
 
     def find_main_module(self):
@@ -450,7 +455,8 @@ def check(producer):
     return state
 
 
-def render_template(language, requirements, into):
+def render_template(main_module_path, main_module_name,
+                    language, requirements, into):
     """Create Dockerfile for ``language``.
 
     Consider a list of ``requirements``, and write the Dockerfile in
@@ -465,7 +471,10 @@ def render_template(language, requirements, into):
         if requirements else '')
 
     dockerfile = dockerfile_template.render(
-        language=language, requirement_cmds=requirement_cmds)
+        main_module_path=main_module_path,
+        main_module_name=main_module_name,
+        language=language,
+        requirement_cmds=requirement_cmds)
     with open(os.path.join(into, 'Dockerfile'), 'w') as f:
         f.write(dockerfile)
 

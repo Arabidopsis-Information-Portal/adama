@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import argparse
 import json
+import importlib
 import logging
 import os
 import sys
@@ -14,7 +15,6 @@ from tasks import QueueConnection
 logging.basicConfig()
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(HERE, 'user_code'))
 
 
 class QueryWorker(QueueConnection):
@@ -34,31 +34,41 @@ class QueryWorker(QueueConnection):
                 responder(json.dumps({'time_in_main': t}))
 
     def operation(self, body):
-        import main
         d = json.loads(body)
         d['worker'] = os.uname()[1]
         endpoint = d['endpoint']
         body = json.dumps(d)
         t_start = time.time()
 
-        getattr(main, endpoint)(json.loads(body))
+        getattr(self.module, endpoint)(json.loads(body))
 
         t_end = time.time()
         return t_end - t_start
 
     def run(self):
+        main_module_path = os.environ.get('MAIN_MODULE_PATH', '')
+        main_module_name = os.environ['MAIN_MODULE_NAME']
+        module_name, _ = os.path.splitext(main_module_name)
+        sys.path.insert(0, os.path.join(HERE, 'user_code', main_module_path))
+        self.module = importlib.import_module(module_name)
+
         self.consume_forever(self.callback)
 
 
 class ProcessWorker(QueueConnection):
 
     def run(self):
+        main_module_path = os.environ.get('MAIN_MODULE_PATH', '')
+        main_module_name = os.environ['MAIN_MODULE_NAME']
+        module_name, _ = os.path.splitext(main_module_name)
+        sys.path.insert(0, os.path.join(HERE, 'user_code', main_module_path))
+        self.module = importlib.import_module(module_name)
+
         self.consume_forever(self.callback)
 
     def callback(self, message, responder):
         try:
-            import main
-            out = main.process(json.loads(message))
+            out = self.module.process(json.loads(message))
             if out is not None:
                 responder(json.dumps(out))
         except Exception as exc:
@@ -140,9 +150,12 @@ def run_worker(worker_type, args):
     print('Listening in queue {}'.format(args.queue_name),
           file=sys.stderr)
     print('*** WORKER STARTED', file=sys.stderr)
-    worker.run()
-    # If worker stops consuming, it's because of an error
-    print('*** WORKER ERROR', file=sys.stderr)
+    try:
+        worker.run()
+    finally:
+        traceback.print_exc(file=sys.stderr)
+        # If worker stops consuming, it's because of an error
+        print('*** WORKER ERROR', file=sys.stderr)
 
 
 def main():
