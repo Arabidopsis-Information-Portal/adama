@@ -34,14 +34,14 @@ class ServicesResource(restful.Resource):
                 "namespace not found: {}".format(namespace), 404)
 
         args = self.validate_post()
-        if args.code and args.git_repository:
+        if 'code' in args and 'git_repository' in args:
             raise APIException(
                 'cannot have code and git repository at '
                 'the same time')
 
-        if args.code:
+        if 'code' in args:
             service = register_code(args, namespace, post_notifier)
-        elif args.git_repository:
+        elif 'git_repository' in args:
             service = register_git_repository(args, namespace, post_notifier)
         else:
             raise APIException(
@@ -93,6 +93,10 @@ class ServicesResource(restful.Resource):
                                "Allowed characters: [a-z0-9_.-]"
                                .format(args.name))
 
+        for key, value in args.items():
+            if value is None:
+                del args[key]
+
         return args
 
     def get(self, namespace):
@@ -113,9 +117,9 @@ def register_code(args, namespace, notifier=None):
     """Register code that comes in the POST request."""
 
     filename = args.code.filename
-    code = args.code.stream.read()
+    args.code = args.code.stream.read()
     tempdir = tempfile.mkdtemp()
-    user_code = extract(filename, code, tempdir)
+    user_code = extract(filename, args.code, tempdir)
     return register(args, namespace, user_code, notifier)
 
 

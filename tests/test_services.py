@@ -74,6 +74,12 @@ def test_register():
         assert service.adapter_name == 'post_v0.4'
         assert service.namespace == 'foo_ns'
         assert service.language == 'python'
+
+        slot = service_store['foo_ns.post_v0.4']
+        assert slot['slot'] == 'ready'
+        assert slot['service'].adapter_name == 'post_v0.4'
+        assert slot['service'].to_json()['name'] == 'post'
+        print slot
     finally:
         service_store['foo_ns.post_v0.4']['service'].stop_workers()
         del service_store['foo_ns.post_v0.4']

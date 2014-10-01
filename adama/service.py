@@ -111,7 +111,10 @@ class Service(object):
                 setattr(self, param[0], param[2])
 
     def to_json(self):
-        return {key[0]: getattr(self, key[0]) for key in self.PARAMS}
+        obj = {key[0]: getattr(self, key[0]) for key in self.PARAMS}
+        obj['language'] = self.language
+        obj['workers'] = self.workers
+        return obj
 
     def make_image(self):
         """Make a docker image for this service."""
@@ -234,7 +237,7 @@ class ServiceQueryResource(restful.Resource):
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
-            srv = service_store[iden]
+            srv = service_store[iden]['service']
         except KeyError:
             raise APIException('service not found: {}'
                                .format(service_iden(namespace, service)),
@@ -260,7 +263,7 @@ class ServiceListResource(restful.Resource):
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
-            srv = service_store[iden]
+            srv = service_store[iden]['service']
         except KeyError:
             raise APIException('service not found: {}'
                                .format(service_iden(namespace, service)),
@@ -285,18 +288,15 @@ class ServiceResource(restful.Resource):
         full_name = service_iden(namespace, service)
         try:
             srv = service_store[full_name]
-            if isinstance(srv, basestring):
-                # Service creation ongoing
+            if srv['slot'] == 'ready':
                 return ok({
                     'result': {
-                        'state': srv
+                        'service': srv['service'].to_json()
                     }
                 })
             else:
                 return ok({
-                    'result': {
-                        'service': srv.to_json(),
-                    }
+                    'result': srv
                 })
         except KeyError:
             raise APIException(
@@ -310,7 +310,7 @@ class ServiceResource(restful.Resource):
     def delete(self, namespace, service):
         name = service_iden(namespace, service)
         try:
-            srv = service_store[name]
+            srv = service_store[name]['service']
             try:
                 srv.stop_workers()
                 # TODO: need to clean up containers here too
