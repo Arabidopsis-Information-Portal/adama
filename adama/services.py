@@ -155,7 +155,7 @@ def register(args, namespace, user_code, notifier=None):
         'service': None
     }
 
-    _async_register(service, notifier=None)
+    _async_register(service, notifier)
     return service
 
 
