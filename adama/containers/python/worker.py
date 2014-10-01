@@ -7,6 +7,7 @@ import logging
 import os
 import sys
 import time
+import traceback
 
 from tasks import QueueConnection
 
@@ -24,14 +25,16 @@ class QueryWorker(QueueConnection):
             try:
                 t = self.operation(message)
             except Exception as exc:
-                print(json.dumps({'error': exc.message}))
+                print(json.dumps({
+                    'error': exc.message,
+                    'traceback': traceback.format_exc()
+                }))
             finally:
                 print('END')
                 responder(json.dumps({'time_in_main': t}))
 
     def operation(self, body):
         import main
-        metadata = json.load(open(os.path.join(HERE, 'metadata.json')))
         d = json.loads(body)
         d['worker'] = os.uname()[1]
         endpoint = d['endpoint']
@@ -59,7 +62,10 @@ class ProcessWorker(QueueConnection):
             if out is not None:
                 responder(json.dumps(out))
         except Exception as exc:
-            responder(json.dumps({'error': exc.message}))
+            responder(json.dumps({
+                'error': exc.message,
+                'traceback': traceback.format_exc()
+            }))
         finally:
             responder('END')
             responder(json.dumps({}))
