@@ -77,14 +77,3 @@ def test_register():
     finally:
         service_store['foo_ns.post_v0.4']['service'].stop_workers()
         del service_store['foo_ns.post_v0.4']
-# def test_get_code_zip():
-#     a = adama.service.Service(
-#         name='foo', namespace='', version='', url='http://example.com',
-#         whitelist=[], description='', requirements=[], notify='',
-#         adapter='foo.zip', code=open(os.path.join(HERE, 'foo.zip')).read(),
-#         json_path='', type='QueryWorker')
-#     a.extract_code()
-#     assert open(
-#         os.path.join(a.temp_dir, 'user_code/main.rb')).read() == 'foo\n'
-#     assert open(
-#         os.path.join(a.temp_dir, 'user_code/dir/bar')).read() == 'bar\n'
