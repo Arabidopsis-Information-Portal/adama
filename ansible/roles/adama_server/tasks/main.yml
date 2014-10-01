@@ -31,7 +31,7 @@
 
 - name: Install all Python requirements
   pip:
-    requirements: /home/adama/adama/dev_requirements.txt
+    requirements: /home/adama/adama/requirements.txt
     executable: "{{ pip_executable }}"
   when: got_adama|changed
   sudo: yes
