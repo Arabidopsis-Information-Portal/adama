@@ -1,6 +1,7 @@
 import json
 import multiprocessing
 import os
+import subprocess
 import tarfile
 import tempfile
 import re
@@ -124,9 +125,16 @@ def register_code(args, namespace, notifier=None):
 
 
 def register_git_repository(args, namespace, notifier=None):
-    # check out code
-    # call register (args, namespace, checkout)
-    pass
+    """Register code from git repo at ``args.git_repository``."""
+
+    tempdir = tempfile.mkdtemp()
+    subprocess.check_call(
+        """
+        cd {} &&
+        git clone {} user_code
+        """.format(tempdir, args.git_repository), shell=True)
+    return register(
+        args, namespace, os.path.join(tempdir, 'user_code'), notifier)
 
 
 def register(args, namespace, user_code, notifier=None):
