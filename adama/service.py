@@ -233,6 +233,55 @@ class Service(object):
         if logs:
             raise RegisterException(len(self.workers), logs)
 
+    def exec_worker(self, endpoint, args, request):
+        """Process a request through the worker."""
+
+        meth = getattr(self, 'exec_worker_{}'.format(self.type))
+        return meth(endpoint, args, request)
+
+    def exec_worker_query(self, endpoint, args, request):
+        """Send ``args`` to ``queue`` in QueryWorker model."""
+
+        queue = self.iden
+        args['endpoint'] = endpoint
+        client = Producer(queue_host=Config.get('queue', 'host'),
+                          queue_port=Config.getint('queue', 'port'),
+                          queue_name=queue)
+        client.send(args)
+        gen = itertools.imap(json.dumps, client.receive())
+        return Response(result_generator(gen, lambda: client.metadata),
+                        mimetype='application/json')
+
+    def exec_worker_map_filter(self, endpoint, args, request):
+        """Forward request and process response.
+
+        Forward the request to the third party service, and map the
+        response through the ``process`` user function.
+
+        """
+        if endpoint != 'search':
+            raise APIException("service of type 'map_filter' does "
+                               "not support /list")
+
+        if is_https(self.url) and request.method == 'GET':
+            method = tls1_get
+        else:
+            method = getattr(requests, request.method.lower())
+        response = method(self.url,
+                          params=request.args,
+                          stream=True)
+        if response.ok:
+            path = '.'.join(filter(None, [self.json_path, 'item']))
+            results = ijson.items(FileLikeWrapper(response), path)
+
+            return Response(
+                result_generator(process_by_client(self, results),
+                                 lambda: {}),
+                mimetype='application/json')
+        else:
+            raise APIException('response from external service: {}'
+                               .format(response))
+
 
 class ServiceQueryResource(restful.Resource):
 
@@ -246,13 +295,7 @@ class ServiceQueryResource(restful.Resource):
                                .format(service_iden(namespace, service)),
                                404)
 
-        queue = srv.iden
-
-        if srv.type == 'query':
-            args['endpoint'] = 'search'
-            return exec_query_worker(args, queue)
-        if srv.type == 'map':
-            return exec_process_worker(srv, args, queue)
+        return srv.exec_worker('search', args, request)
 
     def validate_get(self):
         # no defined query language yet
@@ -272,14 +315,7 @@ class ServiceListResource(restful.Resource):
                                .format(service_iden(namespace, service)),
                                404)
 
-        queue = srv.iden
-
-        if srv.type == 'query':
-            args['endpoint'] = 'list'
-            return exec_query_worker(args, queue)
-        else:
-            raise APIException("service of type 'process' does "
-                               "not support /list")
+        return srv.exec_worker('list', args, request)
 
     def validate_get(self):
         return dict(request.args)
@@ -396,46 +432,6 @@ def tls1_get(*args, **kwargs):
     session.mount('https://', TLSv1Adapter())
     kwargs['verify'] = False
     return session.get(*args, **kwargs)
-
-
-def exec_process_worker(service, args, queue):
-    """Forward request and process response.
-
-    Forward the request to the third party service, and map the
-    response through the ``process`` user function.
-
-    """
-    if is_https(service.url) and request.method == 'GET':
-        method = tls1_get
-    else:
-        method = getattr(requests, request.method.lower())
-    response = method(service.url,
-                      params=request.args,
-                      stream=True)
-    if response.ok:
-        path = '.'.join(filter(None, [service.json_path, 'item']))
-        results = ijson.items(FileLikeWrapper(response), path)
-
-        return Response(
-            result_generator(process_by_client(service, results),
-                             lambda: {}),
-            mimetype='application/json')
-    else:
-        raise APIException('response from external service: {}'
-                           .format(response))
-
-
-def exec_query_worker(args, queue):
-
-    """Send ``args`` to ``queue`` in QueryWorker model."""
-
-    client = Producer(queue_host=Config.get('queue', 'host'),
-                      queue_port=Config.getint('queue', 'port'),
-                      queue_name=queue)
-    client.send(args)
-    gen = itertools.imap(json.dumps, client.receive())
-    return Response(result_generator(gen, lambda: client.metadata),
-                    mimetype='application/json')
 
 
 def check(producer):
