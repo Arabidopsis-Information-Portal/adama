@@ -7,6 +7,9 @@ config:
   - section: server
     option: bind
     value: 0.0.0.0:80
+  - section: server
+    option: prefix
+    value: /community
   - section: store
     option: host
     value: localhost
