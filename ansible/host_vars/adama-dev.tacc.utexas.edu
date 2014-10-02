@@ -3,7 +3,7 @@
 config:
   - section: server
     option: url
-    value: http://adama-dev.tacc.utexas.edu
+    value: adama-dev.tacc.utexas.edu
   - section: server
     option: bind
     value: 0.0.0.0:80
@@ -25,3 +25,5 @@ config:
   - section: docker
     option: host
     value: ""
+
+nginx_server_name: adama-dev.tacc.utexas.edu

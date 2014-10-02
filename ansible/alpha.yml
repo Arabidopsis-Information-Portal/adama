@@ -9,3 +9,4 @@
     - docker
     - { role: adama_server, branch: master }
     - redis_server
+    - nginx
