@@ -165,7 +165,7 @@ def test_process():
         os.chdir(cwd)
 
 def test_delete_service():
-    for i in range(3):
+    for i in range(1, 4):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'
