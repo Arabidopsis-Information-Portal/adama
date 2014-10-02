@@ -6,6 +6,7 @@
     name: nginx
     state: latest
   sudo: yes
+  notify: Make sure nginx is running
 
 - name: Add self signed certs
   copy:
@@ -31,3 +32,16 @@
     src: /etc/nginx/sites-available/adama
     state: link
   sudo: yes
+
+- name: Ensure htpasswd util
+  apt:
+    name: apache2-utils
+    state: latest
+  sudo: yes
+
+- name: Install users for basic auth
+  copy:
+    src: htpasswd
+    dest: /etc/nginx/.htpasswd
+  sudo: yes
+  notify: Reload nginx
