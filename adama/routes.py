@@ -21,7 +21,8 @@ def url(endpoint):
     return PREFIX + endpoint
 
 
-api.add_resource(NamespacesResource, url(''))
+api.add_resource(NamespacesResource, url(''),
+                 endpoint='namespaces')
 api.add_resource(StatusResource, url('/status'))
 api.add_resource(NamespaceResource, url('/<string:namespace>'),
                  endpoint='namespace')
