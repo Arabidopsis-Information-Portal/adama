@@ -5,10 +5,8 @@ import multiprocessing
 import os
 import ssl
 import socket
-import tarfile
 import threading
 import urlparse
-import zipfile
 
 from enum import Enum
 from flask import request, Response
