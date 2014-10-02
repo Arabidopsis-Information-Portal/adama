@@ -1,5 +1,5 @@
 [program:adama]
-command=/home/adama/adama/bin/adama_server.py
+command=uwsgi --socket 127.0.0.1:8080 -w adama.routes:app
 autostart=true
 autorestart=true
 environment=HOME="/home/adama"
