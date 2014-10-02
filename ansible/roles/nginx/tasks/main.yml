@@ -1,0 +1,33 @@
+---
+# tasks file for nginx
+
+- name: Install nginx
+  apt:
+    name: nginx
+    state: latest
+  sudo: yes
+
+- name: Add self signed certs
+  copy:
+    src: certs
+    dest: /etc/nginx/certs
+  sudo: yes
+
+- name: Add config file
+  template:
+    src: adama.j2
+    dest: /etc/nginx/sites-available/adama
+  sudo: yes
+
+- name: Disable default site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  sudo: yes
+
+- name: Enable adama site
+  file:
+    path: /etc/nginx/sites-enabled/adama
+    src: /etc/nginx/sites-available/adama
+    state: link
+  sudo: yes
