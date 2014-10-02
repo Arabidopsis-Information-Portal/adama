@@ -4,11 +4,11 @@
 - name: Make sure nginx is running
   service:
     name: nginx
-    status: started
+    state: started
   sudo: yes
 
 - name: Reload nginx
   service:
     name: nginx
-    status: reloaded
+    state: reloaded
   sudo: yes
