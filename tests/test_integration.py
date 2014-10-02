@@ -56,7 +56,7 @@ def test_register_processor():
                   data={'name': SERVICE,
                         'url': 'http://localhost:{}/json.json'.format(PORT),
                         'version': 2,
-                        'type': 'map',
+                        'type': 'map_filter',
                         'json_path': 'results',
                         'whitelist': ['127.0.0.1']},
                   files={'code': ('main.py', code)})
@@ -68,7 +68,7 @@ def test_register_processor():
                   data={'name': SERVICE,
                         'url': 'http://localhost:{}/json.json'.format(PORT),
                         'version': 3,
-                        'type': 'map',
+                        'type': 'map_filter',
                         'json_path': 'results',
                         'whitelist': ['127.0.0.1']},
                   files={'code': ('main.py', code)})

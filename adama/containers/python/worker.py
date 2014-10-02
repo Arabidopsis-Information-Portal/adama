@@ -68,7 +68,7 @@ class ProcessWorker(QueueConnection):
 
     def callback(self, message, responder):
         try:
-            out = self.module.process(json.loads(message))
+            out = self.module.map_filter(json.loads(message))
             if out is not None:
                 responder(json.dumps(out))
         except Exception as exc:
@@ -135,7 +135,7 @@ def get_class_for(kind):
     """Map the type of adapter to the proper class."""
 
     map = {
-        'map': ProcessWorker,
+        'map_filter': ProcessWorker,
         'query': QueryWorker
     }
     return map[kind]
