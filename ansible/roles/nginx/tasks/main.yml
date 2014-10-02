@@ -10,7 +10,7 @@
 - name: Add self signed certs
   copy:
     src: certs
-    dest: /etc/nginx/certs
+    dest: /etc/nginx
   sudo: yes
 
 - name: Add config file
