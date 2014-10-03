@@ -86,6 +86,7 @@ class ServicesResource(restful.Resource):
         # The following two options are exclusive
         parser.add_argument('code', type=FileStorage, location='files')
         parser.add_argument('git_repository', type=str)
+        parser.add_argument('metadata', type=str)
 
         args = parser.parse_args()
 

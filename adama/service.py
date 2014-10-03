@@ -59,6 +59,7 @@ class WorkerState(Enum):
 
 class Service(object):
 
+    METADATA_DEFAULT = ''
     PARAMS = [
         # parameter, mandatory?, default
         ('name', True),
@@ -72,7 +73,8 @@ class Service(object):
         ('requirements', False, []),
         ('notify', False, ''),
         ('json_path', False, ''),
-        ('main_module', False, 'main')
+        ('main_module', False, 'main'),
+        ('metadata', False, METADATA_DEFAULT)
     ]
 
     def __init__(self, **kwargs):
@@ -82,7 +84,9 @@ class Service(object):
 
         """
         code_dir = kwargs['code_dir']
-        self.__dict__.update(get_metadata_from(code_dir))
+        self.metadata = kwargs.get('metadata', self.METADATA_DEFAULT)
+        self.__dict__.update(get_metadata_from(
+            os.path.join(code_dir, self.metadata)))
         self.__dict__.update(kwargs)
         self.validate_args()
 

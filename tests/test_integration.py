@@ -80,7 +80,8 @@ def test_test_register_git_repo():
         'tar zxf python_map_filter_test_adapter.tgz'.split())
     resp = requests.post(
         URL+'/'+NAMESPACE+'/services',
-        data={'git_repository':
+        data={'metadata': 'src',
+              'git_repository':
                   os.path.join(HERE, 'python_map_filter_test_adapter')})
     response = resp.json()
     assert response['status'] == 'success'
