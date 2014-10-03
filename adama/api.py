@@ -41,8 +41,7 @@ class MyApi(restful.Api):
 
         if isinstance(exc, subprocess.CalledProcessError):
             return self.with_traceback(
-                {'command': ' '.join(exc.cmd),
-                 'message': exc.output}, exc)
+                {'message': exc.output}, exc)
 
         if isinstance(exc, RegisterException):
             all_logs = '\n---\n'.join(exc.logs)
