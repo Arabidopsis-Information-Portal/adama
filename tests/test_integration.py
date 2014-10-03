@@ -123,6 +123,18 @@ def test_register_wrong_requirements():
             return
         time.sleep(5)
 
+def test_services():
+    response = requests.get(
+        URL+'/{}/services'.format(NAMESPACE)).json()
+    assert response['status'] == 'success'
+    results = response['result']
+    for result in results:
+        if result['name'] == 'spam' and \
+            result['version'] == '1' and \
+            len(result['workers']) > 0:
+            assert True
+            return
+    assert False
 
 def test_language():
     response = requests.get(
