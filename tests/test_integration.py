@@ -18,12 +18,12 @@ TIMEOUT = 60 # seconds
 
 def test_register_namespace():
     resp = requests.post(
-        URL, data={'name': NAMESPACE}).json()
+        URL+'/namespaces', data={'name': NAMESPACE}).json()
     assert resp['status'] == 'success'
 
     # second time should fail
     resp = requests.post(
-        URL, data={'name': NAMESPACE}).json()
+        URL+'/namespaces', data={'name': NAMESPACE}).json()
     assert resp['status'] == 'error'
 
 def test_register_service():
