@@ -75,6 +75,16 @@ def test_register_processor():
     response = resp.json()
     assert response['status'] == 'success'
 
+def test_test_register_git_repo():
+    subprocess.check_call(
+        'tar zxf python_map_filter_test_adapter.tgz'.split())
+    resp = requests.post(
+        URL+'/'+NAMESPACE+'/services',
+        data={'git_repository':
+                  os.path.join(HERE, 'python_map_filter_test_adapter')})
+    response = resp.json()
+    assert response['status'] == 'success'
+
 def test_state():
     start = time.time()
     while True:
@@ -86,7 +96,7 @@ def test_state():
         if response['result'].get('service'):
             assert True
             return
-        time.sleep(5)
+        time.sleep(1)
 
 def test_register_wrong_requirements():
     code = open(os.path.join(HERE, 'main4.py')).read()
@@ -164,8 +174,24 @@ def test_process():
         server.kill()
         os.chdir(cwd)
 
+def test_git_repo_map_filter():
+    start = time.time()
+    while True:
+        if time.time() - start > TIMEOUT:
+            assert False
+        response = requests.get(
+            URL+'/{}/{}_v5'.format(NAMESPACE, SERVICE)).json()
+        assert response['status'] == 'success'
+        if response['result'].get('service'):
+            assert True
+            return
+        time.sleep(1)
+    response = request.get(
+        URL+'/{}/{}_v5'.format(NAMESPACE, SERVICE)).json()
+    assert response['result']['type'] == 'map_filter'
+
 def test_delete_service():
-    for i in range(1, 4):
+    for i in range(1, 6):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'
