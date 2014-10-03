@@ -104,6 +104,10 @@ class ServicesResource(restful.Resource):
     def get(self, namespace):
         """List all services"""
 
+        if namespace not in namespace_store:
+            raise APIException(
+                "namespace not found: {}".format(namespace), 404)
+
         result = [srv['service'].to_json()
                   for name, srv in service_store.items()
                   if namespace_of(name) == namespace and

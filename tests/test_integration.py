@@ -137,6 +137,11 @@ def test_services():
             return
     assert False
 
+def test_services_in_wrong_namespace():
+    response = requests.get(
+        URL+'/xxxxxx/services').json()
+    assert response['status'] == 'error'
+
 def test_language():
     response = requests.get(
         URL+'/{}/{}_v1'.format(NAMESPACE, SERVICE)).json()
