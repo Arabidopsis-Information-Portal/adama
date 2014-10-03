@@ -233,6 +233,7 @@ class Service(object):
             state, worker = q.get()
             if state == WorkerState.error:
                 logs.append(docker_output('logs', worker))
+                self.firewall.unregister(worker)
 
         if logs:
             raise RegisterException(len(self.workers), logs)
