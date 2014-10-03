@@ -89,7 +89,7 @@ class ServicesResource(restful.Resource):
 
         args = parser.parse_args()
 
-        if not valid_image_name(args.name):
+        if args.name is not None and not valid_image_name(args.name):
             raise APIException("'{}' is not a valid service name.\n"
                                "Allowed characters: [a-z0-9_.-]"
                                .format(args.name))
