@@ -1,0 +1,36 @@
+{% raw %}
+---
+
+# These are the name and version of your adapter
+# The final url will have the form:
+#
+#     ADAMA_URL/your_namespace/{{ cookiecutter.adapter_name }}_v0.1
+#
+name: {{ cookiecutter.adapter_name }}
+version: 0.1
+
+description: '{{ cookiecutter.description }}'
+
+# Possible values:
+# - query
+# - map_filter
+#
+type: query
+
+# The location of your main module, where the functions 'search' and
+# 'list' can be found.
+main_module: main.py
+
+# Url of the data source your adapter will access
+url: 'http://example.com'
+
+# Extra domain names or ip's your adapter needs to access
+whitelist: []
+
+# Extra requirements your adapter needs to fetch from the internet via
+# the standard packaging tools for your language of choice
+requirements: []
+
+# An url to where Adama will notify when the adapter is ready
+notify: ''
+{% endraw %}
