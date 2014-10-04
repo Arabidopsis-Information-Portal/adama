@@ -10,7 +10,9 @@ anyjson==0.3.3
 backports.ssl-match-hostname==3.4.0.2
 billiard==3.3.0.17
 binaryornot==0.3.0
+blessings==1.6
 celery==3.1.11
+click==3.3
 cookiecutter==0.7.2
 enum34==1.0
 flake8==2.1.0
@@ -30,6 +32,7 @@ numpy==1.8.1
 pep8==1.5.6
 pika==0.9.13
 py==1.4.20
+pyaml==14.05.7
 pyflakes==0.8.1
 pyparsing==2.0.2
 pytest==2.5.2
