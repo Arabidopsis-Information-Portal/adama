@@ -85,6 +85,5 @@ class NamespacesResource(restful.Resource):
         return args
 
     def get(self):
-        result = {name: ns.to_json()
-                  for (name, ns) in namespace_store.items()}
+        result = [ns.to_json() for (name, ns) in namespace_store.items()]
         return ok({'result': result})
