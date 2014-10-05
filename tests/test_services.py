@@ -67,7 +67,7 @@ def test_register():
             user_code=os.path.join(HERE, 'python_test_adapter'),
             notifier=notifier)
 
-        result = q.get(timeout=15)
+        result = q.get(timeout=30)
         assert result[0] == 'http://example.com'
         assert result[1] is ok
         service = result[2]
