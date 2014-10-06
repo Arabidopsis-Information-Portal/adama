@@ -1,8 +1,8 @@
 .. warning:: This API is preliminary, and it **may** change.
 
-================
-Adama Quickstart
-================
+==============
+Adama Tutorial
+==============
 
 Follow this quickstart with any HTTP client.  Here we'll use curl_.
 
