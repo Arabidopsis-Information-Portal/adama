@@ -30,7 +30,7 @@ readme = open('README.rst').read()
 
 setup(
     name='adama',
-    version='0.1.0',
+    version=open('adama/VERSION').read().strip(),
     description='Araport API manager',
     long_description=readme,
     author='Walter Moreira',
