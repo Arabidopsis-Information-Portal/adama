@@ -4,7 +4,7 @@
 Adama Tutorial
 ==============
 
-Follow this quickstart with any HTTP client.  Here we'll use curl_.
+Follow this tutorial with any HTTP client.  Here we'll use curl_.
 
 The languages supported by Adama are currently: Python, Javascript.
 
