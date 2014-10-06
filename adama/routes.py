@@ -24,7 +24,7 @@ def url(endpoint):
     return PREFIX + endpoint
 
 
-api.add_resource(JSONTestResource, '/json',
+api.add_resource(JSONTestResource, url('/json'),
                  endpoint='json')
 api.add_resource(NamespacesResource, url('/namespaces'),
                  endpoint='namespaces')
@@ -56,6 +56,8 @@ TOKEN_RE = re.compile('Bearer (.+)')
 
 @app.before_request
 def check_token():
+    if request.path == PREFIX + '/json':
+        return
     if not request.path.startswith(PREFIX):
         return
     auth = request.headers['Authorization']
