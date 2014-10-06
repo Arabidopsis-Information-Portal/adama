@@ -1,9 +1,7 @@
 [program:adama]
 command=uwsgi --socket 127.0.0.1:8080 -w adama.routes:app -p {{ wsgi_processes }}
-user=adama
 autostart=true
 autorestart=true
-environment=HOME="/home/adama"
 stopasgroup=true
 killasgroup=true
 stopsignal=INT

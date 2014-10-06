@@ -54,12 +54,11 @@
 
 - name: Setup local config file
   ini_file:
-    dest: /home/adama/.adama.conf
+    dest: /etc/adama.conf
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
   sudo: yes
-  sudo_user: adama
   with_items: config
   notify: Document local config file
 

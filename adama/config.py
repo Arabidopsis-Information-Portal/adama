@@ -1,7 +1,7 @@
 """Read config files from:
 
-- $SRC/adama/adama.conf
-- $USER/.adama.conf
+- Deployed adama.conf inside package
+- /etc/adama.conf
 
 """
 
@@ -16,10 +16,8 @@ HERE = location_of(__file__)
 
 def read_config():
     parser = ConfigParser.ConfigParser()
-    places = [os.path.join(sys.prefix, 'etc/adama.conf'),
-              os.path.join(sys.prefix, 'local/etc/adama.conf'),
-              os.path.abspath(os.path.join(HERE, '../adama.conf')),
-              os.path.expanduser('~/.adama.conf')]
+    places = [os.path.abspath(os.path.join(HERE, '../adama.conf')),
+              os.path.expanduser('/etc/adama.conf')]
     if not parser.read(places):
         raise RuntimeError("couldn't read config file from {0}"
                            .format(', '.join(places)))
