@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 from textwrap import dedent
 
@@ -5,12 +7,13 @@ from blessings import Terminal
 import click
 from cookiecutter.main import cookiecutter
 
+import adama
 from adama import __version__
 from adama.tools import location_of
 
 
 t = Terminal()
-HERE = location_of(__file__)
+HERE = os.path.join(location_of(adama.__file__), 'generator')
 
 
 @click.group()
