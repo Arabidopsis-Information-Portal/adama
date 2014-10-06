@@ -274,14 +274,14 @@ Add also the file ``metadata.yml`` with the metadata information:
    version: 0.1
    type: map_filter
    main_module: main.py
-   url: {{ adama_pre_base }}/json
+   url: {{ adama_base }}/json
    whitelist: ['127.0.0.1']
    description: ''
    requirements: []
    notify: ''
    json_path: result
 
-The url ``{{ adama_pre_base }}/json`` returns a sample JSON response:
+The url ``{{ adama_base }}/json`` returns a sample JSON response:
 
 .. code-block:: bash
 
