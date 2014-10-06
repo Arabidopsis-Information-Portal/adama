@@ -63,4 +63,4 @@ Free software: MIT license
 .. _ansible: http://www.ansible.com/
 .. _quickstart: https://github.com/waltermoreira/adama/blob/master/QUICKSTART.rst
 .. _issues: https://github.com/Arabidopsis-Information-Portal/adama/issues
-.. _tutorial: https://github.com/Arabidopsis-Information-Portal/adama/blob/documenting/docs/tutorial/tutorial.rst
+.. _tutorial: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/tutorial/tutorial.rst
