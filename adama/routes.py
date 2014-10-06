@@ -56,6 +56,9 @@ TOKEN_RE = re.compile('Bearer (.+)')
 
 @app.before_request
 def check_token():
+    if not Config.getboolean('server', 'auth'):
+        return
+    # bypass auth in /json and non-prefixed urls
     if request.path == PREFIX + '/json':
         return
     if not request.path.startswith(PREFIX):
