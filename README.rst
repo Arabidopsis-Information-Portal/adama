@@ -32,7 +32,7 @@ Request an access token to @waltermoreira.  After getting it, check access to Ad
        "status": "success"
    }   
 
-The access to Adama is granted if the response looks like above.  Otherwise, please, 
+The access to Adama is granted if the response looks like the above.  Otherwise, please, 
 report the output to @waltermoreira, or to the issues_ page.
 
 If everything looks ok, proceed to the tutorial.
@@ -48,7 +48,7 @@ Developing Adama
 ================
 
 The architecture_ and the `full documentation`_ are aimed to those developers who wish to contribute
-to the Adama base code.  There are instructions to set up a full development box that can run Adama 
+to the Adama codebase.  There are instructions to set up a full development box that can run Adama 
 locally for experimenting.
 
 
