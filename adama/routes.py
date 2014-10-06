@@ -21,7 +21,7 @@ def url(endpoint):
     return PREFIX + endpoint
 
 
-api.add_resource(JSONTestResource, url('/json'),
+api.add_resource(JSONTestResource, '/json',
                  endpoint='json')
 api.add_resource(NamespacesResource, url('/namespaces'),
                  endpoint='namespaces')
