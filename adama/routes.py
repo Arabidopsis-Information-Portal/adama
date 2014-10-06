@@ -1,4 +1,6 @@
-from flask import render_template, redirect, url_for
+import re
+
+from flask import render_template, redirect, url_for, request, abort
 
 from . import app
 from .api import api
@@ -10,6 +12,7 @@ from .service import (ServiceResource, ServiceQueryResource,
                       ServiceListResource)
 from .status import StatusResource
 from .jsontest import JSONTestResource
+from .token_store import token_store
 
 PREFIX = Config.get('server', 'prefix')
 
@@ -47,3 +50,18 @@ def hello_world():
 @app.route('/')
 def root():
     return redirect(url_for('hello_world'))
+
+
+TOKEN_RE = re.compile('Bearer (.+)')
+
+@app.before_request
+def check_token():
+    if not request.path.startswith(PREFIX):
+        return
+    auth = request.headers['Authorization']
+    match = TOKEN_RE.match(auth)
+    if not match:
+        abort(400)
+    token = match.group(1)
+    if token not in token_store:
+        abort(400)
