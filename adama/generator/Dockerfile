@@ -18,3 +18,5 @@ RUN chmod +x /adama/adama/generator/generator.py
 RUN ln -s /adama/adama/generator/generator.py /generator
 
 WORKDIR /target
+
+CMD ["/generator"]
