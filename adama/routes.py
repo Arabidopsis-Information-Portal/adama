@@ -58,6 +58,11 @@ TOKEN_RE = re.compile('Bearer (.+)')
 def check_token():
     if not Config.getboolean('server', 'auth'):
         return
+    # --- REVIEW THIS ---
+    # Allow unauthorized GET requests for now
+    if request.method == 'GET':
+        return
+    # ------
     # bypass auth in /json and non-prefixed urls
     if request.path == PREFIX + '/json':
         return
