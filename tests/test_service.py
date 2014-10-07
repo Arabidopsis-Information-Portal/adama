@@ -107,3 +107,9 @@ def test_valid_image_name():
     assert not adama.service.valid_image_name('fooX')
     assert not adama.service.valid_image_name('foo+')
     assert not adama.service.valid_image_name('Foo')
+
+def test_duplicated_in_whitelist():
+    a = adama.service.Service(
+        code_dir=os.path.join(HERE, 'python_test_adapter'),
+        whitelist=['example.com'])
+    assert a.whitelist == ['example.com']

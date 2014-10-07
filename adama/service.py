@@ -96,6 +96,7 @@ class Service(object):
                                self.version)
         self.adapter_name = adapter_iden(self.name, self.version)
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
+        self.whitelist = list(set(self.whitelist))
         self.validate_whitelist()
 
         self.main_module_path = self.find_main_module()
