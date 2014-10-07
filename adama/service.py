@@ -95,6 +95,7 @@ class Service(object):
                                self.version)
         self.adapter_name = adapter_iden(self.name, self.version)
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
+        self.whitelist.extend(get_nameservers())
         self.validate_whitelist()
 
         self.main_module_path = self.find_main_module()
@@ -508,3 +509,10 @@ def get_metadata_from(directory):
         # tried all files, give up and return empty
         return {}
     return yaml.load(f.read())
+
+
+def get_nameservers():
+    nameservers = open('/etc/resolv.conf').read()
+    for line in nameservers:
+        if line.startswith('nameserver'):
+            yield line.split()[1]
