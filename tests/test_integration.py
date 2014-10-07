@@ -216,12 +216,11 @@ def test_git_repo_map_filter():
             URL+'/{}/{}_v5'.format(NAMESPACE, SERVICE)).json()
         assert response['status'] == 'success'
         if response['result'].get('service'):
-            assert True
-            return
+            break
         time.sleep(1)
-    response = request.get(
+    response = requests.get(
         URL+'/{}/{}_v5'.format(NAMESPACE, SERVICE)).json()
-    assert response['result']['type'] == 'map_filter'
+    assert response['result']['service']['type'] == 'map_filter'
 
 def test_delete_service():
     for i in range(1, 6):
