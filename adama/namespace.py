@@ -11,6 +11,13 @@ class Namespace(object):
         self.url = url
         self.description = description
 
+        self.validate_args()
+
+    def validate_args(self):
+        if not self.name:
+            raise APIException(
+                'Namespace cannot be an empty string')
+
     def to_json(self):
         return {
             'name': self.name,

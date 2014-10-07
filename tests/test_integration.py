@@ -26,6 +26,11 @@ def test_register_namespace():
         URL+'/namespaces', data={'name': NAMESPACE}).json()
     assert resp['status'] == 'error'
 
+def test_register_namespace_empty_name():
+    resp = requests.post(
+        URL+'/namespaces', data={'name': ''}).json()
+    assert resp['status'] == 'error'
+
 def test_register_service():
     code = open(os.path.join(HERE, 'main.py')).read()
     resp = requests.post(URL+'/'+NAMESPACE+'/services',
