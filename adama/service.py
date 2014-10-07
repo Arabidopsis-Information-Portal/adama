@@ -512,7 +512,7 @@ def get_metadata_from(directory):
 
 
 def get_nameservers():
-    nameservers = open('/etc/resolv.conf').read()
+    nameservers = open('/etc/resolv.conf')
     for line in nameservers:
         if line.startswith('nameserver'):
             yield line.split()[1]
