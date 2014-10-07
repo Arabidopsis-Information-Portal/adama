@@ -26,7 +26,7 @@ class QueryWorker(QueueConnection):
                 t = self.operation(message)
             except Exception as exc:
                 print(json.dumps({
-                    'error': exc.message,
+                    'error': str(exc.message),
                     'traceback': traceback.format_exc()
                 }))
             finally:
@@ -73,7 +73,7 @@ class ProcessWorker(QueueConnection):
                 responder(json.dumps(out))
         except Exception as exc:
             responder(json.dumps({
-                'error': exc.message,
+                'error': str(exc.message),
                 'traceback': traceback.format_exc()
             }))
         finally:
