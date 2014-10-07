@@ -3,6 +3,7 @@ import itertools
 import json
 import multiprocessing
 import os
+import re
 import ssl
 import socket
 import threading
@@ -111,6 +112,10 @@ class Service(object):
                 if param[1]:
                     raise
                 setattr(self, param[0], param[2])
+        if not valid_image_name(self.name):
+            raise APIException("'{}' is not a valid service name.\n"
+                               "Allowed characters: [a-z0-9_.-]"
+                               .format(self.name))
 
     def to_json(self):
         obj = {key[0]: getattr(self, key[0]) for key in self.PARAMS}
@@ -508,3 +513,7 @@ def get_metadata_from(directory):
         # tried all files, give up and return empty
         return {}
     return yaml.load(f.read())
+
+
+def valid_image_name(name):
+    return re.search(r'[^a-z0-9-_.]', name) is None

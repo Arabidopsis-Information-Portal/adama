@@ -90,11 +90,6 @@ class ServicesResource(restful.Resource):
 
         args = parser.parse_args()
 
-        if args.name is not None and not valid_image_name(args.name):
-            raise APIException("'{}' is not a valid service name.\n"
-                               "Allowed characters: [a-z0-9_.-]"
-                               .format(args.name))
-
         for key, value in args.items():
             if value is None:
                 del args[key]
@@ -113,10 +108,6 @@ class ServicesResource(restful.Resource):
                   if namespace_of(name) == namespace and
                   srv['service'] is not None]
         return ok({'result': result})
-
-
-def valid_image_name(name):
-    return re.search(r'[^a-z0-9-_.]', name) is None
 
 
 def register_code(args, namespace, notifier=None):

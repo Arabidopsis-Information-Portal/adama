@@ -86,6 +86,16 @@ def test_test_register_git_repo():
     response = resp.json()
     assert response['status'] == 'success'
 
+def test_test_register_git_repo_wrong_name():
+    subprocess.check_call(
+        'tar zxf wrong_python_test_adapter.tgz'.split())
+    resp = requests.post(
+        URL+'/'+NAMESPACE+'/services',
+        data={'git_repository':
+                  os.path.join(HERE, 'wrong_python_test_adapter')})
+    response = resp.json()
+    assert response['status'] == 'error'
+
 def test_state():
     start = time.time()
     while True:

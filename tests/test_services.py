@@ -43,17 +43,6 @@ def test_extract_zip():
     finally:
         shutil.rmtree(temp, ignore_errors=True)
 
-def test_valid_image_name():
-    assert adama.services.valid_image_name('foo')
-    assert adama.services.valid_image_name('foo_bar')
-    assert adama.services.valid_image_name('foo.baz')
-    assert adama.services.valid_image_name('_foo')
-    assert adama.services.valid_image_name('foo.0-1')
-
-    assert not adama.services.valid_image_name('fooX')
-    assert not adama.services.valid_image_name('foo+')
-    assert not adama.services.valid_image_name('Foo')
-
 def test_register():
 
     q = multiprocessing.Queue()

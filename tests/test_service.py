@@ -96,3 +96,14 @@ def test_workers():
                               worker).strip()
         assert state == 'false'
         docker_output('rm', '-f', worker)
+
+def test_valid_image_name():
+    assert adama.service.valid_image_name('foo')
+    assert adama.service.valid_image_name('foo_bar')
+    assert adama.service.valid_image_name('foo.baz')
+    assert adama.service.valid_image_name('_foo')
+    assert adama.service.valid_image_name('foo.0-1')
+
+    assert not adama.service.valid_image_name('fooX')
+    assert not adama.service.valid_image_name('foo+')
+    assert not adama.service.valid_image_name('Foo')
