@@ -16,9 +16,9 @@ homepage_html = """
 <head>
   <title>API Spec</title>
   <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'/>
-  <link href='http://rantav.github.io/flask-restful-swagger/static/css/hightlight.default.css' media='screen' rel='stylesheet' type='text/css'/>
-  <link href='http://rantav.github.io/flask-restful-swagger/static/css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
-  <script type="text/javascript" src="http://rantav.github.io/flask-restful-swagger/static/js/all.js" /></script>
+  <link href='//rantav.github.io/flask-restful-swagger/static/css/hightlight.default.css' media='screen' rel='stylesheet' type='text/css'/>
+  <link href='//rantav.github.io/flask-restful-swagger/static/css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
+  <script type="text/javascript" src="//rantav.github.io/flask-restful-swagger/static/js/all.js" /></script>
   <script type="text/javascript">
     $(function () {
       window.swaggerUi = new SwaggerUi({
@@ -37,7 +37,7 @@ homepage_html = """
           console.log(data);
         }
       },
-      docExpansion: "none"
+      docExpansion: "list"
     });
     $('#input_apiKey').change(function() {
       var key = $('#input_apiKey')[0].value;
@@ -69,15 +69,17 @@ homepage_html = """
 <body>
 <div id='header'>
   <div class="swagger-ui-wrap">
-    <a id="logo" href="http://swagger.wordnik.com">swagger</a>
+    <a id="logo" href="">Adama</a>
+    <!--
     <form id='api_selector'>
       <div class='input icon-btn'>
-        <img id="show-wordnik-dev-icon" src="http://rantav.github.io/flask-restful-swagger/static/images/wordnik_api.png" title="Show Wordnik Developer Apis">
+        <img id="show-wordnik-dev-icon" src="//rantav.github.io/flask-restful-swagger/static/images/wordnik_api.png" title="Show Wordnik Developer Apis">
       </div>
       <div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>
       <div class='input'><input disabled='disabled' placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
       <div class='input'><a id="explore" href="#">Explore</a></div>
     </form>
+    -->
   </div>
 </div>
 <div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>

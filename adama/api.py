@@ -83,5 +83,5 @@ api = swagger.docs(MyApi(app),
                    apiVersion=__version__,
                    basePath=Config.get('server', 'url'),
                    resourcePath='/',
-                   produces=["application/json", "text/html"],
-                   api_spec_url='/api/spec')
+                   produces=["application/json"],
+                   api_spec_url='/api/adama')
