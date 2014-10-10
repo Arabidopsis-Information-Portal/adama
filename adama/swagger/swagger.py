@@ -4,8 +4,8 @@ import inspect
 import functools
 import re
 import flask_restful
-from flask_restful_swagger import registry, registered, api_spec_endpoint
-from flask_restful_swagger import html
+from . import registry, registered, api_spec_endpoint
+from . import html
 
 
 resource_listing_endpoint = None
