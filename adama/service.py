@@ -517,13 +517,12 @@ def get_metadata_from(directory):
     return yaml.load(f.read())
 
 
-<<<<<<< HEAD
 def valid_image_name(name):
     return re.search(r'[^a-z0-9-_.]', name) is None
-=======
+
+
 def get_nameservers():
     nameservers = open('/etc/resolv.conf')
     for line in nameservers:
         if line.startswith('nameserver'):
             yield line.split()[1]
->>>>>>> deployed
