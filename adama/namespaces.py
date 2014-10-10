@@ -11,12 +11,20 @@ from .namespace_store import namespace_store
 
 
 @swagger.model
+class NamespaceModel(object):
+    pass
+
+@swagger.model
+@swagger.nested(
+    result=NamespaceModel.__name__
+)
 class NamespacesResponse(object):
     "A response"
 
     resource_fields = {
-        'status': restful.fields.String(attribute='success or failure'),
-        'result': restful.fields.String
+        'status': restful.fields.String(attribute='success or error'),
+        'result': restful.fields.List(
+            restful.fields.Nested(NamespaceModel.resource_fileds))
     }
 
 
