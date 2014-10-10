@@ -96,6 +96,7 @@ class Service(object):
                                self.version)
         self.adapter_name = adapter_iden(self.name, self.version)
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
+        self.whitelist.extend(get_nameservers())
         self.whitelist = list(set(self.whitelist))
         self.validate_whitelist()
 
@@ -516,5 +517,13 @@ def get_metadata_from(directory):
     return yaml.load(f.read())
 
 
+<<<<<<< HEAD
 def valid_image_name(name):
     return re.search(r'[^a-z0-9-_.]', name) is None
+=======
+def get_nameservers():
+    nameservers = open('/etc/resolv.conf')
+    for line in nameservers:
+        if line.startswith('nameserver'):
+            yield line.split()[1]
+>>>>>>> deployed
