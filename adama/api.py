@@ -3,7 +3,7 @@ import textwrap
 import traceback
 
 from flask.ext import restful
-from flask_restful_swagger import swagger
+from adama.swagger import swagger
 
 from . import __version__, app
 from .config import Config

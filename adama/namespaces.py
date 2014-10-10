@@ -2,7 +2,7 @@ import urlparse
 
 from flask import url_for
 from flask.ext import restful
-from flask_restful_swagger import swagger
+from adama.swagger import swagger
 
 from .api import APIException, ok
 from .requestparser import RequestParser
