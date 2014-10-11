@@ -1,5 +1,11 @@
 ADAMA = '/adama';
 
+function addNamespace(ns) {
+    $('#namespaces').append(
+        $('<li class="services">').append(
+            $('<span>').text(ns.name)));
+};
+
 function refreshServices() {
     $.ajax({
         type: 'GET',
@@ -8,9 +14,7 @@ function refreshServices() {
             console.log(data);
             $('#services').empty();
             data.result.map(function(i) {
-                $('#services').append("---\n");
-                $('#services').append(JSON.stringify(i, undefined, 2));
-                $('#services').append("\n");
+                addNamespace(i);
             });
             var now = new Date();
             $('#refreshedServices').attr('title', now.toISOString());
@@ -23,5 +27,5 @@ $(document).ready(function () {
     $('#refreshServices').click(refreshServices);
     refreshServices();
 
-    $('#my-list').collapsibleList('.header', {search: true});
+    $('#namespaces').collapsibleList('.services', {search: true});
 });
