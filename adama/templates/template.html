@@ -71,11 +71,11 @@
           Adama
         </h1>
         <h2>
-          Araport DAta Mediator Api
+          <b>A</b>raport <b>Da</b>ta <b>M</b>ediator <b>A</b>pi
         </h2>
         <p>
-          Showcasing and experimenting with data federation strategies
-          for <a href="http://araport.org">Araport</a>.
+          Showcasing data federation services for the
+          <a href="http://araport.org">Arabidopsis Information Portal</a>.
         </p>
       </div>
 
@@ -86,11 +86,13 @@
       <p>
         <ul>
           <li>
-            See <a href="https://github.com/waltermoreira/adama">project
-            page at Github</a>.
+            <a href="/api/adama.html">API documentation and
+            playground</a>.
           </li>
           <li>
-            <a href="/api/spec.html">API documentation and playground</a>.
+            See <a href="https://github.com/Arabidopsis-Information-Portal/adama">project
+            page at Github</a>.
+          </li>
         </ul>
       </p>
 
@@ -102,6 +104,8 @@
         <button id="refreshServices" class="btn btn-primary" type="button">
           Refresh
         </button>
+        Last refreshed:
+        <abbr id="refreshedServices" class="timeago" title=""></abbr>
       </p>
 
       <p>
@@ -109,6 +113,19 @@
         <pre id="services">
         </pre>
       </p>
+
+      <ul id="my-list">
+        <li class="header">A</li>
+        <ul>
+          <li>Australia</li>
+          <li>Austria</li>
+        </ul>
+        <li class="header">B</li>
+        <ul>
+          <li>Bahamas, The</li>
+          <li>Bahrain</li>
+        </ul>
+      </ul>
 
     </div> <!-- /container -->
 
@@ -120,6 +137,10 @@
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}">
     </script>
     <script src="{{ url_for('static', filename='js/docs.min.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/collapsible-list.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/jquery.timeago.js') }}">
     </script>
     <script src="{{ url_for('static', filename='js/adama-site.js') }}">
     </script>
