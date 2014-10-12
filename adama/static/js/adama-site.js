@@ -12,18 +12,18 @@ function refreshServices() {
         url: ADAMA + '/namespaces',
         success: function(data) {
             console.log(data);
-            $('#services').empty();
+            $('#namespaces').empty();
             data.result.map(function(i) {
                 addNamespace(i);
             });
             var now = new Date();
-            $('#refreshedServices').attr('title', now.toISOString());
-            $('#refreshedServices').timeago();
+            $('#refreshedServices').timeago('update', now.toISOString());
         }
     });
 };
 
 $(document).ready(function () {
+    $('#refreshedServices').timeago();
     $('#refreshServices').click(refreshServices);
     refreshServices();
 
