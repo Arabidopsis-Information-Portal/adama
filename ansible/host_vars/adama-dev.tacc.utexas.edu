@@ -3,13 +3,13 @@
 config:
   - section: server
     option: url
-    value: adama-dev.tacc.utexas.edu
+    value: http://adama-dev.tacc.utexas.edu
   - section: server
     option: bind
     value: 0.0.0.0:80
   - section: server
     option: prefix
-    value: /community
+    value: /community/v0.3
   - section: store
     option: host
     value: localhost
