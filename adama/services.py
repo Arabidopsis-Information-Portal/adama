@@ -312,7 +312,7 @@ def register_code(args, namespace, notifier=None):
     args.code = args.code.stream.read()
     tempdir = tempfile.mkdtemp()
     user_code = extract(filename, args.code, tempdir)
-    return register(args, namespace, user_code, notifier)
+    return register(Service, args, namespace, user_code, notifier)
 
 
 def register_git_repository(args, namespace, notifier=None):
@@ -324,11 +324,14 @@ def register_git_repository(args, namespace, notifier=None):
         cd {} &&
         git clone {} user_code
         """.format(tempdir, args.git_repository), shell=True)
-    return register(
-        args, namespace, os.path.join(tempdir, 'user_code'), notifier)
+    return register(Service, args, namespace,
+                    os.path.join(tempdir, 'user_code'), notifier)
 
 
 def register(args, namespace, user_code, notifier=None):
+
+
+def register(service_class, args, namespace, user_code, notifier=None):
     """Register a service in a namespace.
 
     ``args`` is a dictionary with POST parameters. ``user_code`` is the
@@ -338,7 +341,8 @@ def register(args, namespace, user_code, notifier=None):
     the store.
 
     """
-    service = Service(namespace=namespace, code_dir=user_code, **dict(args))
+    service = service_class(
+        namespace=namespace, code_dir=user_code, **dict(args))
     try:
         slot = service_store[service.iden]['slot']
     except KeyError:

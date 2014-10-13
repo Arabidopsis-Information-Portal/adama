@@ -8,6 +8,7 @@ import pytest
 import adama.services
 from adama.tools import location_of
 from adama.service_store import service_store
+from adama.service import Service
 from adama.api import ok
 
 
@@ -51,6 +52,7 @@ def test_register():
 
     try:
         adama.services.register(
+            Service,
             args={'name': 'post', 'notify': 'http://example.com'},
             namespace='foo_ns',
             user_code=os.path.join(HERE, 'python_test_adapter'),
