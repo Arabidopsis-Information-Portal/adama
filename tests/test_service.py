@@ -112,4 +112,4 @@ def test_duplicated_in_whitelist():
     a = adama.service.Service(
         code_dir=os.path.join(HERE, 'python_test_adapter'),
         whitelist=['example.com'])
-    assert a.whitelist == ['example.com']
+    assert len([x for x in a.whitelist if x == 'example.com']) == 1
