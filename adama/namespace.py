@@ -30,6 +30,14 @@ class NamespaceResponseModel(object):
     }
 
 
+@swagger.model
+class DeleteResponseModel(object):
+
+    resource_fields = {
+        'status': restful.fields.String(attribute='success')
+    }
+
+
 class Namespace(object):
 
     def __init__(self, name, url, description):
@@ -54,7 +62,24 @@ class Namespace(object):
 
 class NamespaceResource(restful.Resource):
 
+    @swagger.operation(
+        notes='Return information about a namespace.',
+        nickname='getNamespace',
+        responseClass=NamespaceResponseModel.__name__,
+        parameters=[
+            {
+                'name': 'namespace',
+                'description': 'name of namespace',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'path'
+            }
+        ]
+    )
     def get(self, namespace):
+        """Get information about a namespace"""
+
         try:
             ns = namespace_store[namespace]
             return ok({'result': ns.to_json()})
@@ -62,7 +87,25 @@ class NamespaceResource(restful.Resource):
             raise APIException(
                 "namespace not found: {}'".format(namespace), 404)
 
+    @swagger.operation(
+        notes='Delete a namespace. Note that this operation always succeed '
+              'regardless of the existence of the namespace.',
+        nickname='deleteNamespace',
+        responseClass=DeleteResponseModel.__name__,
+        parameters=[
+            {
+                'name': 'namespace',
+                'description': 'name of namespace',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'path'
+            }
+        ]
+    )
     def delete(self, namespace):
+        """Delete a namespace"""
+
         try:
             del namespace_store[namespace]
         except KeyError:
