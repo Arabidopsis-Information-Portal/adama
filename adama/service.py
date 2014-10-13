@@ -25,6 +25,7 @@ from .tools import (location_of, identifier, service_iden,
                     adapter_iden, interleave)
 from .tasks import Producer
 from .service_store import service_store
+from .swagger import swagger
 
 
 LANGUAGES = {
@@ -331,6 +332,38 @@ class ServiceListResource(restful.Resource):
 
     def validate_get(self):
         return dict(request.args)
+
+
+@swagger.model
+class ServiceModel(object):
+
+    resource_fields = {
+        'name': restful.fields.String(attribute='name of the service'),
+        'namespace': restful.fields.String(
+            attribute='namespace of the service'),
+        'type': restful.fields.String(attribute='type of the adapter'),
+        'code_dir': restful.fields.String(
+            attribute='(internal) location of adapter code in the server'),
+        'version': restful.fields.String(attribute='version of the adapter'),
+        'url': restful.fields.String(
+            attribute='url of third party data service'),
+        'whitelist': restful.fields.List(
+            restful.fields.String,
+            attribute="ip's or domains the adapter can access"),
+        'description': restful.fields.String(
+            attribute='description of the service'),
+        'requirements': restful.fields.List(
+            restful.fields.String,
+            attribute='third party packages needed by the adapter'),
+        'notify': restful.fields.String(
+            attribute='url to notify via POST when adapter is ready'),
+        'json_path': restful.fields.String(
+            attribute='location of array of results in response'),
+        'main_module': restful.fields.String(
+            attribute='path to main module'),
+        'metadata': restful.fields.String(
+            attribute='path to metadata file')
+    }
 
 
 class ServiceResource(restful.Resource):
