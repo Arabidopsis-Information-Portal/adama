@@ -195,6 +195,8 @@ def add_model(model_class):
     for field_name, field_type in model_class.resource_fields.iteritems():
       nested_type = nested[field_name] if field_name in nested else None
       properties[field_name] = deduce_swagger_type(field_type, nested_type)
+      properties[field_name]['description'] = getattr(
+        field_type, 'attribute', '')
   elif '__init__' in dir(model_class):
     # Alternatively, if a resource_fields does not exist, we deduce the model
     # fields from the parameters sent to its __init__ method
