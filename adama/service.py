@@ -6,6 +6,7 @@ import os
 import re
 import ssl
 import socket
+import textwrap
 import threading
 import urlparse
 
@@ -26,6 +27,7 @@ from .tools import (location_of, identifier, service_iden,
 from .tasks import Producer
 from .service_store import service_store
 from .swagger import swagger
+from .namespace import DeleteResponseModel
 
 
 LANGUAGES = {
@@ -298,7 +300,19 @@ class Service(object):
 
 class ServiceQueryResource(restful.Resource):
 
+    @swagger.operation(
+        notes=textwrap.dedent(
+            """Perform a search query using the adapter registered for this
+            service.
+
+            <p>The parameters and response type of this operation are
+            dependent on the particular service.</p>
+
+            """)
+    )
     def get(self, namespace, service):
+        """Perform a query using a service"""
+
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
@@ -318,7 +332,19 @@ class ServiceQueryResource(restful.Resource):
 
 class ServiceListResource(restful.Resource):
 
+    @swagger.operation(
+        notes=textwrap.dedent(
+            """Perform a list query using the adapter registered for this
+            service.
+
+            <p>This query takes no parameters other than pagination
+            specific parameters. It returns a list of objects.</p>
+
+            """)
+    )
     def get(self, namespace, service):
+        """List all objects using a service"""
+        
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
@@ -366,9 +392,46 @@ class ServiceModel(object):
     }
 
 
+@swagger.model
+@swagger.nested(
+    result=ServiceModel.__name__
+)
+class ServiceResponseModel(object):
+
+    resource_fields = {
+        'status': restful.fields.String(attribute='success or error'),
+        'result': restful.fields.Nested(ServiceModel.resource_fields)
+    }
+
+
 class ServiceResource(restful.Resource):
 
+    @swagger.operation(
+        notes="Obtain information about a service.",
+        nickname="getService",
+        responseClass=ServiceResponseModel.__name__,
+        parameters=[
+            {
+                'name': 'namespace',
+                'description': 'namespace of the service',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'path'
+            },
+            {
+                'name': 'service',
+                'description': 'name of the service, including the version',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'path'
+            }
+        ]
+    )
     def get(self, namespace, service):
+        """Get information about a service"""
+
         full_name = service_iden(namespace, service)
         try:
             srv = service_store[full_name]
@@ -388,10 +451,35 @@ class ServiceResource(restful.Resource):
                 .format(namespace, service),
                 404)
 
-    def post(self, namespace, service):
-        pass
-
+    @swagger.operation(
+        notes="Delete a service in a namespace. Note that this operation "
+              "always succeed. Also, the service is deleted only in the "
+              "given namespace, and since the name includes the version, "
+              "no other version of the same service is deleted.",
+        nickname='deleteService',
+        responseClass=DeleteResponseModel.__name__,
+        parameters=[
+            {
+                'name': 'namespace',
+                'description': 'namespace of the service',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'path'
+            },
+            {
+                'name': 'service',
+                'description': 'name of the service, including the version',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'path'
+            }
+        ]
+    )
     def delete(self, namespace, service):
+        """Delete a service"""
+
         name = service_iden(namespace, service)
         try:
             srv = service_store[name]['service']
