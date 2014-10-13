@@ -61,7 +61,7 @@ class WorkerState(Enum):
     error = 2
 
 
-class Service(object):
+class AbstractService(object):
 
     METADATA_DEFAULT = ''
     PARAMS = [
@@ -80,6 +80,21 @@ class Service(object):
         ('main_module', False, 'main'),
         ('metadata', False, METADATA_DEFAULT)
     ]
+
+    def make_image(self):
+        pass
+
+    def start_workers(self):
+        pass
+
+    def check_health(self):
+        pass
+
+    def exec_worker(self, endpoint, args, request):
+        pass
+
+
+class Service(AbstractService):
 
     def __init__(self, **kwargs):
         """Initialize service.
