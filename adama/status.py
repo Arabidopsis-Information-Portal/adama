@@ -1,9 +1,9 @@
 import subprocess
 
 from flask.ext import restful
-from adama.swagger import swagger
 
 from . import __version__
+from .swagger import swagger
 from .api import ok
 from .tools import location_of
 
