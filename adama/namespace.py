@@ -2,6 +2,32 @@ from flask.ext import restful
 
 from .api import APIException, ok
 from .namespace_store import namespace_store
+from .swagger import swagger
+
+
+@swagger.model
+class NamespaceModel(object):
+
+    resource_fields = {
+        'name': restful.fields.String(attribute='Name of the namespace'),
+        'url': restful.fields.String(
+            attribute='Url associated to the namespace '
+                      '(for documentation purposes)'),
+        'description': restful.fields.String(
+            attribute='Description of the namespace'),
+    }
+
+
+@swagger.model
+@swagger.nested(
+    result=NamespaceModel.__name__
+)
+class NamespaceResponseModel(object):
+
+    resource_fields = {
+        'status': restful.fields.String(attribute='success or error'),
+        'result': restful.fields.Nested(NamespaceModel.resource_fields)
+    }
 
 
 class Namespace(object):

@@ -2,38 +2,43 @@ import urlparse
 
 from flask import url_for
 from flask.ext import restful
-from adama.swagger import swagger
 
+from .swagger import swagger
 from .api import APIException, ok
 from .requestparser import RequestParser
-from .namespace import Namespace
+from .namespace import Namespace, NamespaceModel, NamespaceResponseModel
 from .namespace_store import namespace_store
 
-
-@swagger.model
-class NamespaceModel(object):
-    pass
 
 @swagger.model
 @swagger.nested(
     result=NamespaceModel.__name__
 )
-class NamespacesResponse(object):
-    "A response"
+class NamespacesResponseModel(object):
+     """List of namespaces"""
+
+     resource_fields = {
+         'status': restful.fields.String(attribute='success or error'),
+         'result': restful.fields.List(
+             restful.fields.Nested(NamespaceModel.resource_fields))
+     }
+
+
+@swagger.model
+class CreatedNamespaceModel(object):
 
     resource_fields = {
         'status': restful.fields.String(attribute='success or error'),
-        'result': restful.fields.List(
-            restful.fields.Nested(NamespaceModel.resource_fileds))
+        'result': restful.fields.String(
+            attribute='Url of the new created namespace')
     }
-
 
 class NamespacesResource(restful.Resource):
 
     @swagger.operation(
-        notes='Register a new namespace',
-        nickname='registerNamespace',
-        responseClass=NamespacesResponse.__name__,
+        notes='Create a new namespace.',
+        nickname='createNamespace',
+        responseClass=CreatedNamespaceModel.__name__,
         parameters=[
             {
                 'name': 'name',
@@ -62,6 +67,8 @@ class NamespacesResource(restful.Resource):
         ]
     )
     def post(self):
+        """Create a new namespace"""
+
         args = self.validate_post()
         return self.register_namespace(args)
 
@@ -92,6 +99,23 @@ class NamespacesResource(restful.Resource):
         args = parser.parse_args()
         return args
 
+    @swagger.operation(
+        notes="Return a list of all registered namespaces.",
+        responseClass=NamespacesResponseModel.__name__,
+        nickname='getNamespaces',
+        responseMessages=[
+            {
+                'code': 200,
+                'message': 'list of namespaces'
+            },
+            {
+                'code': 500,
+                'message': 'internal error'
+            },
+        ]
+    )
     def get(self):
+        """Get list of namespaces"""
+
         result = [ns.to_json() for (name, ns) in namespace_store.items()]
         return ok({'result': result})
