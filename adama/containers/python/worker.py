@@ -71,6 +71,10 @@ class GenericWorker(QueueConnection):
                 'body': body
             }))
         except Exception as exc:
+            responder(json.dumps({
+                'error': str(exc.message),
+                'traceback': traceback.format_exc()
+            }))
         finally:
             responder('END')
             responder(json.dumps({}))
