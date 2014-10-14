@@ -11,7 +11,6 @@ from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
                       ServiceListResource)
 from .status import StatusResource
-from .jsontest import JSONTestResource
 from .token_store import token_store
 
 PREFIX = Config.get('server', 'prefix')
