@@ -46,24 +46,40 @@ class QueryWorker(QueueConnection):
         return t_end - t_start
 
     def run(self):
-        main_module_path = os.environ.get('MAIN_MODULE_PATH', '')
-        main_module_name = os.environ['MAIN_MODULE_NAME']
-        module_name, _ = os.path.splitext(main_module_name)
-        sys.path.insert(0, os.path.join(HERE, 'user_code', main_module_path))
-        self.module = importlib.import_module(module_name)
-
+        self.module = find_main_module()
         self.consume_forever(self.callback)
+
+
+class GenericWorker(QueueConnection):
+
+    def run(self):
+        self.module = find_main_module()
+        self.consume_forever(self.callback)
+
+    def operation(self, body):
+        d = json.loads(body)
+        d['worker'] = os.uname()[1]
+        endpoint = d['endpoint']
+
+        return getattr(self.module, endpoint)(d)
+
+    def callback(self, message, responder):
+        try:
+            headers, body = self.operation(message)
+            responder(json.dumps({
+                'headers': headers,
+                'body': body
+            }))
+        except Exception as exc:
+        finally:
+            responder('END')
+            responder(json.dumps({}))
 
 
 class ProcessWorker(QueueConnection):
 
     def run(self):
-        main_module_path = os.environ.get('MAIN_MODULE_PATH', '')
-        main_module_name = os.environ['MAIN_MODULE_NAME']
-        module_name, _ = os.path.splitext(main_module_name)
-        sys.path.insert(0, os.path.join(HERE, 'user_code', main_module_path))
-        self.module = importlib.import_module(module_name)
-
+        self.module = find_main_module()
         self.consume_forever(self.callback)
 
     def callback(self, message, responder):
@@ -131,12 +147,21 @@ def parse_args():
     return parser.parse_args()
 
 
+def find_main_module():
+    main_module_path = os.environ.get('MAIN_MODULE_PATH', '')
+    main_module_name = os.environ['MAIN_MODULE_NAME']
+    module_name, _ = os.path.splitext(main_module_name)
+    sys.path.insert(0, os.path.join(HERE, 'user_code', main_module_path))
+    return importlib.import_module(module_name)
+
+
 def get_class_for(kind):
     """Map the type of adapter to the proper class."""
 
     map = {
         'map_filter': ProcessWorker,
-        'query': QueryWorker
+        'query': QueryWorker,
+        'generic': GenericWorker
     }
     return map[kind]
 
