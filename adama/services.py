@@ -18,6 +18,7 @@ from .service_store import service_store
 from .requestparser import RequestParser
 from .tools import namespace_of
 from .service import Service, EXTENSIONS, ServiceModel
+from .passthrough import PassthroughService
 from .namespaces import namespace_store
 from .api import APIException, ok, error
 from .swagger import swagger
@@ -223,6 +224,8 @@ class ServicesResource(restful.Resource):
             service = register_code(args, namespace, post_notifier)
         elif 'git_repository' in args:
             service = register_git_repository(args, namespace, post_notifier)
+        elif args['type'] == 'passthrough':
+            service = register_passthrough(args, namespace, post_notifier)
         else:
             raise APIException(
                 'no code or git repository specified')
@@ -328,7 +331,11 @@ def register_git_repository(args, namespace, notifier=None):
                     os.path.join(tempdir, 'user_code'), notifier)
 
 
-def register(args, namespace, user_code, notifier=None):
+def register_passthrough(args, namespace, notifier=None):
+    """Register a passthrough adapter via form values."""
+
+    return register(
+        PassthroughService, args, namespace, None, notifier)
 
 
 def register(service_class, args, namespace, user_code, notifier=None):
