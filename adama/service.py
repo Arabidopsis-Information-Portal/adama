@@ -107,16 +107,16 @@ class AbstractService(object):
         return {key[0]: getattr(self, key[0]) for key in self.PARAMS}
 
     def make_image(self):
-        pass
+        raise NotImplementedError
 
     def start_workers(self):
-        pass
+        raise NotImplementedError
 
     def check_health(self):
-        pass
+        raise NotImplementedError
 
     def exec_worker(self, endpoint, args, request):
-        pass
+        raise NotImplementedError
 
 
 class Service(AbstractService):
