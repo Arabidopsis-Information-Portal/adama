@@ -90,6 +90,11 @@ class AbstractService(object):
         self.__dict__.update(kwargs)
         self._validate_args()
 
+        self.iden = identifier(self.namespace,
+                               self.name,
+                               self.version)
+        self.adapter_name = adapter_iden(self.name, self.version)
+
     def _validate_args(self):
         for param in self.PARAMS:
             try:
@@ -139,10 +144,6 @@ class Service(AbstractService):
         """
         super(Service, self).__init__(**kwargs)
 
-        self.iden = identifier(self.namespace,
-                               self.name,
-                               self.version)
-        self.adapter_name = adapter_iden(self.name, self.version)
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
         self.whitelist.extend(get_nameservers())
         self.whitelist = list(set(self.whitelist))
