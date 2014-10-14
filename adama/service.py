@@ -123,12 +123,7 @@ class Service(AbstractService):
         First get metadata from ``code_dir`` and then use ``kwargs``.
 
         """
-        code_dir = kwargs['code_dir']
-        self.metadata = kwargs.get('metadata', self.METADATA_DEFAULT)
-        self.__dict__.update(get_metadata_from(
-            os.path.join(code_dir, self.metadata)))
-        self.__dict__.update(kwargs)
-        self.validate_args()
+        super(Service, self).__init__(**kwargs)
 
         self.iden = identifier(self.namespace,
                                self.name,
@@ -144,19 +139,6 @@ class Service(AbstractService):
         self.state = None
         self.workers = []
         self.firewall = None
-
-    def validate_args(self):
-        for param in self.PARAMS:
-            try:
-                getattr(self, param[0])
-            except AttributeError:
-                if param[1]:
-                    raise
-                setattr(self, param[0], param[2])
-        if not valid_image_name(self.name):
-            raise APIException("'{}' is not a valid service name.\n"
-                               "Allowed characters: [a-z0-9_.-]"
-                               .format(self.name))
 
     def to_json(self):
         obj = {key[0]: getattr(self, key[0]) for key in self.PARAMS}
