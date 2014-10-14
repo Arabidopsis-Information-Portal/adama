@@ -23,10 +23,11 @@ class PassthroughService(AbstractService):
 
     def exec_worker(self, endpoint, args, request):
         method = getattr(requests, request.method.lower())
+        data = request.data if request.data else request.form
         response = method(
             self.url,
             params=request.args,
-            data=request.form)
+            data=data)
         return Response(
             response=response.content,
             status=response.status_code,
