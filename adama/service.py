@@ -69,7 +69,7 @@ class AbstractService(object):
         ('name', True),
         ('namespace', True),
         ('type', True),
-        ('code_dir', True),
+        ('code_dir', False, None),
         ('version', False, '0.1'),
         ('url', False, 'http://localhost'),
         ('whitelist', False, []),
