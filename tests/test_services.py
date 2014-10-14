@@ -9,6 +9,7 @@ import adama.services
 from adama.tools import location_of
 from adama.service_store import service_store
 from adama.service import Service
+from adama.passthrough import PassthroughService
 from adama.api import ok
 
 
@@ -71,6 +72,21 @@ def test_register():
         assert slot['slot'] == 'ready'
         assert slot['service'].adapter_name == 'post_v0.4'
         assert slot['service'].to_json()['name'] == 'post'
+
+        adama.services.register(
+            PassthroughService,
+            args={'name': 'pass', 'notify': 'http://example.com',
+                  'type': 'passthrough'},
+            namespace='foo_ns',
+            user_code=None,
+            notifier=notifier)
+
+        result = q.get(timeout=30)
+        assert result[1] is ok
+        service = result[2]
+        assert service.name == 'pass'
+        assert service.type == 'passthrough'
+
     except Queue.Empty:
         assert False
     finally:
@@ -79,3 +95,9 @@ def test_register():
             srv.stop_workers()
 
         del service_store['foo_ns.post_v0.4']
+
+        srv = service_store['foo_ns.pass_v0.1']['service']
+        if srv is not None:
+            srv.stop_workers()
+
+        del service_store['foo_ns.pass_v0.1']

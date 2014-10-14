@@ -101,6 +101,24 @@ def test_test_register_git_repo_wrong_name():
     response = resp.json()
     assert response['status'] == 'error'
 
+def test_register_passthrough_get():
+    resp = requests.post(
+        URL+'/'+NAMESPACE+'/services',
+        data={'name': SERVICE,
+              'type': 'passthrough',
+              'version': '6',
+              'url': 'http://httpbin.org/get'})
+    assert resp.json()['status'] == 'success'
+
+def test_register_passthrough_post():
+    resp = requests.post(
+        URL+'/'+NAMESPACE+'/services',
+        data={'name': SERVICE,
+              'type': 'passthrough',
+              'version': '7',
+              'url': 'http://httpbin.org/post'})
+    assert resp.json()['status'] == 'success'
+
 def test_state():
     start = time.time()
     while True:
@@ -222,8 +240,26 @@ def test_git_repo_map_filter():
         URL+'/{}/{}_v5'.format(NAMESPACE, SERVICE)).json()
     assert response['result']['service']['type'] == 'map_filter'
 
+def test_passthrough_get():
+    response = requests.get(
+        URL+'/{}/{}_v6/search?bar=4'.format(NAMESPACE, SERVICE)).json()
+    assert response['args']['bar'] == '4'
+
+def test_passthrough_post_form():
+    response = requests.post(
+        URL+'/{}/{}_v7/search?bar=4'.format(NAMESPACE, SERVICE),
+        data={'foo': 5}).json()
+    assert response['args']['bar'] == '4'
+    assert response['form']['foo'] == '5'
+
+def test_passthrough_post_data():
+    response = requests.post(
+        URL+'/{}/{}_v7/search?bar=4'.format(NAMESPACE, SERVICE),
+        data="some text").json()
+    assert response['data'] == 'some text'
+
 def test_delete_service():
-    for i in range(1, 6):
+    for i in range(1, 8):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'

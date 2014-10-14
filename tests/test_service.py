@@ -16,6 +16,7 @@ import pytest
 import adama.service
 from adama.tools import location_of
 from adama.docker import docker_output
+from adama.passthrough import PassthroughService
 
 HERE = location_of(__file__)
 
@@ -113,3 +114,9 @@ def test_duplicated_in_whitelist():
         code_dir=os.path.join(HERE, 'python_test_adapter'),
         whitelist=['example.com'])
     assert len([x for x in a.whitelist if x == 'example.com']) == 1
+
+def test_passthrough_service():
+    a = adama.passthrough.PassthroughService(
+        code_dir=None, name='foo', namespace='bar', type='passthrough')
+    assert a.check_health()
+    assert a.url is not None
