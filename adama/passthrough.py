@@ -15,6 +15,9 @@ class PassthroughService(AbstractService):
     def start_workers(self):
         pass
 
+    def stop_workers(self):
+        pass
+
     def check_health(self):
         return True
 

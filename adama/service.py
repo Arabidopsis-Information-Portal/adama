@@ -117,6 +117,9 @@ class AbstractService(object):
     def start_workers(self):
         raise NotImplementedError
 
+    def stop_workers(self):
+        raise NotImplementedError
+
     def check_health(self):
         raise NotImplementedError
 
