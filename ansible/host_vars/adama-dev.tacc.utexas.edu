@@ -9,7 +9,7 @@ config:
     value: 0.0.0.0:80
   - section: server
     option: prefix
-    value: /community/v0.3
+    value: /community/v{{ lookup('file', '../adama/VERSION') }}
   - section: store
     option: host
     value: localhost
