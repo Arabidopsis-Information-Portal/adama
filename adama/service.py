@@ -116,6 +116,16 @@ class AbstractService(object):
         raise NotImplementedError
 
     def exec_worker(self, endpoint, args, request):
+        """Exercise worker with data from the request.
+
+        ``endpoint`` denotes which endpoint is using the worker (search,
+        list).  ``args`` is the validated dictionary of GET arguments,
+        if any (note that this method can be called for POST requests too,
+        in which case ``args`` is empty).
+
+        ``request`` is the request object.
+
+        """
         raise NotImplementedError
 
 
