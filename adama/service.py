@@ -102,6 +102,10 @@ class AbstractService(object):
             raise APIException("'{}' is not a valid service name.\n"
                                "Allowed characters: [a-z0-9_.-]"
                                .format(self.name))
+
+    def to_json(self):
+        return {key[0]: getattr(self, key[0]) for key in self.PARAMS}
+
     def make_image(self):
         pass
 
@@ -141,7 +145,7 @@ class Service(AbstractService):
         self.firewall = None
 
     def to_json(self):
-        obj = {key[0]: getattr(self, key[0]) for key in self.PARAMS}
+        obj = super(Service, self).to_json()
         obj['language'] = self.language
         obj['workers'] = self.workers
         return obj
