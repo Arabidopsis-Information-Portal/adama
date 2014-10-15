@@ -65,9 +65,9 @@ class GenericWorker(QueueConnection):
 
     def callback(self, message, responder):
         try:
-            headers, body = self.operation(message)
+            content_type, body = self.operation(message)
             responder(json.dumps({
-                'headers': headers,
+                'content_type': content_type,
                 'body': body
             }))
         except Exception as exc:
