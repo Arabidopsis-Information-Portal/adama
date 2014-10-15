@@ -333,6 +333,26 @@ class Service(AbstractService):
             raise APIException('response from external service: {}'
                                .format(response))
 
+    def exec_worker_generic(self, endpoint, args, request):
+        queue = self.iden
+        args['endpoint'] = endpoint
+        client = Producer(queue_host=Config.get('queue', 'host'),
+                          queue_port=Config.getint('queue', 'port'),
+                          queue_name=queue)
+        client.send(args)
+        response = list(client.receive())
+        if len(response) != 1:
+            raise APIException(
+                'Wrong return type of generic adapter: got {} results'
+                .format(len(response)))
+        response = response[0]
+        if not 'error' in response:
+            return Response(response['body'],
+                            content_type=response['content_type'])
+        else:
+            return Response(response,
+                            content_type='application/json')
+
 
 class ServiceQueryResource(restful.Resource):
 
