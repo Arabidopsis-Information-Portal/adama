@@ -80,6 +80,17 @@ def test_register_processor():
     response = resp.json()
     assert response['status'] == 'success'
 
+def test_register_generic():
+    code = open(os.path.join(HERE, 'main5.py')).read()
+    resp = requests.post(URL+'/'+NAMESPACE+'/services',
+                  data={'name': SERVICE,
+                        'version': 8,
+                        'type': 'generic',
+                        'whitelist': ['127.0.0.1']},
+                  files={'code': ('main.py', code)})
+    response = resp.json()
+    assert response['status'] == 'success'
+
 def test_test_register_git_repo():
     subprocess.check_call(
         'tar zxf python_map_filter_test_adapter.tgz'.split())
@@ -192,6 +203,12 @@ def test_query():
     assert result[0]['args']['foo'] == '3'
     assert result[0]['args']['bar'] == 'baz'
 
+def test_query_generic():
+    response = requests.get(
+        URL+'/{}/{}_v8/search?foo=3&bar=baz'.format(NAMESPACE, SERVICE))
+    assert response.ok
+    assert response.headers['content-type'] == 'text/csv'
+
 def test_list():
     response = requests.get(
         URL+'/{}/{}_v1/list?foo=3'.format(NAMESPACE, SERVICE)).json()
@@ -259,7 +276,7 @@ def test_passthrough_post_data():
     assert response['data'] == 'some text'
 
 def test_delete_service():
-    for i in range(1, 8):
+    for i in range(1, 9):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'
