@@ -2,8 +2,8 @@
 Araport Data Mediator API
 =========================
 
-.. image:: https://badge.fury.io/gh/waltermoreira%2Fadama.svg
-    :target: http://badge.fury.io/gh/waltermoreira%2Fadama
+.. image:: https://badge.fury.io/gh/Arabidopsis-Information-Portal%2Fadama.svg
+    :target: http://badge.fury.io/gh/Arabidopsis-Information-Portal%2Fadama
 
 ..
    .. image:: https://travis-ci.org/waltermoreira/adama.png?branch=master
@@ -44,6 +44,8 @@ The tutorial_ illustrates the main features of Adama by going over a couple of e
 
 This document is meaningful for users and for developers who want to add new data sources to Adama.
 
+You can also read the `live docs of the API`_.
+
 Developing Adama
 ================
 
@@ -64,3 +66,4 @@ Free software: MIT license
 .. _quickstart: https://github.com/waltermoreira/adama/blob/master/QUICKSTART.rst
 .. _issues: https://github.com/Arabidopsis-Information-Portal/adama/issues
 .. _tutorial: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/tutorial/tutorial.rst
+.. _live docs of the API: https://adama-dev.tacc.utexas.edu/api/adama.html
