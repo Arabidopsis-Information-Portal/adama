@@ -72,3 +72,9 @@ def check_token():
     token = match.group(1)
     if token not in token_store:
         abort(400)
+
+@app.after_request
+def add_cors(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
