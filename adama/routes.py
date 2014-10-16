@@ -57,7 +57,7 @@ def check_token():
         return
     # --- REVIEW THIS ---
     # Allow unauthorized GET requests for now
-    if request.method == 'GET':
+    if request.method in ('GET', 'OPTIONS'):
         return
     # ------
     # bypass auth in /json and non-prefixed urls
