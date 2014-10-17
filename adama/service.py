@@ -350,7 +350,7 @@ class Service(AbstractService):
             return Response(response['body'],
                             content_type=response['content_type'])
         else:
-            return Response(response,
+            return Response(json.dumps(response),
                             content_type='application/json')
 
 
