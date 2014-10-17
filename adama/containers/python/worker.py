@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import argparse
+import base64
 import json
 import importlib
 import logging
@@ -68,7 +69,7 @@ class GenericWorker(QueueConnection):
             content_type, body = self.operation(message)
             responder(json.dumps({
                 'content_type': content_type,
-                'body': body
+                'body': base64.b64encode(body)
             }))
         except Exception as exc:
             responder(json.dumps({

@@ -1,3 +1,4 @@
+import base64
 import glob
 import itertools
 import json
@@ -347,7 +348,7 @@ class Service(AbstractService):
                 .format(len(response)))
         response = response[0]
         if not 'error' in response:
-            return Response(response['body'],
+            return Response(base64.b64decode(response['body']),
                             content_type=response['content_type'])
         else:
             return Response(json.dumps(response),
