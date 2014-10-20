@@ -5,6 +5,13 @@ from flask import render_template, redirect, url_for, request, abort
 from Crypto.PublicKey import RSA
 import jwt
 
+# monkey patch jwt to make it work with WSO2's algorithm
+from Crypto.Signature import PKCS1_v1_5
+from Crypto.Hash import SHA256
+jwt.verify_methods['SHA256WITHRSA'] = (
+    lambda msg, key, sig: PKCS1_v1_5.new(key).verify(SHA256.new(msg), sig))
+jwt.prepare_key_methods['SHA256WITHRSA'] = jwt.prepare_RS_key
+
 from . import app
 from .api import api
 from .config import Config
