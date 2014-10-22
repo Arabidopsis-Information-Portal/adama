@@ -1,7 +1,7 @@
 import base64
 import re
 
-from flask import render_template, redirect, url_for, request, abort
+from flask import render_template, request, abort
 from Crypto.PublicKey import RSA
 import jwt
 
