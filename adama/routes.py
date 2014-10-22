@@ -61,6 +61,9 @@ def root():
 
 @app.before_request
 def check_access():
+    # allow unrestricted access to docs
+    if request.path.startswith('/api/adama'):
+        return
     # don't control access to OPTIONS verb
     if request.method == 'OPTIONS':
         return
