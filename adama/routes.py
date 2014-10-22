@@ -59,6 +59,11 @@ def root():
     return redirect(url_for('hello_world'))
 
 
+@app.route('/api/adama/swagger-ui.js')
+def swagger_ui():
+    return app.send_static_file('js/swagger-ui.js')
+
+
 @app.before_request
 def check_access():
     # allow unrestricted access to docs

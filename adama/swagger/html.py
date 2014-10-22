@@ -1,4 +1,4 @@
-from flask import Response
+from flask import Response, url_for
 from jinja2 import Template
 
 def render_endpoint(endpoint):
@@ -7,7 +7,8 @@ def render_endpoint(endpoint):
 
 def render_homepage(resource_list_url):
   template = Template(homepage_html)
-  conf = {'resource_list_url': resource_list_url}
+  conf = {'resource_list_url': resource_list_url,
+          'swagger_ui': url_for('swagger_ui')}
   return Response(template.render(conf), mimetype='text/html')
 
 homepage_html = """
@@ -18,7 +19,7 @@ homepage_html = """
   <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'/>
   <link href='//rantav.github.io/flask-restful-swagger/static/css/hightlight.default.css' media='screen' rel='stylesheet' type='text/css'/>
   <link href='//rantav.github.io/flask-restful-swagger/static/css/screen.css' media='screen' rel='stylesheet' type='text/css'/>
-  <script type="text/javascript" src="//rantav.github.io/flask-restful-swagger/static/js/all.js" /></script>
+  <script type="text/javascript" src="{{ swagger_ui }}" /></script>
   <script type="text/javascript">
     $(function () {
       window.swaggerUi = new SwaggerUi({
@@ -70,16 +71,16 @@ homepage_html = """
 <div id='header'>
   <div class="swagger-ui-wrap">
     <a id="logo" href="">Adama</a>
-    <!--
     <form id='api_selector'>
       <div class='input icon-btn'>
         <img id="show-wordnik-dev-icon" src="//rantav.github.io/flask-restful-swagger/static/images/wordnik_api.png" title="Show Wordnik Developer Apis">
       </div>
+<!--
       <div class='input'><input placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"/></div>
-      <div class='input'><input disabled='disabled' placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
+-->
+      <div class='input'><input placeholder="api_key" id="input_apiKey" name="apiKey" type="text"/></div>
       <div class='input'><a id="explore" href="#">Explore</a></div>
     </form>
-    -->
   </div>
 </div>
 <div id="message-bar" class="swagger-ui-wrap">&nbsp;</div>
