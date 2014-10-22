@@ -50,13 +50,8 @@ api.add_resource(ServiceListResource,
 
 
 @app.route('/home')
-def hello_world():
+def home():
     return render_template('template.html')
-
-
-@app.route('/')
-def root():
-    return redirect(url_for('hello_world'))
 
 
 @app.route('/api/adama/swagger-ui.js')
