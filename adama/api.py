@@ -81,7 +81,7 @@ def error(obj):
 
 api = swagger.docs(MyApi(app),
                    apiVersion=__version__,
-                   basePath=Config.get('server', 'url'),
+                   basePath=Config.get('server', 'api_docs'),
                    resourcePath='/',
                    produces=["application/json"],
                    api_spec_url='/api/adama')

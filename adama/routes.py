@@ -35,10 +35,12 @@ def url(endpoint):
 
 api.add_resource(NamespacesResource, url('/namespaces'),
                  endpoint='namespaces')
-api.add_resource(StatusResource, url('/status'))
+api.add_resource(StatusResource, url('/status'),
+                 endpoint='status')
 api.add_resource(NamespaceResource, url('/<string:namespace>'),
                  endpoint='namespace')
-api.add_resource(ServicesResource, url('/<string:namespace>/services'))
+api.add_resource(ServicesResource, url('/<string:namespace>/services'),
+                 endpoint='services')
 api.add_resource(ServiceResource, url('/<string:namespace>/<string:service>'),
                  endpoint='service')
 api.add_resource(ServiceQueryResource,
