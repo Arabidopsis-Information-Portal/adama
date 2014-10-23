@@ -15,7 +15,7 @@ examples:
 
 .. code-block:: bash
 
-   $ export API=https://adama-dev.tacc.utexas.edu/community/v0.3
+   $ export API=https://araport-api.tacc.utexas.edu/community/v0.3
 
 
 You need to obtain a token through your method of choice.  In what
@@ -36,7 +36,7 @@ A ``GET`` request to ``$API/status`` should return:
 
    $ curl -L -X GET $API/status -H "Authorization: Bearer $TOKEN"
    {
-       "api": "Adama v",
+       "api": "Adama v0.3",
        "hash": "6869fde8e2617ab8f8a58c5c09b1512a80185500",
        "status": "success"
    }
@@ -55,7 +55,7 @@ Namespaces allow Adama to group adapters. Create a new namespace with:
    $ curl -X POST $API/namespaces -Fname=tacc -Fdescription="TACC namespace" \
       -H "Authorization: Bearer $TOKEN"
    {
-       "result": "https://adama-dev.tacc.utexas.edu/community/v0.3/tacc",
+       "result": "https://araport-api.tacc.utexas.edu/community/v0.3/tacc",
        "status": "success"
    }
 
@@ -173,9 +173,9 @@ Using curl_:
        "message": "registration started",
        "result": {
            "notification": "https://my.url",
-           "search": "https://adama-dev.tacc.utexas.edu/community/v0.3/search",
-           "list": "https://adama-dev.tacc.utexas.edu/community/v0.3/list",
-           "state": "https://adama-dev.tacc.utexas.edu/community/v0.3/example_v0.1"
+           "search": "https://araport-api.tacc.utexas.edu/community/v0.3/search",
+           "list": "https://araport-api.tacc.utexas.edu/community/v0.3/list",
+           "state": "https://araport-api.tacc.utexas.edu/community/v0.3/example_v0.1"
        },
        "status": "success"
    }
@@ -274,18 +274,18 @@ Add also the file ``metadata.yml`` with the metadata information:
    version: 0.1
    type: map_filter
    main_module: main.py
-   url: https://adama-dev.tacc.utexas.edu/community/v0.3/json
+   url: https://araport-api.tacc.utexas.edu/community/v0.3/json
    whitelist: ['127.0.0.1']
    description: ''
    requirements: []
    notify: ''
    json_path: result
 
-The url ``https://adama-dev.tacc.utexas.edu/community/v0.3/json`` returns a sample JSON response:
+The url ``https://araport-api.tacc.utexas.edu/community/v0.3/json`` returns a sample JSON response:
 
 .. code-block:: bash
 
-   $ curl https://adama-dev.tacc.utexas.edu/community/v0.3/json
+   $ curl https://araport-api.tacc.utexas.edu/community/v0.3/json
    {
        "result": [
            {
@@ -398,4 +398,4 @@ Current endpoints for Adama:
 
 .. _curl: http://curl.haxx.se
 
-.. |adama_base| replace:: ``https://adama-dev.tacc.utexas.edu/community/v0.3``
+.. |adama_base| replace:: ``https://araport-api.tacc.utexas.edu/community/v0.3``
