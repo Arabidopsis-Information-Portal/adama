@@ -91,7 +91,8 @@ def api_url_for(endpoint, **kwargs):
 
 api = swagger.docs(MyApi(app),
                    apiVersion=__version__,
-                   basePath=Config.get('server', 'api_docs'),
+                   basePath=(Config.get('server', 'api_url') +
+                             Config.get('server', 'api_prefix')),
                    resourcePath='/',
                    produces=["application/json"],
                    api_spec_url='/api/adama')
