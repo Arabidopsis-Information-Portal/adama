@@ -1,10 +1,9 @@
 import urlparse
 
-from flask import url_for
 from flask.ext import restful
 
 from .swagger import swagger
-from .api import APIException, ok
+from .api import APIException, ok, api_url_for
 from .requestparser import RequestParser
 from .namespace import Namespace, NamespaceModel, NamespaceResponseModel
 from .namespace_store import namespace_store
@@ -84,10 +83,7 @@ class NamespacesResource(restful.Resource):
         ns = Namespace(name=name, url=url, description=description)
         namespace_store[name] = ns
         return ok({
-            'result': url_for(
-                'namespace',
-                namespace=name,
-                _external=True)
+            'result': api_url_for('namespace', namespace=name)
         })
 
     def validate_post(self):

@@ -8,7 +8,6 @@ import textwrap
 import re
 import zipfile
 
-from flask import url_for
 from flask.ext import restful
 from werkzeug.datastructures import FileStorage
 import requests
@@ -20,7 +19,7 @@ from .tools import namespace_of
 from .service import Service, EXTENSIONS, ServiceModel
 from .passthrough import PassthroughService
 from .namespaces import namespace_store
-from .api import APIException, ok, error
+from .api import APIException, ok, error, api_url_for
 from .swagger import swagger
 
 
@@ -233,21 +232,18 @@ class ServicesResource(restful.Resource):
         return ok({
             'message': 'registration started',
             'result': {
-                'state_url': url_for(
+                'state_url': api_url_for(
                     'service',
                     namespace=service.namespace,
-                    service=service.adapter_name,
-                    _external=True),
-                'search_url': url_for(
+                    service=service.adapter_name),
+                'search_url': api_url_for(
                     'search',
                     namespace=service.namespace,
-                    service=service.adapter_name,
-                    _external=True),
-                'list_url': url_for(
+                    service=service.adapter_name),
+                'list_url': api_url_for(
                     'list',
                     namespace=service.namespace,
-                    service=service.adapter_name,
-                    _external=True),
+                    service=service.adapter_name),
                 'notification': service.notify
             }
         })
@@ -436,11 +432,10 @@ def post_notifier(url, result, data):
         content = result({
             'message': 'Registration successful',
             'result': {
-                'search': url_for(
+                'search': api_url_for(
                     'service',
                     namespace=data.namespace,
-                    service=data.adapter_name,
-                    _external=True)
+                    service=data.adapter_name)
             }
         })
     else:

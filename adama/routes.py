@@ -63,7 +63,6 @@ def swagger_ui():
 
 @app.before_request
 def check_access():
-    import ipdb; ipdb.set_trace()
     # allow unrestricted access to docs
     if request.path.startswith('/api/adama'):
         return
