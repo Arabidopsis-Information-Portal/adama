@@ -123,12 +123,3 @@ def add_cors(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
-
-def api_url_for(endpoint, **kwargs):
-    status_endpoint = url_for('status')
-    prefix = status_endpoint[:-len('/status')]
-    api_endpoint = url_for(endpoint, **kwargs)
-    return (Config.get('server', 'api_url') +
-            Config.get('server', 'api_prefix') +
-            api_endpoint[len(prefix):])
-
