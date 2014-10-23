@@ -2,17 +2,8 @@
 Araport Data Mediator API
 =========================
 
-.. image:: https://badge.fury.io/gh/Arabidopsis-Information-Portal%2Fadama.svg
-    :target: http://badge.fury.io/gh/Arabidopsis-Information-Portal%2Fadama
-
-..
-   .. image:: https://travis-ci.org/waltermoreira/adama.png?branch=master
-           :target: https://travis-ci.org/waltermoreira/adama
-
-..
-   .. image:: https://pypip.in/d/adama/badge.png
-           :target: https://pypi.python.org/pypi/adama
-
+.. image:: http://img.shields.io/badge/version-0.3-brightgreen.svg
+   :target: https://github.com/Arabidopsis-Information-Portal/adama
 
 This project implements a data federation strategy for the `Arabidopsis Information Portal`_.
 
