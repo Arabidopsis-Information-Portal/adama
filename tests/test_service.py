@@ -76,6 +76,18 @@ def test_adapter_detect_language():
         a = adama.service.Service(
             code_dir=os.path.join(HERE, 'spam_test_adapter'))
 
+def test_adapter_pyc():
+    a = adama.service.Service(
+        code_dir=os.path.join(HERE, 'pyc_test_adapter'))
+    assert a.language == 'python'
+    try:
+        os.rename(os.path.join(HERE, 'pyc_test_adapter/src/main.py'),
+                  os.path.join(HERE, 'pyc_test_adapter/src/_main.py'))
+        assert a.find_main_module().endswith('main.py')
+    finally:
+        os.rename(os.path.join(HERE, 'pyc_test_adapter/src/_main.py'),
+                  os.path.join(HERE, 'pyc_test_adapter/src/main.py'))
+
 def test_workers():
     a = adama.service.Service(
         code_dir=os.path.join(HERE, 'python_test_adapter'))

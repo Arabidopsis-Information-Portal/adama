@@ -181,8 +181,15 @@ class Service(AbstractService):
         """Find the path to the ``main_module``."""
 
         directory, basename = os.path.split(self.main_module)
-        module, _ = os.path.splitext(basename)
+        module, ext = os.path.splitext(basename)
+        if ext:
+            # if the module include the extension, just return its absolute
+            #  path
+            return os.path.join(self.code_dir, self.main_module)
 
+        # Otherwise, try to find the proper module, by assuming that there
+        # is only one file with such name.  Note that this may fail if
+        # there are other files such as byte-compiled binaries, etc.
         found = glob.glob(os.path.join(self.code_dir, directory, module+'.*'))
         if not found:
             raise APIException('module not found: {}'
