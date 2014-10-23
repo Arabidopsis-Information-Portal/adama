@@ -49,7 +49,7 @@ You can also read the `live docs of the API`_.
 Developing Adama
 ================
 
-The architecture_ and the `full documentation`_ are aimed to those developers who wish to contribute
+The architecture_ and the full documentation are aimed to those developers who wish to contribute
 to the Adama codebase.  There are instructions to set up a full development box that can run Adama 
 locally for experimenting.
 
