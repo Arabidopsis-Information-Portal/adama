@@ -21,7 +21,7 @@ import yaml
 
 from .api import APIException, RegisterException, ok
 from .config import Config
-from .docker import docker_output, start_container, tail_logs
+from .docker import docker_output, start_container, tail_logs, safe_docker
 from .firewall import Firewall
 from .tools import (location_of, identifier, service_iden,
                     adapter_iden, interleave)
@@ -219,8 +219,7 @@ class Service(AbstractService):
         prev_cwd = os.getcwd()
         os.chdir(self.code_dir)
         try:
-            output = docker_output('build', '-t', self.iden, '.')
-            print(output)
+            safe_docker('build', '-t', self.iden, '.')
         finally:
             os.chdir(prev_cwd)
 

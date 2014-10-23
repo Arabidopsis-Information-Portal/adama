@@ -5,6 +5,7 @@ import random
 import subprocess
 import sys
 
+from .api import APIException
 from .config import Config
 from .tools import TimeoutFunction, TimeoutFunctionException
 
@@ -15,9 +16,18 @@ def docker(*args, **kwargs):
     host = Config.get('docker', 'host')
     cmd = [Config.get('docker', 'command')] + (['-H', host] if host else [])
     stderr = kwargs.get('stderr', subprocess.STDOUT)
-    stdout = kwargs.get('stdout', subprocess.STDOUT)
+    stdout = kwargs.get('stdout', sys.stdout)
     return subprocess.Popen(
         cmd + list(args), stdout=stdout, stderr=stderr)
+
+
+def safe_docker(*args):
+    """Execute docker and raise exception with stderr&stdout if failed."""
+
+    proc = docker(*args, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+    out, _ = proc.communicate()
+    if proc.returncode:
+        raise APIException(out)
 
 
 def docker_output(*args):
