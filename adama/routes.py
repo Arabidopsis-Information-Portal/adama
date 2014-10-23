@@ -1,7 +1,7 @@
 import base64
 import re
 
-from flask import render_template, request, abort
+from flask import render_template, request, abort, url_for
 from Crypto.PublicKey import RSA
 import jwt
 
@@ -63,6 +63,7 @@ def swagger_ui():
 
 @app.before_request
 def check_access():
+    import ipdb; ipdb.set_trace()
     # allow unrestricted access to docs
     if request.path.startswith('/api/adama'):
         return
@@ -121,4 +122,13 @@ def check_bearer_token(request):
 def add_cors(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
+
+
+def api_url_for(endpoint, **kwargs):
+    status_endpoint = url_for('status')
+    prefix = status_endpoint[:-len('/status')]
+    api_endpoint = url_for(endpoint, **kwargs)
+    return (Config.get('server', 'api_url') +
+            Config.get('server', 'api_prefix') +
+            api_endpoint[len(prefix):])
 
