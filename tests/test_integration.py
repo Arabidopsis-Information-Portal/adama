@@ -168,6 +168,33 @@ def test_register_wrong_requirements():
             return
         time.sleep(5)
 
+def test_register_unavailable_requirement():
+    code = open(os.path.join(HERE, 'main5.py')).read()
+    resp = requests.post(URL+'/'+NAMESPACE+'/services',
+                  data={'name': SERVICE,
+                        'version': 9,
+                        'type': 'generic',
+                        'requirements': 're',
+                        'whitelist': ['127.0.0.1']},
+                  files={'code': ('main.py', code)})
+    response = resp.json()
+    assert response['status'] == 'success'
+
+    start = time.time()
+    while True:
+        if time.time() - start > TIMEOUT:
+            assert False
+        response = requests.get(
+            URL+'/{}/{}_v9'.format(NAMESPACE, SERVICE)).json()
+        assert response['status'] == 'success'
+        print response
+        if (response['result'].get('slot') == 'error' and
+            'No distributions at all found for re' in
+                    response['result'].get('msg', '')):
+            assert True
+            return
+        time.sleep(5)
+
 def test_services():
     response = requests.get(
         URL+'/{}/services'.format(NAMESPACE)).json()
@@ -276,7 +303,7 @@ def test_passthrough_post_data():
     assert response['data'] == 'some text'
 
 def test_delete_service():
-    for i in range(1, 9):
+    for i in range(1, 10):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'
