@@ -19,12 +19,12 @@ This project implements a data federation strategy for the `Arabidopsis Informat
 Quickstart
 ==========
 
-Request an access token to @waltermoreira.  After getting it, check access to Adama with:
+Grab a token from `Araport API Store`_.  After getting it, check access to Adama with:
 
 .. code-block:: bash
 
    $ export TOKEN=<my token>
-   $ curl -L -k https://adama-dev.tacc.utexas.edu/community/v0.3/status \
+   $ curl -L -k https://araport-api.tacc.utexas.edu/community/v0.3/status \
        -H "Authorization: Bearer $TOKEN"
    {
        "api": "Adama v0.3", 
@@ -62,6 +62,7 @@ Free software: MIT license
 
 .. _architecture: http://rawgit.com/waltermoreira/adama/master/docs/index.html
 .. _Arabidopsis Information Portal: https://www.araport.org/
+.. _Araport API Store: https://api.araport.org/store/
 .. _ansible: http://www.ansible.com/
 .. _quickstart: https://github.com/waltermoreira/adama/blob/master/QUICKSTART.rst
 .. _issues: https://github.com/Arabidopsis-Information-Portal/adama/issues
