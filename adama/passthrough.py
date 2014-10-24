@@ -52,6 +52,8 @@ def _join(url, endpoint):
     beginning of ``endpoint``, each one with the proper semantics.
 
     """
+    if not endpoint:
+        return url
     parsed_url = urlparse.urlsplit(url)
     new_path = os.path.join(parsed_url.path, endpoint)
     parts = list(parsed_url)
