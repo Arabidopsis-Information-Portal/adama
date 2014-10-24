@@ -20,6 +20,7 @@ from .namespace import NamespaceResource
 from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
                       ServiceListResource)
+from .passthrough import PassthroughServiceResource
 from .status import StatusResource
 from .token_store import token_store
 
@@ -49,6 +50,11 @@ api.add_resource(ServiceQueryResource,
 api.add_resource(ServiceListResource,
                  url('/<string:namespace>/<string:service>/list'),
                  endpoint='list')
+api.add_resource(PassthroughServiceResource,
+                 url('/<string:namespace>/<string:service>/access'),
+                 url('/<string:namespace>/<string:service>/access/'
+                     '<path:path>'),
+                 endpoint='access')
 
 
 @app.route('/home')
