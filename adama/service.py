@@ -392,30 +392,6 @@ class ServiceQueryResource(restful.Resource):
         # accept everything
         return {key: val[0] for key, val in dict(request.args).items()}
 
-    @swagger.operation(
-        notes="""Perform a search query using a passthrough adapter.
-
-        <p>The POST operation is only meaningful for passthrough adapters.
-        The parameters and response type are dependent on the particular
-        service.</p>
-
-        """
-    )
-    def post(self, namespace, service):
-        """Perform a POST to a service"""
-
-        try:
-            iden = service_iden(namespace, service)
-            srv = service_store[iden]['service']
-        except KeyError:
-            raise APIException('service not found: {}'
-                               .format(service_iden(namespace, service)),
-                               404)
-        if srv.type != 'passthrough':
-            raise APIException(
-                'POST is only allowed for passthrough adapters', 400)
-        return srv.exec_worker('search', None, request)
-
 
 class ServiceListResource(restful.Resource):
 
