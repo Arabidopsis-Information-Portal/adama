@@ -130,6 +130,15 @@ def test_register_passthrough_post():
               'url': 'http://httpbin.org/post'})
     assert resp.json()['status'] == 'success'
 
+def test_register_passthrough_endpoint():
+    resp = requests.post(
+        URL+'/'+NAMESPACE+'/services',
+        data={'name': SERVICE,
+              'type': 'passthrough',
+              'version': '10',
+              'url': 'http://httpbin.org'})
+    assert resp.json()['status'] == 'success'
+
 def test_state():
     start = time.time()
     while True:
@@ -286,24 +295,29 @@ def test_git_repo_map_filter():
 
 def test_passthrough_get():
     response = requests.get(
-        URL+'/{}/{}_v6/search?bar=4'.format(NAMESPACE, SERVICE)).json()
+        URL+'/{}/{}_v6/access?bar=4'.format(NAMESPACE, SERVICE)).json()
     assert response['args']['bar'] == '4'
 
 def test_passthrough_post_form():
     response = requests.post(
-        URL+'/{}/{}_v7/search?bar=4'.format(NAMESPACE, SERVICE),
+        URL+'/{}/{}_v7/access?bar=4'.format(NAMESPACE, SERVICE),
         data={'foo': 5}).json()
     assert response['args']['bar'] == '4'
     assert response['form']['foo'] == '5'
 
 def test_passthrough_post_data():
     response = requests.post(
-        URL+'/{}/{}_v7/search?bar=4'.format(NAMESPACE, SERVICE),
+        URL+'/{}/{}_v7/access?bar=4'.format(NAMESPACE, SERVICE),
         data="some text").json()
     assert response['data'] == 'some text'
 
+def test_passthrough_get_extra_fragment():
+    response = requests.get(
+        URL+'/{}/{}_v10/access/get?foo=3'.format(NAMESPACE, SERVICE)).json()
+    assert response['args']['foo'] == '3'
+
 def test_delete_service():
-    for i in range(1, 10):
+    for i in range(1, 11):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'
