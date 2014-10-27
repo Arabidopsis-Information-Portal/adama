@@ -5,7 +5,6 @@ import subprocess
 import tarfile
 import tempfile
 import textwrap
-import re
 import zipfile
 
 from flask.ext import restful
@@ -17,7 +16,6 @@ from .service_store import service_store
 from .requestparser import RequestParser
 from .tools import namespace_of
 from .service import Service, EXTENSIONS, ServiceModel
-from .passthrough import PassthroughService
 from .namespaces import namespace_store
 from .api import APIException, ok, error, api_url_for
 from .swagger import swagger
@@ -219,12 +217,10 @@ class ServicesResource(restful.Resource):
                 'cannot have code and git repository at '
                 'the same time')
 
-        if 'code' in args:
+        if 'code' in args or args.get('type') == 'passthrough':
             service = register_code(args, namespace, post_notifier)
         elif 'git_repository' in args:
             service = register_git_repository(args, namespace, post_notifier)
-        elif args['type'] == 'passthrough':
-            service = register_passthrough(args, namespace, post_notifier)
         else:
             raise APIException(
                 'no code or git repository specified')
@@ -307,10 +303,13 @@ class ServicesResource(restful.Resource):
 def register_code(args, namespace, notifier=None):
     """Register code that comes in the POST request."""
 
-    filename = args.code.filename
-    args.code = args.code.stream.read()
-    tempdir = tempfile.mkdtemp()
-    user_code = extract(filename, args.code, tempdir)
+    if args.type == 'passthrough':
+        user_code = None
+    else:
+        filename = args.code.filename
+        args.code = args.code.stream.read()
+        tempdir = tempfile.mkdtemp()
+        user_code = extract(filename, args.code, tempdir)
     return register(Service, args, namespace, user_code, notifier)
 
 
@@ -325,13 +324,6 @@ def register_git_repository(args, namespace, notifier=None):
         """.format(tempdir, args.git_repository), shell=True)
     return register(Service, args, namespace,
                     os.path.join(tempdir, 'user_code'), notifier)
-
-
-def register_passthrough(args, namespace, notifier=None):
-    """Register a passthrough adapter via form values."""
-
-    return register(
-        PassthroughService, args, namespace, None, notifier)
 
 
 def register(service_class, args, namespace, user_code, notifier=None):

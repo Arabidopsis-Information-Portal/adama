@@ -169,6 +169,8 @@ class Service(AbstractService):
         """Make a docker image for this service."""
 
         self.firewall = Firewall(self.whitelist)
+        if self.type == 'passthrough':
+            return
         render_template(
             os.path.dirname(self.main_module),
             os.path.basename(self.main_module_path),
@@ -180,6 +182,8 @@ class Service(AbstractService):
     def find_main_module(self):
         """Find the path to the ``main_module``."""
 
+        if self.type == 'passthrough':
+            return None
         directory, basename = os.path.split(self.main_module)
         module, ext = os.path.splitext(basename)
         if ext:
@@ -198,6 +202,8 @@ class Service(AbstractService):
         return found[0]
 
     def detect_language(self, module):
+        if not module:
+            return None
         _, ext = os.path.splitext(module)
         try:
             return EXTENSIONS[ext]
@@ -216,6 +222,8 @@ class Service(AbstractService):
                     .format(addr), 400)
 
     def build(self):
+        if self.type == 'passthrough':
+            return
         prev_cwd = os.getcwd()
         os.chdir(self.code_dir)
         try:
@@ -224,6 +232,8 @@ class Service(AbstractService):
             os.chdir(prev_cwd)
 
     def start_workers(self, n=None):
+        if self.type == 'passthrough':
+            return
         if self.language is None:
             raise APIException('language of adapter not detected yet', 500)
         if n is None:
@@ -246,6 +256,8 @@ class Service(AbstractService):
         return worker
 
     def stop_workers(self):
+        if self.type == 'passthrough':
+            return
         threads = []
         for worker in self.workers:
             threads.append(self.async_stop_worker(worker))
@@ -261,6 +273,9 @@ class Service(AbstractService):
 
     def check_health(self):
         """Check that all workers started ok."""
+
+        if self.type == 'passthrough':
+            return True
 
         q = multiprocessing.Queue()
 
@@ -359,6 +374,22 @@ class Service(AbstractService):
         else:
             return Response(json.dumps(response),
                             content_type='application/json')
+
+    def exec_worker_passthrough(self, endpoint, args, request):
+        """Pass a request straight to a pre-defined url.
+
+        ``endpoint`` is what comes after the /access endpoint, and it
+        should be added to the final url.
+
+        """
+        method = getattr(requests, request.method.lower())
+        data = request.data if request.data else request.form
+        url = _join(self.url, endpoint)
+        response = method(url, params=request.args, data=data)
+        return Response(
+            response=response.content,
+            status=response.status_code,
+            headers=response.headers.items())
 
 
 class ServiceQueryResource(restful.Resource):
@@ -710,3 +741,21 @@ def get_nameservers():
     for line in nameservers:
         if line.startswith('nameserver'):
             yield line.split()[1]
+
+
+def _join(url, endpoint):
+    """Join endpoint at the end of url.
+
+    Take care of considering the slashes at the end of ``url`` and at the
+    beginning of ``endpoint``, each one with the proper semantics.
+
+    """
+    if not endpoint:
+        return url
+    parsed_url = urlparse.urlsplit(url)
+    new_path = os.path.join(parsed_url.path, endpoint)
+    parts = list(parsed_url)
+    parts[2] = new_path
+    return urlparse.urlunsplit(parts)
+
+

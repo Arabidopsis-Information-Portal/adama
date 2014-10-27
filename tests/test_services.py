@@ -9,7 +9,6 @@ import adama.services
 from adama.tools import location_of
 from adama.service_store import service_store
 from adama.service import Service
-from adama.passthrough import PassthroughService
 from adama.api import ok
 
 
@@ -74,7 +73,7 @@ def test_register():
         assert slot['service'].to_json()['name'] == 'post'
 
         adama.services.register(
-            PassthroughService,
+            Service,
             args={'name': 'pass', 'notify': 'http://example.com',
                   'type': 'passthrough'},
             namespace='foo_ns',
