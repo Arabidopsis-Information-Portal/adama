@@ -139,6 +139,16 @@ def test_register_passthrough_endpoint():
               'url': 'http://httpbin.org'})
     assert resp.json()['status'] == 'success'
 
+def test_register_passthrough_via_git():
+    subprocess.check_call(
+        'tar zxf passthrough_test_adapter.tgz'.split())
+    resp = requests.post(
+        URL+'/'+NAMESPACE+'/services',
+        data={'git_repository':
+                os.path.join(HERE, 'passthrough_test_adapter')})
+    response = resp.json()
+    assert response['status'] == 'success'
+
 def test_state():
     start = time.time()
     while True:
@@ -317,7 +327,7 @@ def test_passthrough_get_extra_fragment():
     assert response['args']['foo'] == '3'
 
 def test_delete_service():
-    for i in range(1, 11):
+    for i in range(1, 12):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'
