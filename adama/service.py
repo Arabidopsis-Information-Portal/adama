@@ -470,6 +470,8 @@ class ServiceModel(object):
         'version': restful.fields.String(attribute='version of the adapter'),
         'url': restful.fields.String(
             attribute='url of third party data service'),
+        'self': restful.fields.String(
+            attribute='url to access this service'),
         'whitelist': restful.fields.List(
             restful.fields.String,
             attribute="ip's or domains the adapter can access"),

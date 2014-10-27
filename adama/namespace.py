@@ -13,6 +13,8 @@ class NamespaceModel(object):
         'url': restful.fields.String(
             attribute='Url associated to the namespace '
                       '(for documentation purposes)'),
+        'self': restful.fields.String(
+            attribute='Url to access this namespace'),
         'description': restful.fields.String(
             attribute='Description of the namespace'),
     }
