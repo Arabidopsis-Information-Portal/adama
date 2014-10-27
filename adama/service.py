@@ -19,7 +19,7 @@ import requests
 import ijson
 import yaml
 
-from .api import APIException, RegisterException, ok
+from .api import APIException, RegisterException, ok, api_url_for
 from .config import Config
 from .docker import docker_output, start_container, tail_logs, safe_docker
 from .firewall import Firewall
@@ -163,6 +163,9 @@ class Service(AbstractService):
         obj = super(Service, self).to_json()
         obj['language'] = self.language
         obj['workers'] = self.workers
+        obj['self'] = api_url_for('service',
+                                  namespace=self.namespace,
+                                  service=self.adapter_name)
         return obj
 
     def make_image(self):

@@ -1,6 +1,6 @@
 from flask.ext import restful
 
-from .api import APIException, ok
+from .api import APIException, ok, api_url_for
 from .namespace_store import namespace_store
 from .swagger import swagger
 
@@ -56,7 +56,8 @@ class Namespace(object):
         return {
             'name': self.name,
             'url': self.url,
-            'description': self.description
+            'description': self.description,
+            'self': api_url_for('namespace', namespace=self.name)
         }
 
 
