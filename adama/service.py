@@ -274,7 +274,7 @@ class Service(AbstractService):
     def async_stop_worker(self, worker):
         self.firewall.unregister(worker)
         thread = threading.Thread(target=docker_output,
-                                  args=('kill', worker))
+                                  args=('rm', '-f', worker))
         thread.start()
         return thread
 
