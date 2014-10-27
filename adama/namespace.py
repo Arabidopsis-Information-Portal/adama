@@ -55,12 +55,17 @@ class Namespace(object):
                 'Namespace cannot be an empty string')
 
     def to_json(self):
-        return {
+        obj = {
             'name': self.name,
             'url': self.url,
-            'description': self.description,
-            'self': api_url_for('namespace', namespace=self.name)
-        }
+            'description': self.description
+            }
+        try:
+            obj['self'] = api_url_for('namespace', namespace=self.name)
+        except RuntimeError:
+            # no app context, ignore 'self' field
+            pass
+        return obj
 
 
 class NamespaceResource(restful.Resource):

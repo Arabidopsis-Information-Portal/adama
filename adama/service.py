@@ -163,9 +163,13 @@ class Service(AbstractService):
         obj = super(Service, self).to_json()
         obj['language'] = self.language
         obj['workers'] = self.workers
-        obj['self'] = api_url_for('service',
-                                  namespace=self.namespace,
-                                  service=self.adapter_name)
+        try:
+            obj['self'] = api_url_for('service',
+                                      namespace=self.namespace,
+                                      service=self.adapter_name)
+        except RuntimeError:
+            # no app context, ignore 'self' field
+            pass
         return obj
 
     def make_image(self):
