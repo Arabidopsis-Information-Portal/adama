@@ -4,9 +4,9 @@ import subprocess
 
 class Firewall(object):
 
-    def __init__(self, whitelist,
+    def __init__(self, whitelist=None,
                  get=None, insert=None, delete=None):
-        self.whitelist = whitelist
+        self.whitelist = whitelist if whitelist is not None else []
         # function that retuns the chain FORWARD
         if get is not None:
             self.get = get
