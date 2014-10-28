@@ -270,6 +270,7 @@ class Service(AbstractService):
             threads.append(self.async_stop_worker(worker))
         for thread in threads:
             thread.join(STOP_TIMEOUT)
+        self.workers = []
 
     def async_stop_worker(self, worker):
         self.firewall.unregister(worker)
