@@ -9,14 +9,29 @@ def rebuild_service(name):
     srv.make_image()
 
 
-def restart_workers(name, n=None):
+def service(name):
     srv_slot = service_store[name]
-    srv = srv_slot['service']
+    return srv_slot['service']
+
+
+def save_service(service):
+    srv_slot = service_store[service.iden]
+    srv_slot['service'] = service
+    service_store[service.iden] = srv_slot
+
+
+def stop_workers(name):
+    srv = service(name)
+    srv.stop_workers()
+    save_service(srv)
+
+
+def restart_workers(name, n=None):
+    srv = service(name)
     srv.stop_workers()
     srv.start_workers(n=n)
     srv.check_health()
-    srv_slot['service'] = srv
-    service_store[name] = srv_slot
+    save_service(srv)
 
 
 def delete_iface(name):
