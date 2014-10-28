@@ -106,8 +106,7 @@ def test_workers():
     for worker in a.workers:
         state = docker_output('inspect', '-f', '{{.State.Running}}',
                               worker).strip()
-        assert state == 'false'
-        docker_output('rm', '-f', worker)
+        assert 'No such image or container' in state
 
 def test_valid_image_name():
     assert adama.service.valid_image_name('foo')
