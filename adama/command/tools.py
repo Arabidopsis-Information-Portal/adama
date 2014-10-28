@@ -1,6 +1,7 @@
 import subprocess
 
 from ..service_store import service_store
+from ..firewall import Firewall
 
 
 def rebuild_service(name):
@@ -37,3 +38,10 @@ def veth_ifaces():
         if iface.startswith('veth'):
             yield iface[:-1]
 
+def firewall_flush(iface):
+    """Remove all rules associated to ``iface``."""
+
+    fw = Firewall()
+    for _, target, _, dest, veth in fw._list():
+        if veth == iface:
+            fw.delete(dest, iface, target)
