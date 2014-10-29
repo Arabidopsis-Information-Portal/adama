@@ -349,10 +349,14 @@ class Service(AbstractService):
             method = tls1_get
         else:
             method = getattr(requests, request.method.lower())
+        try:
+            headers = {'Authorization':
+                           request.headers['Authorization']}
+        except KeyError:
+            headers = {}
         response = method(self.url,
                           params=request.args,
-                          headers={'Authorization':
-                                       request.headers['Authorization']},
+                          headers=headers,
                           stream=True)
         if response.ok:
             path = '.'.join(filter(None, [self.json_path, 'item']))
