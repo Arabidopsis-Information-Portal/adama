@@ -50,7 +50,7 @@ def veth_ifaces():
             iface = fields[1]
         except IndexError:
             continue
-        if iface.startswith('veth'):
+        if iface.startswith('A'):
             yield iface[:-1]
 
 def firewall_flush(iface):
