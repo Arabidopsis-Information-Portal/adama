@@ -8,6 +8,7 @@ import sys
 from .api import APIException
 from .config import Config
 from .tools import TimeoutFunction, TimeoutFunctionException
+from .ip_pool import IPPoolClient
 
 
 VETH_LENGTH = 14
@@ -89,9 +90,17 @@ def start_container(iden, *params):
     veth_a = 'A{0}'.format(container[:VETH_LENGTH])
     veth_b = 'B{0}'.format(container[:VETH_LENGTH])
 
-    x = random.randint(1, 255)
-    y = random.randint(1, 255)
-    ip = '172.17.{0}.{1}'.format(x, y)
+    pool_client = IPPoolClient()
+    try:
+        xy = pool_client.get()['ip']
+        if xy is None:
+            raise APIException(
+                "No more ip's for workers", 500)
+    except TimeoutFunctionException:
+        raise APIException(
+            "Couldn't connect to the ip pool server", 500)
+
+    ip = '172.17.{0}.{1}'.format(*xy)
 
     subprocess.check_call(
         ['sudo', 'sh', '-c',
