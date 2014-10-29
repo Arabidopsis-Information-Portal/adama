@@ -9,7 +9,8 @@ from .api import APIException
 from .config import Config
 from .tools import TimeoutFunction, TimeoutFunctionException
 
-MAX_VETH = 100000
+
+VETH_LENGTH = 14
 
 
 def docker(*args, **kwargs):
@@ -85,9 +86,8 @@ def start_container(iden, *params):
         'run', '-d', '--net=none', iden, *params).strip()
     pid = docker_output(
         'inspect', '-f', '{{.State.Pid}}', container).strip()
-    n = random.randint(1, MAX_VETH)
-    veth_a = 'vethA{0}'.format(n)
-    veth_b = 'vethB{0}'.format(n)
+    veth_a = 'A{0}'.format(container[:VETH_LENGTH])
+    veth_b = 'B{0}'.format(container[:VETH_LENGTH])
 
     x = random.randint(1, 255)
     y = random.randint(1, 255)
