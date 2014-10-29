@@ -63,6 +63,10 @@ class AbstractQueueConnection(object):
         pass
 
 
+class QueueConnectionException(Exception):
+    pass
+
+
 class QueueConnection(AbstractQueueConnection):
 
     def __init__(self, queue_host, queue_port, queue_name):
@@ -127,12 +131,15 @@ class QueueConnection(AbstractQueueConnection):
                     return
 
     def consume_forever(self, callback, **kwargs):
-        self.channel.basic_qos(prefetch_count=1)
-        self.channel.basic_consume(partial(self.on_consume, callback),
-                                   queue=self.queue_name,
-                                   no_ack=True,
-                                   **kwargs)
-        self.channel.start_consuming()
+        try:
+            self.channel.basic_qos(prefetch_count=1)
+            self.channel.basic_consume(partial(self.on_consume, callback),
+                                       queue=self.queue_name,
+                                       no_ack=True,
+                                       **kwargs)
+            self.channel.start_consuming()
+        except pika.exceptions.ChannelClosed:
+            raise QueueConnectionException('channel closed')
 
     def on_consume(self, callback, ch, method, props, body):
 
