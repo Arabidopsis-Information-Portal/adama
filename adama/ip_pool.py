@@ -5,6 +5,7 @@ import multiprocessing
 
 from .tasks import QueueConnection
 from .config import Config
+from .tools import TimeoutFunction
 
 
 class IPPoolDeque(object):
@@ -64,8 +65,9 @@ class IPPoolClient(object):
         conn = self.connect()
         conn.send(json.dumps({'tag': 'get'}))
         g = conn.receive()
+        f = TimeoutFunction(lambda: json.loads(next(g)), 1)
         try:
-            return json.loads(next(g))
+            return f()
         finally:
             g.close()
             conn.connection.close()
