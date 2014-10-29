@@ -325,6 +325,7 @@ class Service(AbstractService):
 
         queue = self.iden
         args['endpoint'] = endpoint
+        args['headers'] = dict(request.headers)
         client = Producer(queue_host=Config.get('queue', 'host'),
                           queue_port=Config.getint('queue', 'port'),
                           queue_name=queue)
@@ -350,6 +351,8 @@ class Service(AbstractService):
             method = getattr(requests, request.method.lower())
         response = method(self.url,
                           params=request.args,
+                          headers={'Authorization':
+                                       request.headers['Authorization']},
                           stream=True)
         if response.ok:
             path = '.'.join(filter(None, [self.json_path, 'item']))
