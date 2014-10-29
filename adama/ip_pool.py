@@ -3,7 +3,7 @@ from collections import deque
 import json
 import multiprocessing
 
-from .tasks import QueueConnection
+from .tasks import QueueConnection, QueueConnectionException
 from .config import Config
 from .tools import TimeoutFunction
 
@@ -46,7 +46,12 @@ class IPPoolServer(object):
         conn = QueueConnection(Config.get('queue', 'host'),
                                Config.getint('queue', 'port'),
                                'ip_pool')
-        conn.consume_forever(self.act, exclusive=True)
+        try:
+            conn.consume_forever(self.act, exclusive=True)
+        except QueueConnectionException:
+            # ignore queue connection error, since this means that there is
+            #  already a server running
+            pass
 
     def start(self):
         self.proc = multiprocessing.Process(
