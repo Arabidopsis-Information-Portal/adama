@@ -126,11 +126,12 @@ class QueueConnection(AbstractQueueConnection):
                 if is_done:
                     return
 
-    def consume_forever(self, callback):
+    def consume_forever(self, callback, **kwargs):
         self.channel.basic_qos(prefetch_count=1)
         self.channel.basic_consume(partial(self.on_consume, callback),
                                    queue=self.queue_name,
-                                   no_ack=True)
+                                   no_ack=True,
+                                   **kwargs)
         self.channel.start_consuming()
 
     def on_consume(self, callback, ch, method, props, body):
