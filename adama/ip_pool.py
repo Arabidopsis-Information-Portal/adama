@@ -73,23 +73,3 @@ class IPPoolClient(object):
     def put(self, obj):
         conn = self.connect()
         conn.send(json.dumps({'tag': 'put', 'ip': obj}))
-
-
-def get(s, m):
-    cl = IPPoolClient()
-    for i in range(m):
-        s.add(tuple(cl.get()['ip']))
-
-def test(n=50, m=10):
-    sets = [set() for i in range(n)]
-    threads = []
-    for a_set in sets:
-        t = threading.Thread(target=get, args=(a_set, m))
-        t.start()
-        threads.append(t)
-    [t.join() for t in threads]
-    return sets
-
-def check(sets):
-    return not any(u.intersection(v) for u in sets for v in sets if u != v)
-
