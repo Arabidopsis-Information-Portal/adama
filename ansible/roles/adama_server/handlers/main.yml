@@ -9,7 +9,7 @@
 
 - name: Document local config file
   lineinfile:
-    dest: /home/adama/.adama.conf
+    dest: /etc/adama.conf
     insertbefore: BOF
     line: "# Managed by ansible\n# See all options in $ADAMA_SRC/adama.conf\n# Tweak automatically configured values in $ADAMA_SRC/ansible/host_vars/<this_host>\n"
     state: present
