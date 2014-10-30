@@ -11,8 +11,10 @@ from .tools import TimeoutFunction, TimeoutFunctionException
 from .ip_pool import IPPoolClient
 
 
+# max length of the identifier for the virtual iface
 VETH_LENGTH = 14
-
+# max number of attempts to try to find a free ip
+MAX_ATTEMPTS = 10
 
 def docker(*args, **kwargs):
     host = Config.get('docker', 'host')
@@ -90,17 +92,22 @@ def start_container(iden, *params):
     veth_a = 'A{0}'.format(container[:VETH_LENGTH])
     veth_b = 'B{0}'.format(container[:VETH_LENGTH])
 
+    # try to find a fresh ip for the container
     pool_client = IPPoolClient()
     try:
-        xy = pool_client.get()['ip']
-        if xy is None:
+        for i in range(MAX_ATTEMPTS):
+            x = random.randint(1, 255)
+            y = random.randint(1, 255)
+            if pool_client.reserve((x, y)):
+                break
+        else:
             raise APIException(
                 "No more ip's for workers", 500)
     except TimeoutFunctionException:
         raise APIException(
             "Couldn't connect to the ip pool server", 500)
 
-    ip = '172.17.{0}.{1}'.format(*xy)
+    ip = '172.17.{0}.{1}'.format(x, y)
 
     subprocess.check_call(
         ['sudo', 'sh', '-c',
