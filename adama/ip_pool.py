@@ -1,46 +1,39 @@
-import threading
-from collections import deque
 import json
 import multiprocessing
 
 from .tasks import QueueConnection, QueueConnectionException
 from .config import Config
 from .tools import TimeoutFunction
+from .store import Store
 
 
-class IPPoolDeque(object):
+class IPPool(Store):
 
     def __init__(self):
-        self.ips = deque((i, j)
-                         for i in range(1, 255)
-                         for j in range(1, 255))
-        self.ips.remove((42, 1))
-
-    def get(self):
-        return self.ips.popleft()
-
-    def put(self, obj):
-        if obj in self.ips:
-            return
-        self.ips.append(obj)
+        # Use Redis db=4 for ip's
+        super(IPPool, self).__init__(db=4)
+        # Reserve the gateway ip: 172.17.42.1
+        self[(42, 1)] = True
 
 
 class IPPoolServer(object):
 
     def __init__(self):
-        self.ips = IPPoolDeque()
+        self.ips = IPPool()
         self.start()
 
     def act(self, message, responder):
         msg = json.loads(message)
-        if msg['tag'] == 'get':
-            try:
-                responder(json.dumps({'ip': self.ips.get()}))
-            except IndexError:
-                # no more ip's available
-                responder(json.dumps({'ip': None}))
-        if msg['tag'] == 'put':
-            self.ips.put(msg['ip'])
+        tag = msg['tag']
+        ip = tuple(msg['ip'])
+        if tag == 'remove':
+            del self.ips[ip]
+        if tag == 'reserve':
+            if ip in self.ips:
+                responder(json.dumps({'result': 'in use'}))
+            else:
+                self.ips[ip] = True
+                responder(json.dumps({'result': 'ok'}))
 
     def _run(self):
         conn = QueueConnection(Config.get('queue', 'host'),
@@ -66,17 +59,19 @@ class IPPoolClient(object):
                                Config.getint('queue', 'port'),
                                'ip_pool')
 
-    def get(self):
+    def reserve(self, ip):
         conn = self.connect()
-        conn.send(json.dumps({'tag': 'get'}))
+        conn.send(json.dumps({'tag': 'reserve',
+                              'ip': ip}))
         g = conn.receive()
         f = TimeoutFunction(lambda: json.loads(next(g)), 1)
         try:
-            return f()
+            r = f()
+            return r['result'] == 'ok'
         finally:
             g.close()
             conn.connection.close()
 
-    def put(self, obj):
+    def remove(self, ip):
         conn = self.connect()
-        conn.send(json.dumps({'tag': 'put', 'ip': obj}))
+        conn.send(json.dumps({'tag': 'remove', 'ip': ip}))
