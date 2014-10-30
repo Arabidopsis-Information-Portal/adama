@@ -15,7 +15,8 @@ class PassthroughServiceResource(restful.Resource):
         <p>The parameters and response type are dependent on the particular
         service.</p>
 
-        """
+        """,
+        nickname='getAccess'
     )
     def get(self, namespace, service, path=''):
         """Perform a GET request via a passthrough adapter"""
@@ -28,7 +29,8 @@ class PassthroughServiceResource(restful.Resource):
         <p>The parameters and response type are dependent on the particular
         service.</p>
 
-        """
+        """,
+        nickname='postAccess'
     )
     def post(self, namespace, service, path=''):
         """Perform a POST request via a passthrough adapter"""

@@ -417,7 +417,8 @@ class ServiceQueryResource(restful.Resource):
             <p>The parameters and response type of this operation are
             dependent on the particular service.</p>
 
-            """)
+            """),
+        nickname='query'
     )
     def get(self, namespace, service):
         """Perform a query using a service"""
@@ -449,7 +450,8 @@ class ServiceListResource(restful.Resource):
             <p>This query takes no parameters other than pagination
             specific parameters. It returns a list of objects.</p>
 
-            """)
+            """),
+        nickname='list'
     )
     def get(self, namespace, service):
         """List all objects using a service"""
