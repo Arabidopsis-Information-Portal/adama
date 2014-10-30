@@ -418,7 +418,7 @@ class ServiceQueryResource(restful.Resource):
             dependent on the particular service.</p>
 
             """),
-        nickname='query'
+        nickname='search'
     )
     def get(self, namespace, service):
         """Perform a query using a service"""
