@@ -17,14 +17,15 @@ class AbstractQueueConnection(object):
 
     """
 
-    TIMEOUT = 1  # second
+    CONNECTION_TIMEOUT = 10  # second
 
     def connect(self):
         """Establish the connection.
 
-        This method should be able to retry the connection until TIMEOUT or
-        sleep and try at the end of the TIMEOUT period.  Lack of network
-        connection is NOT an error until the TIMEOUT period expires.
+        This method should be able to retry the connection until
+        CONNECTION_TIMEOUT or sleep and try at the end of the
+        CONNECTION_TIMEOUT period.  Lack of network connection is NOT an
+        error until the CONNECTION_TIMEOUT period expires.
         """
         pass
 
@@ -54,6 +55,8 @@ class AbstractQueueConnection(object):
             g(message)
 
         that can be used to answer to the producer.
+
+        This method should be able to retry the connection.
 
         """
         pass
@@ -91,7 +94,7 @@ class QueueConnection(AbstractQueueConnection):
                 self.channel.queue_declare(queue=self.queue_name, durable=True)
                 return
             except pika.exceptions.AMQPConnectionError:
-                if time.time() - start_t > self.TIMEOUT:
+                if time.time() - start_t > self.CONNECTION_TIMEOUT:
                     raise
                 time.sleep(0.5)
 
@@ -131,15 +134,18 @@ class QueueConnection(AbstractQueueConnection):
                     return
 
     def consume_forever(self, callback, **kwargs):
-        try:
-            self.channel.basic_qos(prefetch_count=1)
-            self.channel.basic_consume(partial(self.on_consume, callback),
-                                       queue=self.queue_name,
-                                       no_ack=True,
-                                       **kwargs)
-            self.channel.start_consuming()
-        except pika.exceptions.ChannelClosed:
-            raise QueueConnectionException('channel closed')
+        while True:
+            try:
+                self.channel.basic_qos(prefetch_count=1)
+                self.channel.basic_consume(partial(self.on_consume, callback),
+                                           queue=self.queue_name,
+                                           no_ack=True,
+                                           **kwargs)
+                self.channel.start_consuming()
+            except Exception as exc:
+                # on exceptions, try to reconnect to the queue
+                # it will give up after CONNECTION_TIMEOUT
+                self.connect()
 
     def on_consume(self, callback, ch, method, props, body):
 
