@@ -132,7 +132,6 @@ class QueueConnection(AbstractQueueConnection):
     def consume_forever(self, callback):
         while True:
             try:
-                last_attempt_t = time.time()
                 self.channel.basic_qos(prefetch_count=1)
                 self.channel.basic_consume(partial(self.on_consume, callback),
                                            queue=self.queue_name,
