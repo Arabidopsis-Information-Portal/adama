@@ -65,12 +65,16 @@ def firewall_flush(iface):
 
 
 def _backup_code(srv, destination):
+    """Generate a .tar.bz2 with the code used to create the adapter"""
+
     target = os.path.join(destination, srv.iden+'.tar.bz2')
     with tarfile.open(target, 'w:bz2') as tar:
         tar.add(srv.code_dir)
 
 
 def backup_code(destination):
+    """Backup code for all the adapters in the service store"""
+
     for name in service_store:
         srv = service(name)
         _backup_code(srv, destination)
