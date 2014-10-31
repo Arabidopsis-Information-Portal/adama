@@ -78,3 +78,22 @@ def backup_code(destination):
     for name in service_store:
         srv = service(name)
         _backup_code(srv, destination)
+
+
+def backup_redis(destination):
+    target = os.path.join(destination, 'redis.tar.bz2')
+    with tarfile.open(target, 'w:bz2') as tar:
+        tar.add('/var/lib/redis')
+
+
+def backup_adapters(destination):
+    """Do a full backup.
+
+    Backup code and redis database.
+
+    Warning: this is not synchronized. Stop registration and deletions when
+    backing up.
+
+    """
+    backup_code(destination)
+    backup_redis(destination)
