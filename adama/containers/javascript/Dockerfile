@@ -14,4 +14,4 @@ RUN npm install -g amqplib
 ADD worker.js /root/worker.js
 
 CMD []
-ENTRYPOINT ["/sbin/my_init", "--", "node", "/root/worker.js"]
+ENTRYPOINT ["node", "/root/worker.js"]

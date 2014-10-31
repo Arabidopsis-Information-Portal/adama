@@ -9,4 +9,4 @@ ADD tasks.py /root/tasks.py
 EXPOSE 22
 
 CMD []
-ENTRYPOINT ["/sbin/my_init", "--", "python", "/root/worker.py"]
+ENTRYPOINT ["python", "/root/worker.py"]
