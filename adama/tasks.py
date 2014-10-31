@@ -66,10 +66,6 @@ class AbstractQueueConnection(object):
         pass
 
 
-class QueueConnectionException(Exception):
-    pass
-
-
 class QueueConnection(AbstractQueueConnection):
 
     def __init__(self, queue_host, queue_port, queue_name):
@@ -142,10 +138,17 @@ class QueueConnection(AbstractQueueConnection):
                                            no_ack=True,
                                            **kwargs)
                 self.channel.start_consuming()
+            except pika.exceptions.ChannelClosed:
+                if kwargs.get('exclusive', False):
+                    # if the channel closes and the connection is
+                    # 'exclusive', just return. This is so temporary
+                    # connections can be clean up automatically.
+                    return
             except Exception as exc:
                 # on exceptions, try to reconnect to the queue
                 # it will give up after CONNECTION_TIMEOUT
-                self.connect()
+                pass
+            self.connect()
 
     def on_consume(self, callback, ch, method, props, body):
 
