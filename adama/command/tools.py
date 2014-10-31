@@ -1,4 +1,6 @@
+import os
 import subprocess
+import tarfile
 
 from ..service_store import service_store
 from ..firewall import Firewall
@@ -60,3 +62,15 @@ def firewall_flush(iface):
     for _, target, _, dest, veth in fw._list():
         if veth == iface:
             fw.delete(dest, iface, target)
+
+
+def _backup_code(srv, destination):
+    target = os.path.join(destination, srv.iden+'.tar.bz2')
+    with tarfile.open(target, 'w:bz2') as tar:
+        tar.add(srv.code_dir)
+
+
+def backup_code(destination):
+    for name in service_store:
+        srv = service(name)
+        _backup_code(srv, destination)
