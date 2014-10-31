@@ -1,0 +1,5 @@
+---
+
+- name: Ensure redis is using AOF
+  command: redis-cli config set appendonly yes
+  sudo: yes

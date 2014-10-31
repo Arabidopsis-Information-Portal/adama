@@ -22,3 +22,11 @@
     state: started
     enabled: yes
   sudo: yes
+
+- name: Ensure redis is configured for using AOF
+  lineinfile:
+    dest: /etc/redis/redis.conf
+    regexp: ^appendonly
+    line: appendonly yes
+  sudo: yes
+  notify: Ensure redis is using AOF
