@@ -1,6 +1,8 @@
+import glob
 import os
 import subprocess
 import tarfile
+import time
 
 from ..service_store import service_store
 from ..firewall import Firewall
@@ -99,3 +101,33 @@ def backup_adapters(destination):
     """
     backup_code(destination)
     backup_redis(destination)
+
+
+def restore_code(directory):
+    adapters_path = os.path.join(directory, 'adapters')
+    for filepath in glob.glob(os.path.join(adapters_path, '*.tar.bz2')):
+        filename = os.path.basename(filepath)
+        name = filename[:-len('.tar.bz2')]
+        slot = service_store[name]
+        if slot['slot'] == 'ready':
+            subprocess.check_call(
+                'sudo tar jxf {0} -C /'.format(filepath).split())
+            print('Rebuilding {}'.format(name))
+            rebuild_service(name)
+            print('  Restarting {}'.format(name))
+            restart_workers(name)
+
+def restore_redis(directory):
+    tar = os.path.join(directory, 'redis.tar.bz2')
+    subprocess.check_call('sudo service redis-server stop'.split())
+    subprocess.check_call('sudo tar jxf {} -C /'.format(tar).split())
+    subprocess.check_call('sudo service redis-server start'.split())
+
+
+def restore_adapters(directory):
+    """Restore adapters code and redis database."""
+
+    restore_redis(directory)
+    # give some time to redis to spin up
+    time.sleep(1)
+    restore_code(directory)
