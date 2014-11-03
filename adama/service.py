@@ -22,8 +22,10 @@ import jinja2
 import requests
 import ijson
 import yaml
+from werkzeug.datastructures import FileStorage
 
 from . import app
+from .requestparser import RequestParser
 from .api import APIException, RegisterException, ok, api_url_for, error
 from .config import Config
 from .docker import docker_output, start_container, tail_logs, safe_docker
@@ -34,6 +36,7 @@ from .tasks import Producer
 from .service_store import service_store
 from .swagger import swagger
 from .namespace import DeleteResponseModel
+from .tools import chdir
 
 LANGUAGES = {
     'python': ('py', 'pip install {package}'),
@@ -622,15 +625,44 @@ class ServiceResource(restful.Resource):
             slot = service_store[name]
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
-        if slot['slot'] != 'ready':
-            raise APIException(
-                'service not in ready state: {}'.format(name), 400)
-        slot['slot'] = 'free'
-        service_store[name] = slot
         args = self.validate_put()
+        old_srv = slot['service']
+        if old_srv is None:
+            raise APIException('service not ready: {}'.format(name), 400)
+        old_srv.stop_workers()
+        slot['slot'] = 'free'
+        slot['service'] = None
+        service_store[name] = slot
         # if args.update, then update the git repo
+        if args.get('update_git_repository', False):
+            with chdir(old_srv.code_dir):
+                subprocess.check_call('git pull'.split())
         register(
-            Service, args, namespace, slot['service'].code_dir, post_notifier)
+            Service, args, namespace, old_srv.code_dir, post_notifier)
+        return ok({})
+
+    @staticmethod
+    def validate_put():
+        parser = RequestParser()
+        parser.add_argument('type', type=str)
+        parser.add_argument('url', type=str)
+        parser.add_argument('whitelist', type=str, action='append')
+        parser.add_argument('description', type=str)
+        parser.add_argument('requirements', type=str, action='append')
+        parser.add_argument('notify', type=str)
+        parser.add_argument('json_path', type=str)
+        parser.add_argument('main_module', type=str)
+        parser.add_argument('code', type=FileStorage, location='files')
+        parser.add_argument('update_git_repository', type=bool)
+        parser.add_argument('metadata', type=str)
+
+        args = parser.parse_args()
+
+        for key, value in args.items():
+            if value is None:
+                del args[key]
+
+        return args
 
 
 class FileLikeWrapper(object):
