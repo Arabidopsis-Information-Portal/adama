@@ -19,7 +19,7 @@ def test_extract_module():
     mod = open(os.path.join(HERE, 'main.py')).read()
     temp = tempfile.mkdtemp()
     try:
-        user_code = adama.services.extract('mymain.py', mod, temp)
+        user_code = adama.service.extract('mymain.py', mod, temp)
         assert open(os.path.join(user_code, 'mymain.py')).read() == mod
     finally:
         shutil.rmtree(temp, ignore_errors=True)
@@ -28,7 +28,7 @@ def test_extract_tarball():
     tarball = open(os.path.join(HERE, 'foo.tgz')).read()
     temp = tempfile.mkdtemp()
     try:
-        user_code = adama.services.extract('foo.tgz', tarball, temp)
+        user_code = adama.service.extract('foo.tgz', tarball, temp)
         assert open(
             os.path.join(user_code, 'main.py')).read().startswith('foo')
     finally:
@@ -38,7 +38,7 @@ def test_extract_zip():
     zipfile = open(os.path.join(HERE, 'foo.zip')).read()
     temp = tempfile.mkdtemp()
     try:
-        user_code = adama.services.extract('foo.zip', zipfile, temp)
+        user_code = adama.service.extract('foo.zip', zipfile, temp)
         assert open(
             os.path.join(user_code, 'main.rb')).read().startswith('foo')
     finally:
@@ -51,7 +51,7 @@ def test_register():
         q.put((url, result, data))
 
     try:
-        adama.services.register(
+        adama.service.register(
             Service,
             args={'name': 'post', 'notify': 'http://example.com'},
             namespace='foo_ns',
@@ -72,7 +72,7 @@ def test_register():
         assert slot['service'].adapter_name == 'post_v0.4'
         assert slot['service'].to_json()['name'] == 'post'
 
-        adama.services.register(
+        adama.service.register(
             Service,
             args={'name': 'pass', 'notify': 'http://example.com',
                   'type': 'passthrough'},
