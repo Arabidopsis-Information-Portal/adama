@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 import itertools
 import os
 import signal
@@ -55,3 +56,13 @@ def service_iden(namespace, service):
 
 def namespace_of(identifier):
     return identifier.split('.')[0]
+
+
+@contextmanager
+def chdir(directory):
+    old_wd = os.getcwd()
+    try:
+        os.chdir(directory)
+        yield
+    finally:
+        os.chdir(old_wd)
