@@ -6,7 +6,13 @@ import sys
 from textwrap import dedent
 import time
 
+import logging
+logging.basicConfig()
+
 import pika
+
+pika_logger = logging.getLogger('pika.adapters.blocking_connection')
+pika_logger.setLevel(logging.CRITICAL)
 
 
 class AbstractQueueConnection(object):
