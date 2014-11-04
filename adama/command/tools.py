@@ -81,7 +81,8 @@ def backup_code(destination):
 
     for name in service_store:
         srv = service(name)
-        _backup_code(srv, destination)
+        if srv.type != 'passthrough':
+            _backup_code(srv, destination)
 
 
 def backup_redis(destination):
