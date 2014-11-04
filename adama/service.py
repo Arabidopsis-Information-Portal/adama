@@ -527,6 +527,13 @@ class ServiceResponseModel(object):
     }
 
 
+@swagger.model
+class ModifyServiceResponseModel(object):
+
+    resource_fields = {
+        'status': restful.fields.String(attribute='success or error')
+    }
+
 class ServiceResource(restful.Resource):
 
     @swagger.operation(
@@ -617,6 +624,129 @@ class ServiceResource(restful.Resource):
             pass
         return ok({})
 
+    @swagger.operation(
+        notes=textwrap.dedent(
+            """Modify an existing service.
+
+            <p>This method allows to modify an existing service. Code can
+            be updated by specifiying the 'code' parameter, or by setting
+            the field 'update_git_repository', in which case the adapter
+            performs a "git pull". </p>
+
+            """),
+        nickname='modifyService',
+        responseClass=ModifyServiceResponseModel.__name__,
+        consumes='multipart/form-data',
+        parameters=[
+            {
+                'name': 'namespace',
+                'description': 'namespace of the service',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'path'
+            },
+            {
+                'name': 'service',
+                'description': 'name of the service, including the version',
+                'required': True,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'path'
+            },
+            {
+                'name': 'metadata',
+                'description': 'path of metadata file relative to '
+                               'git_repository root',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'type',
+                'description': 'type of the adapter',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'url',
+                'description': 'url of the third party data service',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'whitelist',
+                'description': 'ip or domain to be whitelisted',
+                'required': False,
+                'allowMultiple': True,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'description',
+                'description': 'description of the service',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'requirements',
+                'description': 'third party package needed by the adapter',
+                'required': False,
+                'allowMultiple': True,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'notify',
+                'description': 'url to notify when adapter is ready',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'json_path',
+                'description': 'location of the array of result in response',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'main_module',
+                'description': 'path of main module relative to '
+                               'git_repository root',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
+                'name': 'code',
+                'description': 'type of the adapter',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'File',
+                'paramType': 'form'
+            },
+            {
+                'name': 'update_git_repository',
+                'description': ('whether to update the git repository via'
+                                '"git pull"'),
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            }
+        ]
+    )
     def put(self, namespace, service):
         """Modify a service"""
 
