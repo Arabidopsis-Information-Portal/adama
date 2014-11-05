@@ -850,6 +850,7 @@ def result_generator(results, metadata):
         yield '---\n'
         yield exc
 
+
 def is_https(url):
     return urlparse.urlparse(url).scheme == 'https'
 
