@@ -12,6 +12,7 @@ import tarfile
 import textwrap
 import tempfile
 import threading
+import traceback
 import urlparse
 import zipfile
 
@@ -837,13 +838,17 @@ def result_generator(results, metadata):
     (for example: timing).
 
     """
-    yield '{"result": [\n'
-    for line in interleave(['\n, '], results):
-        yield line
-    yield '\n],\n'
-    yield '"metadata": {0},\n'.format(json.dumps(metadata()))
-    yield '"status": "success"}\n'
-
+    try:
+        yield '{"result": [\n'
+        for line in interleave(['\n, '], results):
+            yield line
+        yield '\n],\n'
+        yield '"metadata": {0},\n'.format(json.dumps(metadata()))
+        yield '"status": "success"}\n'
+    except Exception:
+        exc = traceback.format_exc()
+        yield '---\n'
+        yield exc
 
 def is_https(url):
     return urlparse.urlparse(url).scheme == 'https'
