@@ -796,6 +796,29 @@ class ServiceResource(restful.Resource):
         return args
 
 
+class ServiceHealthResource(restful.Resource):
+
+    @staticmethod
+    def _is_running(worker):
+        running = docker_output(
+            'inspect', '-f', '{{.State.Running}}', worker).strip()
+        return running == 'true'
+
+    def get(self, namespace, service):
+        name = service_iden(namespace, service)
+        try:
+            slot = service_store[name]
+        except KeyError:
+            raise APIException('service not found: {}'.format(name), 404)
+        srv = slot['service']
+        workers_alive = len([worker for worker in srv.workers
+                             if self._is_running(worker)])
+        should_have = int(request.args.get('workers', 1))
+        app.logger.debug(str(srv.workers))
+        app.logger.debug('workers = {}'.format(workers_alive))
+        return workers_alive >= should_have
+
+
 class FileLikeWrapper(object):
 
     def __init__(self, response):

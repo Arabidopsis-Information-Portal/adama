@@ -19,7 +19,7 @@ from .namespaces import NamespacesResource
 from .namespace import NamespaceResource
 from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
-                      ServiceListResource)
+                      ServiceListResource, ServiceHealthResource)
 from .passthrough import PassthroughServiceResource
 from .status import StatusResource
 from .token_store import token_store
@@ -55,6 +55,8 @@ api.add_resource(PassthroughServiceResource,
                  url('/<string:namespace>/<string:service>/access/'
                      '<path:path>'),
                  endpoint='access')
+api.add_resource(ServiceHealthResource,
+                 url('/<string:namespace>/<string:service>/_health'))
 
 
 @app.route('/home')
