@@ -213,23 +213,21 @@ class ServicesResource(restful.Resource):
             raise APIException(
                 'no code or git repository specified')
 
+        result = {
+            'state_url': api_url_for(
+                'service',
+                namespace=service.namespace,
+                service=service.adapter_name),
+            'notification': service.notify
+        }
+        for endpoint in service.endpoints():
+            result[endpoint+'_url'] = api_url_for(
+                endpoint,
+                namespace=service.namespace,
+                service=service.adapter_name)
         return ok({
             'message': 'registration started',
-            'result': {
-                'state_url': api_url_for(
-                    'service',
-                    namespace=service.namespace,
-                    service=service.adapter_name),
-                'search_url': api_url_for(
-                    'search',
-                    namespace=service.namespace,
-                    service=service.adapter_name),
-                'list_url': api_url_for(
-                    'list',
-                    namespace=service.namespace,
-                    service=service.adapter_name),
-                'notification': service.notify
-            }
+            'result': result
         })
 
     @staticmethod

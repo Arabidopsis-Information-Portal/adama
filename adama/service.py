@@ -183,6 +183,12 @@ class Service(AbstractService):
             pass
         return obj
 
+    def endpoints(self):
+        if self.type == 'passthrough':
+            return ['access']
+        else:
+            return ['search', 'list']
+
     def make_image(self):
         """Make a docker image for this service."""
 
