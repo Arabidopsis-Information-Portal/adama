@@ -5,7 +5,12 @@ Documentation for Developers
 - A `quickstart tutorial`_
 - `Live docs`_ for the main API. It doesn't include documentation for the
   individual adapters yet.
+- A description_ of the fields in the ``metadata.yml`` file for registering an
+  adapter.
 - Setting up your own local VM or container to run Adama. *[Coming soon]*
+
+.. _description: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/metadata.rst
+
 
 Old docs
 ========
