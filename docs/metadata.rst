@@ -72,13 +72,15 @@ The file ``metadata.yml`` accepts the following fields:
         "status": "success",
         "result":
            {
-             "data": [1, 2, 3, 4, ...],
+             "data": [1, 2, 3, 4, 5],
              "name": "integers"
            }
       }
 
    and the adapter is interested in the array of integers,
-   then we set::
+   then we set:
+   
+   .. code-block:: yaml
 
      json_path: result.data
 
