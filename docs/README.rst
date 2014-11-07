@@ -5,7 +5,7 @@ Documentation for Developers
 - A `quickstart tutorial`_
 - `Live docs`_ for the main API. It doesn't include documentation for the
   individual adapters yet.
-
+- Setting up your own local VM or container to run Adama. *[Coming soon]*
 
 Old docs
 ========
