@@ -1,0 +1,19 @@
+============================
+Documentation for Developers
+============================
+
+- A `quickstart tutorial`_
+- `Live docs`_ for the main API. It doesn't include documentation for the
+  individual adapters yet.
+
+
+Old docs
+========
+
+- Architecture_. Preliminary document on the architecture of Adama.
+  Some details on the API have now changed.
+
+
+.. _quickstart tutorial: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/tutorial/tutorial.rst
+.. _Live docs: https://adama-dev.tacc.utexas.edu/api/adama.html
+.. _Architecture: http://rawgit.com/waltermoreira/adama/master/docs/index.html
