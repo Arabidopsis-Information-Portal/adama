@@ -18,7 +18,7 @@ Grab a token from `Araport API Store`_.  After getting it, check access to Adama
 .. code-block:: bash
 
    $ export TOKEN=<my token>
-   $ curl -L -k https://araport-api.tacc.utexas.edu/community/v0.3/status \
+   $ curl -L -k https://api.araport.org/community/v0.3/status \
        -H "Authorization: Bearer $TOKEN"
    {
        "api": "Adama v0.3", 
