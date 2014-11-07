@@ -35,17 +35,17 @@ Tutorial
 ========
 
 The tutorial_ illustrates the main features of Adama by going over a couple of examples.
-
-This document is meaningful for users and for developers who want to add new data sources to Adama.
+This document is useful for people who consume Adama services, and for developers that wish to
+add new data sources.
 
 You can also read the `live docs of the API`_.
 
-Developing Adama
-================
+Developing in/for Adama
+=======================
 
-The architecture_ and the full documentation are aimed to those developers who wish to contribute
-to the Adama codebase.  There are instructions to set up a full development box that can run Adama 
-locally for experimenting.
+The docs_ directory contains more in-depth documentation.
+Those documents are aimed to developers who wish to write new adapters, 
+as well as developers who wish to contribute to the Adama codebase.
 
 
 License
@@ -53,7 +53,7 @@ License
 
 Free software: MIT license
 
-
+.. _docs: https://github.com/Arabidopsis-Information-Portal/adama/tree/master/docs
 .. _architecture: http://rawgit.com/waltermoreira/adama/master/docs/index.html
 .. _Arabidopsis Information Portal: https://www.araport.org/
 .. _Araport API Store: https://api.araport.org/store/
