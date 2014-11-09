@@ -11,7 +11,7 @@ Documentation for Developers
 - Setting up your own local VM or container to run Adama. *[Coming soon]*
 
 .. _description: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/metadata.rst
-.. _types of adapters:: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/adapters.rst
+.. _types of adapters: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/adapters.rst
 
 
 Old docs
