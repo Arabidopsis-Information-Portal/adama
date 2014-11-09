@@ -7,9 +7,11 @@ Documentation for Developers
   individual adapters yet.
 - A description_ of the fields in the ``metadata.yml`` file for registering an
   adapter.
+- In depth description of the `types of adapters`_.
 - Setting up your own local VM or container to run Adama. *[Coming soon]*
 
 .. _description: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/metadata.rst
+.. _types of adapters:: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/adapters.rst
 
 
 Old docs
