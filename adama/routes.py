@@ -1,7 +1,8 @@
 import base64
+import os
 import re
 
-from flask import render_template, request, abort, url_for
+from flask import render_template, request, abort, send_from_directory
 from Crypto.PublicKey import RSA
 import jwt
 
@@ -23,9 +24,10 @@ from .service import (ServiceResource, ServiceQueryResource,
 from .passthrough import PassthroughServiceResource
 from .status import StatusResource
 from .token_store import token_store
+from .tools import location_of
 
 PREFIX = Config.get('server', 'prefix')
-
+HERE = location_of(__file__)
 
 print('Using PREFIX = {}'.format(PREFIX))
 
@@ -69,10 +71,17 @@ def swagger_ui():
     return app.send_static_file('js/swagger-ui.js')
 
 
+@app.route('/docs/<path:path>')
+def docs_adapters(path):
+    return send_from_directory(
+        os.path.join(HERE, 'static/html/'), path)
+
+
 @app.before_request
 def check_access():
     # allow unrestricted access to docs
-    if request.path.startswith('/api/adama'):
+    if (request.path.startswith('/api/adama') or
+            request.path.startswith('/docs')):
         return
     # don't control access to OPTIONS verb
     if request.method == 'OPTIONS':
