@@ -51,6 +51,7 @@ clean:
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	cp -r $(BUILDDIR)/html ../../adama/static/html/adapters
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
