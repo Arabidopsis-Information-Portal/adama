@@ -90,7 +90,7 @@ class AbstractService(object):
         ('notify', False, ''),
         ('json_path', False, ''),
         ('main_module', False, 'main'),
-        ('users', False, []),
+        ('users', False, {}),
         ('metadata', False, METADATA_DEFAULT)
     ]
 
