@@ -90,6 +90,7 @@ class AbstractService(object):
         ('notify', False, ''),
         ('json_path', False, ''),
         ('main_module', False, 'main'),
+        ('users', False, []),
         ('metadata', False, METADATA_DEFAULT)
     ]
 
@@ -620,6 +621,7 @@ class ServiceResource(restful.Resource):
         name = service_iden(namespace, service)
         try:
             srv = service_store[name]['service']
+#            srv.check_permissions(g.user, 'DELETE')
             try:
                 srv.stop_workers()
                 # TODO: need to clean up containers here too

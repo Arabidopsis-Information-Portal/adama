@@ -1,8 +1,10 @@
+from flask import g
 from flask.ext import restful
 
 from .api import APIException, ok, api_url_for
 from .namespace_store import namespace_store
 from .swagger import swagger
+from .entity import Entity
 
 
 @swagger.model
@@ -42,12 +44,20 @@ class DeleteResponseModel(object):
 
 class Namespace(object):
 
-    def __init__(self, name, url, description):
+    def __init__(self, name, url, description, users=None):
         self.name = name
         self.url = url
         self.description = description
+        # {user: [methods allowed...]}
+        self.users = users or {}
 
         self.validate_args()
+
+    def get_permissions(self, user):
+        for allowed_entity in self.users:
+            if user in Entity(allowed_entity):
+                for meth in self.users[allowed_entity]:
+                    yield meth
 
     def validate_args(self):
         if not self.name:
@@ -58,6 +68,7 @@ class Namespace(object):
         obj = {
             'name': self.name,
             'url': self.url,
+            'users': self.users,
             'description': self.description
             }
         try:
@@ -115,7 +126,13 @@ class NamespaceResource(restful.Resource):
         """Delete a namespace"""
 
         try:
-            del namespace_store[namespace]
+            ns = namespace_store[namespace]
+            if 'DELETE' in tuple(ns.get_permissions(g.user)):
+                del namespace_store[namespace]
+            else:
+                raise APIException(
+                    'user {} does not have permissions for DELETE'
+                    .format(g.user))
         except KeyError:
             pass
         return ok({})

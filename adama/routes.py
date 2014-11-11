@@ -2,7 +2,7 @@ import base64
 import os
 import re
 
-from flask import render_template, request, abort, send_from_directory
+from flask import render_template, request, abort, send_from_directory, g
 from Crypto.PublicKey import RSA
 import jwt
 
@@ -88,6 +88,7 @@ def check_access():
         return
     access_control_type = Config.get('server', 'access_control')
     if access_control_type == 'none':
+        g.user = 'anonymous'
         return
     if access_control_type == 'jwt':
         return check_jwt(request)
@@ -109,6 +110,7 @@ def check_jwt(request):
         decoded = jwt.decode(
             request.headers['X-JWT-Assertion-{0}'.format(tenant_name)],
             PUB_KEY)
+        g.user = decoded['http://wso2.org/claims/enduser']
     except (jwt.DecodeError, KeyError):
         abort(400)
 
@@ -131,7 +133,10 @@ def check_bearer_token(request):
     if not match:
         abort(400)
     token = match.group(1)
-    if token not in token_store:
+    try:
+        g.user = token_store[token]
+        app.logger.debug('user {}'.format(g.user))
+    except KeyError:
         abort(400)
 
 @app.after_request
