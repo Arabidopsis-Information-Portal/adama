@@ -20,3 +20,11 @@ class Entity(object):
         except AttributeError:
             return False
 
+
+def get_permissions(users, user):
+    """Get permissions for an user from a list of user/groups"""
+
+    for allowed_entity in users:
+        if user in Entity(allowed_entity):
+            for meth in users[allowed_entity]:
+                yield meth

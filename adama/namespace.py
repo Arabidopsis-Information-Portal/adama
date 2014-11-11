@@ -4,7 +4,7 @@ from flask.ext import restful
 from .api import APIException, ok, api_url_for
 from .namespace_store import namespace_store
 from .swagger import swagger
-from .entity import Entity
+from .entity import get_permissions
 
 
 @swagger.model
@@ -52,12 +52,6 @@ class Namespace(object):
         self.users = users or {}
 
         self.validate_args()
-
-    def get_permissions(self, user):
-        for allowed_entity in self.users:
-            if user in Entity(allowed_entity):
-                for meth in self.users[allowed_entity]:
-                    yield meth
 
     def validate_args(self):
         if not self.name:
@@ -127,7 +121,7 @@ class NamespaceResource(restful.Resource):
 
         try:
             ns = namespace_store[namespace]
-            if 'DELETE' in tuple(ns.get_permissions(g.user)):
+            if 'DELETE' in tuple(get_permissions(ns.users, g.user)):
                 del namespace_store[namespace]
             else:
                 raise APIException(
