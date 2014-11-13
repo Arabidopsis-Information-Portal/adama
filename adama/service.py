@@ -623,7 +623,8 @@ class ServiceResource(restful.Resource):
         name = service_iden(namespace, service)
         try:
             srv = service_store[name]['service']
-            if 'DELETE' not in get_permissions(srv.users, g.user):
+            if (srv is not None and
+                    'DELETE' not in get_permissions(srv.users, g.user)):
                 raise APIException(
                     'user {} does not have permissions to DELETE '
                     'the service {}'.format(g.user, name))
