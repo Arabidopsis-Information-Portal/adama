@@ -1050,9 +1050,13 @@ def register(service_class, args, namespace, user_code, notifier=None):
     the store.
 
     """
+    try:
+        user = g.user
+    except RuntimeError:
+        user = 'anonymous'
     service = service_class(
         namespace=namespace, code_dir=user_code,
-        users={g.user: ['POST', 'PUT', 'DELETE']},
+        users={user: ['POST', 'PUT', 'DELETE']},
         **dict(args))
     try:
         slot = service_store[service.iden]['slot']
