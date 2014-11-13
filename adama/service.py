@@ -17,7 +17,7 @@ import urlparse
 import zipfile
 
 from enum import Enum
-from flask import request, Response
+from flask import request, Response, g
 from flask.ext import restful
 import jinja2
 import requests
@@ -38,6 +38,8 @@ from .service_store import service_store
 from .swagger import swagger
 from .namespace import DeleteResponseModel
 from .tools import chdir
+from .entity import get_permissions
+
 
 LANGUAGES = {
     'python': ('py', 'pip install {package}'),
@@ -90,6 +92,7 @@ class AbstractService(object):
         ('notify', False, ''),
         ('json_path', False, ''),
         ('main_module', False, 'main'),
+        ('users', False, {}),
         ('metadata', False, METADATA_DEFAULT)
     ]
 
@@ -620,6 +623,11 @@ class ServiceResource(restful.Resource):
         name = service_iden(namespace, service)
         try:
             srv = service_store[name]['service']
+            if (srv is not None and
+                    'DELETE' not in get_permissions(srv.users, g.user)):
+                raise APIException(
+                    'user {} does not have permissions to DELETE '
+                    'the service {}'.format(g.user, name))
             try:
                 srv.stop_workers()
                 # TODO: need to clean up containers here too
@@ -762,8 +770,14 @@ class ServiceResource(restful.Resource):
             slot = service_store[name]
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
-        args = self.validate_put()
+
         old_srv = slot['service']
+        if 'PUT' not in get_permissions(old_srv.users, g.user):
+            raise APIException(
+                'user {} does not have permissions to PUT to '
+                'service {}'.format(g.user, name))
+
+        args = self.validate_put()
         if old_srv is None:
             raise APIException('service not ready: {}'.format(name), 400)
         old_srv.stop_workers()
@@ -1036,8 +1050,14 @@ def register(service_class, args, namespace, user_code, notifier=None):
     the store.
 
     """
+    try:
+        user = g.user
+    except RuntimeError:
+        user = 'anonymous'
     service = service_class(
-        namespace=namespace, code_dir=user_code, **dict(args))
+        namespace=namespace, code_dir=user_code,
+        users={user: ['POST', 'PUT', 'DELETE']},
+        **dict(args))
     try:
         slot = service_store[service.iden]['slot']
     except KeyError:

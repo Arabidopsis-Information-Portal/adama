@@ -1,5 +1,6 @@
 import textwrap
 
+from flask import g
 from flask.ext import restful
 from werkzeug.datastructures import FileStorage
 
@@ -11,6 +12,7 @@ from .service import (ServiceModel, register_code,
 from .namespaces import namespace_store
 from .api import APIException, ok, api_url_for
 from .swagger import swagger
+from .entity import get_permissions
 
 
 @swagger.model
@@ -198,6 +200,12 @@ class ServicesResource(restful.Resource):
         if namespace not in namespace_store:
             raise APIException(
                 "namespace not found: {}".format(namespace), 404)
+
+        ns = namespace_store[namespace]
+        if 'POST' not in get_permissions(ns.users, g.user):
+            raise APIException(
+                'user {} does not have permissions to POST to '
+                'namespace {}'.format(g.user, namespace))
 
         args = self.validate_post()
         if 'code' in args and 'git_repository' in args:

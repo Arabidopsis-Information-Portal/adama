@@ -1,5 +1,6 @@
 import urlparse
 
+from flask import g
 from flask.ext import restful
 
 from .swagger import swagger
@@ -80,7 +81,9 @@ class NamespacesResource(restful.Resource):
             raise APIException("namespace '{}' already exists"
                                .format(name), 400)
 
-        ns = Namespace(name=name, url=url, description=description)
+        ns = Namespace(name=name, url=url,
+                       description=description,
+                       users={g.user: ['POST', 'PUT', 'DELETE']})
         namespace_store[name] = ns
         return ok({
             'result': api_url_for('namespace', namespace=name)
