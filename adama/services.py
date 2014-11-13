@@ -201,7 +201,7 @@ class ServicesResource(restful.Resource):
             raise APIException(
                 "namespace not found: {}".format(namespace), 404)
 
-        ns = namespace_store['namespace']
+        ns = namespace_store[namespace]
         if 'POST' not in get_permissions(ns.users, g.user):
             raise APIException(
                 'user {} does not have permissions to POST to '
