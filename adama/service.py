@@ -251,12 +251,8 @@ class Service(AbstractService):
     def build(self):
         if self.type == 'passthrough':
             return
-        prev_cwd = os.getcwd()
-        os.chdir(self.code_dir)
-        try:
+        with chdir(self.code_dir):
             safe_docker('build', '-t', self.iden, '.')
-        finally:
-            os.chdir(prev_cwd)
 
     def start_workers(self, n=None):
         if self.type == 'passthrough':
