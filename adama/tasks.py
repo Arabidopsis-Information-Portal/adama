@@ -11,7 +11,7 @@ logging.basicConfig()
 
 import pika
 
-pika_logger = logging.getLogger('pika.adapters.blocking_connection')
+pika_logger = logging.getLogger('pika.adapters')
 pika_logger.setLevel(logging.CRITICAL)
 
 
