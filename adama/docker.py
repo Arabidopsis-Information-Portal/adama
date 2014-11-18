@@ -8,7 +8,6 @@ import sys
 from .api import APIException
 from .config import Config
 from .tools import TimeoutFunction, TimeoutFunctionException
-from .ip_pool import IPPoolClient
 
 
 # max length of the identifier for the virtual iface
