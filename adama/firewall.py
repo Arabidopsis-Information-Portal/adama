@@ -5,6 +5,10 @@ from .docker import docker_output
 from .config import Config
 
 
+class Firewall(object):
+    pass
+
+
 def allow(worker, whitelist):
     """Allow access of worker to ip's in whitelist."""
 
