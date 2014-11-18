@@ -79,49 +79,7 @@ def check_docker(display=False):
 
 
 def start_container(iden, *params):
-    """Run container from image ``iden``.
+    """Run container from image ``iden``."""
 
-    Create veth pair and bind them properly. Return the name of the
-    interface in the inside of the container, and the ip address.
-
-    """
-    container = docker_output(
-        'run', '-d', '--net=none', iden, *params).strip()
-    pid = docker_output(
-        'inspect', '-f', '{{.State.Pid}}', container).strip()
-    veth_a = 'A{0}'.format(container[:VETH_LENGTH])
-    veth_b = 'B{0}'.format(container[:VETH_LENGTH])
-
-    # try to find a fresh ip for the container
-    pool_client = IPPoolClient()
-    try:
-        for i in range(MAX_ATTEMPTS):
-            x = random.randint(1, 255)
-            y = random.randint(1, 255)
-            if pool_client.reserve((x, y)):
-                break
-        else:
-            raise APIException(
-                "No more ip's for workers", 500)
-    except TimeoutFunctionException:
-        raise APIException(
-            "Couldn't connect to the ip pool server", 500)
-
-    ip = '172.17.{0}.{1}'.format(x, y)
-
-    subprocess.check_call(
-        ['sudo', 'sh', '-c',
-         """
-         mkdir -p /var/run/netns
-         ln -sf /proc/{pid}/ns/net /var/run/netns/{pid}
-         ip link add {veth_a} type veth peer name {veth_b}
-         brctl addif docker0 {veth_a}
-         ip link set {veth_a} up
-         ip link set {veth_b} netns {pid}
-         ip netns exec {pid} ip link set dev {veth_b} name eth0
-         ip netns exec {pid} ip link set eth0 up
-         ip netns exec {pid} ip addr add {ip}/16 dev eth0
-         ip netns exec {pid} ip route add default via 172.17.42.1
-         """.format(pid=pid, veth_a=veth_a, veth_b=veth_b, ip=ip)])
-
-    return container, veth_a, ip
+    container = docker_output('run', '-d', iden, *params).strip()
+    return container
