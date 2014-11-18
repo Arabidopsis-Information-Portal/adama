@@ -30,7 +30,7 @@ from .requestparser import RequestParser
 from .api import APIException, RegisterException, ok, api_url_for, error
 from .config import Config
 from .docker import docker_output, start_container, tail_logs, safe_docker
-from .firewall import Firewall
+from .firewall import allow
 from .tools import (location_of, identifier, service_iden,
                     adapter_iden, interleave)
 from .tasks import Producer
@@ -164,6 +164,7 @@ class Service(AbstractService):
 
         self.whitelist.append(urlparse.urlparse(self.url).hostname)
         self.whitelist.extend(get_nameservers())
+        self.whitelist.append('172.17.42.1')
         self.whitelist = list(set(self.whitelist))
         self.validate_whitelist()
 
@@ -171,7 +172,6 @@ class Service(AbstractService):
         self.language = self.detect_language(self.main_module_path)
         self.state = None
         self.workers = []
-        self.firewall = None
 
     def to_json(self):
         obj = super(Service, self).to_json()
@@ -195,7 +195,6 @@ class Service(AbstractService):
     def make_image(self):
         """Make a docker image for this service."""
 
-        self.firewall = Firewall(self.whitelist)
         if self.type == 'passthrough':
             return
         render_template(
@@ -265,7 +264,7 @@ class Service(AbstractService):
         self.workers = [self.start_worker() for _ in range(n)]
 
     def start_worker(self):
-        worker, iface, ip = start_container(
+        worker = start_container(
             self.iden,          # image name
             '--queue-host',
             Config.get('queue', 'host'),
@@ -275,7 +274,8 @@ class Service(AbstractService):
             self.iden,
             '--adapter-type',
             self.type)
-        self.firewall.register(worker, iface)
+        allow(worker, self.whitelist)
+        docker_output('exec', worker, 'touch', '/ready')
         return worker
 
     def stop_workers(self):
@@ -289,7 +289,6 @@ class Service(AbstractService):
         self.workers = []
 
     def async_stop_worker(self, worker):
-        self.firewall.unregister(worker)
         thread = threading.Thread(target=docker_output,
                                   args=('rm', '-f', worker))
         thread.start()
@@ -325,7 +324,6 @@ class Service(AbstractService):
             state, worker = q.get()
             if state == WorkerState.error:
                 logs.append(docker_output('logs', worker))
-                self.firewall.unregister(worker)
 
         if logs:
             raise RegisterException(len(self.workers), logs)
