@@ -12,8 +12,8 @@ def env(image):
 def path(p):
     """Build the corresponding path `p` inside the container. """
 
-    return os.path.normpath(os.path.join(os.environ.get('HOST_PREFIX', '/'),
-                                         './{}'.format(p)))
+    return os.path.normpath(os.path.join(
+        os.environ.get('HOST_PREFIX', '/host'), './{}'.format(p)))
 
 
 def docker(*args):

@@ -9,4 +9,3 @@ minion:
     LOCAL_REGISTRY: 192.168.59.103:5000
     DOCKER_BINARY: /usr/bin/docker
     DOCKER_SOCKET: /run/docker.sock
-    HOST_PREFIX: /host

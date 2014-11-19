@@ -40,11 +40,21 @@ class MinionHandler(SerfHandler):
     @truncated_stdout
     def start(self):
         image, num_workers = sys.stdin.read().split()
-        registry = os.environ['LOCAL_REGISTRY']
-        remote_image = '{}/{}'.format(registry, image)
+        remote_image = remote(image)
         docker_utils.docker('pull', remote_image)
         for i in range(int(num_workers)):
             _start(remote_image)
+
+
+def remote(image):
+    """Find the name of image in the registry: `LOCAL_REGISTRY`. """
+
+    try:
+        registry = os.environ['LOCAL_REGISTRY']
+        return '{}/{}'.format(registry, image)
+    except KeyError:
+        # if LOCAL_REGISTRY is not set, default to docker hub
+        return image
 
 
 def _start(image):

@@ -2,7 +2,7 @@ import os
 import socket
 import subprocess
 
-from docker_utils import docker
+from docker_utils import docker, path
 
 
 class Firewall(object):
@@ -14,8 +14,7 @@ def allow(worker, whitelist):
 
     whitelist = list(resolve(whitelist if whitelist is not None else []))
     pid = get_pid(worker)
-    host_dir = os.environ['HOST_PREFIX']
-    ensure_namespace_link(host_dir, pid)
+    ensure_namespace_link(pid)
     run(pid, 'iptables -A OUTPUT -s 0/0 -d 0/0 -j DROP')
     for ip in whitelist:
         run(pid, 'iptables -I OUTPUT 1 -s 0/0 -d {0} -j ACCEPT'.format(ip))
@@ -34,10 +33,11 @@ def get_pid(worker):
     return docker('inspect', '-f', '{{.State.Pid}}', worker).strip()
 
 
-def ensure_namespace_link(host_dir, pid):
+def ensure_namespace_link(pid):
     subprocess.check_call('mkdir -p /var/run/netns'.split())
+    host_path = path('/proc/{pid}/ns/net'.format(**locals()))
     subprocess.check_call(
-        'ln -sf {host_dir}/proc/{pid}/ns/net /var/run/netns/{pid}'
+        'ln -sf {host_path} /var/run/netns/{pid}'
         .format(**locals()).split())
 
 
