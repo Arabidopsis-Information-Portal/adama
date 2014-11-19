@@ -10,4 +10,4 @@ ADD handler.py /
 
 EXPOSE 7946
 
-CMD ["serf", "agent", "-event-handler=/handler.py", "-tag", "role=minion"]
+CMD ["serf", "agent", "-event-handler=/handler.py", "-tag", "role=minion", "-log-level=debug"]
