@@ -3,6 +3,7 @@ from functools import wraps
 import os
 import sys
 import subprocess
+import traceback
 import cStringIO
 
 from serf_master import SerfHandler, SerfHandlerProxy
@@ -19,10 +20,14 @@ def truncated_stdout(f):
         old_stdout = sys.stdout
         old_stdout.flush()
         sys.stdout = cStringIO.StringIO()
+        out = ''
         try:
-            return f(*args, **kwargs)
+            result = f(*args, **kwargs)
+            out = 'SUCCESS\n' + sys.stdout.getvalue()
+            return result
+        except Exception:
+            out = 'ERROR\n' + traceback.format_exc()
         finally:
-            out = sys.stdout.getvalue()
             sys.stdout = old_stdout
             print out[-MAX_OUTPUT:]
     return wrapper
