@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+"""
+Launch a serf node.
+
+The role of the node is retrieved from the environment variable ``ROLE``.
+
+The node will join a cluster, if the ``CONTACT`` variable specifies an
+address.
+
+"""
 
 import os
 import subprocess
