@@ -10,4 +10,4 @@ COPY handler /handler
 
 EXPOSE 7946
 
-CMD ["serf", "agent", "-event-handler=/handler/handler.py", "-tag", "role=minion", "-log-level=debug"]
+CMD ["/handler/join.py"]
