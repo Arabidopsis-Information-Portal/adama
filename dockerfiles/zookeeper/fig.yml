@@ -4,10 +4,16 @@ zookeeper:
   build: .
   volumes:
     - /:/host
+  volumes_from:
+    - zookeeperdata
   environment:
     DOCKER_BINARY: /usr/bin/docker
     DOCKER_SOCKET: /run/docker.sock
     CONTACT:
     ROLE: zookeeper
-    PWDX:
+
+zookeeperdata:
+  image: ubuntu
+  volumes:
+    - ./:/data
 
