@@ -1,5 +1,6 @@
 from functools import wraps
 import json
+import subprocess
 import sys
 import traceback
 import cStringIO
@@ -36,3 +37,8 @@ def with_payload(f):
         kwargs.update(payload)
         return f(*args, **kwargs)
     return wrapper
+
+
+def serf(*args):
+    cmd = ['serf'] + list(args) + ['-format=json']
+    return json.loads(subprocess.check_output(cmd))
