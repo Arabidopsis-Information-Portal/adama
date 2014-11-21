@@ -5,6 +5,8 @@ from serf_master import SerfHandler, SerfHandlerProxy
 try:
     from my_handler import MyHandler
 except ImportError:
+    print "Could not import user's handler."
+    print "Defaulting to dummy handler."
     MyHandler = SerfHandler
 
 
