@@ -16,4 +16,5 @@ zookeeperdata:
   image: ubuntu
   volumes:
     - ./:/data
+    - ./zoo.cfg:/opt/zookeeper-3.4.5/conf/zoo.cfg
 
