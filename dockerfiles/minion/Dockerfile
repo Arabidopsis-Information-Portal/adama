@@ -1,4 +1,4 @@
-FROM serf_node
+FROM serfnode
 
 MAINTAINER Walter Moreira <wmoreira@tacc.utexas.edu>
 
