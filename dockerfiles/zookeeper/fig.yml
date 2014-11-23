@@ -1,5 +1,16 @@
 ---
 
+# A Zookeeper node.
+#
+# Run with:
+#
+#   ADVERTISE=<my-reachable-ip> fig up
+#
+# Connect to a cluster with:
+#
+#   ADVERTISE=<my-reachable-ip> CONTACT=<known-node> fig up
+#
+
 zookeeper:
   build: .
   volumes:
