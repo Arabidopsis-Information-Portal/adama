@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import socket
 from textwrap import dedent
 
 from serf_master import SerfHandler
@@ -29,10 +28,6 @@ class MyHandler(SerfHandler):
         write_members(sorted_members)
         id_num = myid(myself, sorted_members)
         write_myid(id_num)
-        print "wrote", sorted_members
-        print "my_id", id_num
-        print 'data', data_volume_name()
-        print 'service', service_name()
         start_zookeeper(myself)
 
 
