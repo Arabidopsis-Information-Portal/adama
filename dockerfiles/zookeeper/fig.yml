@@ -6,15 +6,22 @@ zookeeper:
     - /:/host
   volumes_from:
     - zookeeperdata
+  ports:
+    - "7946:7946"
+    - "7373:7373"
+    - "2181:2181"
+    - "2888:2888"
+    - "3888:3888"
+  net: "host"
   environment:
     DOCKER_BINARY: /usr/bin/docker
     DOCKER_SOCKET: /run/docker.sock
-    CONTACT:
     ROLE: zookeeper
+    CONTACT:
+    ADVERTISE:
 
 zookeeperdata:
   image: ubuntu
   volumes:
     - ./:/data
     - ./zoo.cfg:/opt/zookeeper-3.4.5/conf/zoo.cfg
-

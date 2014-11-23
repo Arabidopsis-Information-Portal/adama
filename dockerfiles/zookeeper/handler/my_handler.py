@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import socket
 from textwrap import dedent
 
 from serf_master import SerfHandler
@@ -23,14 +24,24 @@ class MyHandler(SerfHandler):
     def member_join(self):
         members = serf('members')['members']
         myself = serf('info')['agent']['name']
+        stop_zookeeper(myself)
         sorted_members = sort_members(members)
         write_members(sorted_members)
         id_num = myid(myself, sorted_members)
         write_myid(id_num)
         print "wrote", sorted_members
         print "my_id", id_num
-        #stop_zookeeper(myself)
-        #start_zookeeper(myself, id_num)
+        print 'data', data_volume_name()
+        print 'service', service_name()
+        start_zookeeper(myself)
+
+
+def data_volume_name():
+    return 'zookeeper_zookeeperdata_1'
+
+
+def service_name():
+    return 'zookeeper_zookeeper_1'
 
 
 def stop_zookeeper(agent):
@@ -40,19 +51,14 @@ def stop_zookeeper(agent):
         pass
 
 
-def start_zookeeper(agent, myid):
-    port1 = port(1, myid)
-    port2 = port(2, myid)
-    containers = docker('ps', '-a').splitlines()
-    data = ''
-    for cont in containers:
-        data = cont.split()[-1].strip()
-        if 'zookeeperdata' in data:
-            break
-    docker('run', '-d', '-p', '2181', '-p',
-           '{0}:{0]'.format(port1), '{0}:{0]'.format(port2),
+def start_zookeeper(agent):
+    docker('run', '-d',
+           '-p', '2181:2181',
+           '-p', '2888:2888',
+           '-p', '3888:3888',
            '--name', '{}_zookeeper'.format(agent),
-           '--volumes-from', data, 'jplock/zookeeper')
+           '--net', 'host',
+           '--volumes-from', data_volume_name(), 'jplock/zookeeper')
 
 
 def write_myid(n):
@@ -63,11 +69,9 @@ def write_myid(n):
 def write_members(members):
     with open('/data/zoo.cfg', 'w') as f:
         servers = [
-            'server.{i}={ip}:{port1}:{port2}'
+            'server.{i}={ip}:2888:3888'
             .format(i=i+1,
-                    ip=elt['addr'].split(':')[0],
-                    port1=2888+i,
-                    port2=3888+i)
+                    ip=elt['addr'].split(':')[0])
             for i, elt in enumerate(members)]
         f.write(TEMPLATE.format(servers='\n'.join(servers)))
 
@@ -83,11 +87,4 @@ def myid(myself, members):
     for i, elt in enumerate(members):
         if elt['name'] == myself:
             return i+1
-
-
-def port(n, id_num):
-    if n == 1:
-        return 2888 + id_num
-    else:
-        return 3888 + id_num
 

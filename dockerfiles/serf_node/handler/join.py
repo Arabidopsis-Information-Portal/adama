@@ -21,6 +21,9 @@ def main():
     contact = os.environ.get('CONTACT')
     if contact:
         cmd.extend(['-join', contact])
+    advertise = os.environ.get('ADVERTISE')
+    if advertise:
+        cmd.extend(['-advertise', advertise])
     subprocess.check_call(cmd)
 
 
