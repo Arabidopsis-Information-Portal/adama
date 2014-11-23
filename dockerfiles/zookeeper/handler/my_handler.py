@@ -21,14 +21,28 @@ class MyHandler(SerfHandler):
 
     @truncated_stdout
     def member_join(self):
-        members = serf('members')['members']
-        myself = serf('info')['agent']['name']
-        stop_zookeeper(myself)
-        sorted_members = sort_members(members)
-        write_members(sorted_members)
-        id_num = myid(myself, sorted_members)
-        write_myid(id_num)
-        start_zookeeper(myself)
+        update_zookeeper()
+
+    @truncated_stdout
+    def member_leave(self):
+        update_zookeeper()
+
+    @truncated_stdout
+    def member_failed(self):
+        update_zookeeper()
+
+
+def update_zookeeper():
+    members = [member
+               for member in serf('members')['members']
+               if member['status'] == 'alive']
+    myself = serf('info')['agent']['name']
+    stop_zookeeper(myself)
+    sorted_members = sort_members(members)
+    write_members(sorted_members)
+    id_num = myid(myself, sorted_members)
+    write_myid(id_num)
+    start_zookeeper(myself)
 
 
 def data_volume_name():
