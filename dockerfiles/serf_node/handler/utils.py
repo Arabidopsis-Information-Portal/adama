@@ -39,6 +39,28 @@ def with_payload(f):
     return wrapper
 
 
+def with_member_info(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        kwargs['members'] = list(member_info(sys.stdin.readlines()))
+        return f(*args, **kwargs)
+    return wrapper
+
+
+def member_info(lines):
+    for line in lines:
+        member = {}
+        parts = line.split()
+        member['node'] = parts[0]
+        member['ip'] = parts[1]
+        member['role'] = parts[2]
+        member['tags'] = parts[3]
+        # {x: y
+        #                   for part in parts[3].split(',')
+        #                   for x, y in part.split('=')}
+        yield member
+
+
 def serf(*args):
     cmd = ['serf'] + list(args) + ['-format=json']
     return json.loads(subprocess.check_output(cmd))

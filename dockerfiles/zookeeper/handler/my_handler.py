@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 from textwrap import dedent
+import sys
 
 from serf_master import SerfHandler
-from utils import truncated_stdout, serf
+from utils import truncated_stdout, serf, with_member_info
 from docker_utils import docker
 
 
@@ -20,8 +21,11 @@ TEMPLATE = dedent(
 class MyHandler(SerfHandler):
 
     @truncated_stdout
-    def member_join(self):
-        update_zookeeper()
+    @with_member_info
+    def member_join(self, members):
+        print '>>>>', members
+        # if role == 'zookeeper':
+        #     update_zookeeper()
 
     @truncated_stdout
     def member_leave(self):
