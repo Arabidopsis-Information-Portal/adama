@@ -30,6 +30,8 @@ zookeeper:
     ROLE: zookeeper
     CONTACT:
     ADVERTISE:
+    BIND_PORT:
+    NODE:
 
 zookeeperdata:
   image: ubuntu
