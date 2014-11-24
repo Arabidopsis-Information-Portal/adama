@@ -5,6 +5,7 @@ minion:
   volumes:
     - /:/host
   privileged: true
+  net: "host"
   ports:
     - "7946"
   environment:
@@ -14,4 +15,8 @@ minion:
     CONTACT:
     ROLE: minion
     PWD:
+    ADVERTISE:
+    BIND_PORT:
+    RPC_PORT:
+    NODE:
 
