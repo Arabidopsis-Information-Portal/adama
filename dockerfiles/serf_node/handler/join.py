@@ -18,21 +18,28 @@ def main():
     cmd = ('serf agent -event-handler=/handler/handler.py '
            '-log-level=debug -tag role={role}'
            .format(**locals()).split())
+
     contact = os.environ.get('CONTACT')
     if contact:
         cmd.extend(['-join', contact])
+
     advertise = os.environ.get('ADVERTISE')
     if advertise:
         cmd.extend(['-advertise', advertise])
-    bind_port = os.environ.get('BIND_PORT', '7946')
-    if bind_port:
-        cmd.extend(['-bind', '0.0.0.0:{}'.format(bind_port)])
+    try:
+        _, bind_port = advertise.split(':')
+    except ValueError:
+        bind_port = '7946'
+    cmd.extend(['-bind', '0.0.0.0:{}'.format(bind_port)])
+
     node = os.environ.get('NODE')
     if node:
         cmd.extend(['-node', node])
+
     rpc_port = os.environ.get('RPC_PORT', '7373')
     if rpc_port:
         cmd.extend(['-rpc-addr', '127.0.0.1:{}'.format(rpc_port)])
+
     subprocess.check_call(cmd)
 
 

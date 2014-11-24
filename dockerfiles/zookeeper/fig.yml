@@ -30,7 +30,7 @@ zookeeper:
     ROLE: zookeeper
     CONTACT:
     ADVERTISE:
-    BIND_PORT:
+    RPC_PORT:
     NODE:
 
 zookeeperdata:
