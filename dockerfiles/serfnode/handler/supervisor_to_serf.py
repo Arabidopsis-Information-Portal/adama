@@ -22,7 +22,8 @@ def main():
         data = sys.stdin.read(int(headers['len'])) # read the event payload
         data_dict = dict(x.split(':') for x in data.split())
         data_dict['eventname'] = headers['eventname']
-        serf_event('myevent', json.dumps(data_dict))
+        data_dict['node'] = serf('info')['agent']['name']
+        serf_event('supervisor', json.dumps(data_dict))
         write_stdout('RESULT 2\nOK') # transition from READY to ACKNOWLEDGED
 
 if __name__ == '__main__':
