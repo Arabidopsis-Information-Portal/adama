@@ -54,10 +54,7 @@ def member_info(lines):
         member['node'] = parts[0]
         member['ip'] = parts[1]
         member['role'] = parts[2]
-        member['tags'] = parts[3]
-        # {x: y
-        #                   for part in parts[3].split(',')
-        #                   for x, y in part.split('=')}
+        member['tags'] = dict(part.split('=') for part in parts[3].split(','))
         yield member
 
 

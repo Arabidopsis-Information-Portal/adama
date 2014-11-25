@@ -23,9 +23,8 @@ class MyHandler(SerfHandler):
     @truncated_stdout
     @with_member_info
     def member_join(self, members):
-        print '>>>>', members
-        # if role == 'zookeeper':
-        #     update_zookeeper()
+        if any(member['role'] == 'zookeeper' for member in members):
+            update_zookeeper()
 
     @truncated_stdout
     def member_leave(self):
