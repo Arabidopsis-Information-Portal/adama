@@ -61,3 +61,8 @@ def member_info(lines):
 def serf(*args):
     cmd = ['serf'] + list(args) + ['-format=json']
     return json.loads(subprocess.check_output(cmd))
+
+
+def serf_event(name, *args):
+    cmd = ['serf', 'event', name] + list(args)
+    subprocess.check_call(cmd, stdout=sys.stderr)
