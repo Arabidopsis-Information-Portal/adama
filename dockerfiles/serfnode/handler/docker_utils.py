@@ -26,3 +26,13 @@ def docker(*args):
     cmd.extend(args)
     return subprocess.check_output(cmd).strip()
 
+
+def fig(*args):
+    docker_path = os.path.dirname(
+        path(os.environ.get('DOCKER_BINARY', '/usr/bin/docker')))
+    docker_socket = path(os.environ.get('DOCKER_SOCKET', '/run/docker.sock'))
+    arg_list = ' '.join(args)
+    cmd = ('DOCKER_HOST=unix://{docker_socket} PATH={docker_path}:$PATH '
+           'fig {arg_list}'
+           .format(**locals()))
+    return subprocess.check_output(cmd, shell=True).strip()
