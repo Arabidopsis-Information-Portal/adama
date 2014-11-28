@@ -2,5 +2,5 @@ FROM serfnode
 
 MAINTAINER Walter Moreira <wmoreira@tacc.utexas.edu>
 
-ADD handler /handler
-
+COPY handler /handler
+COPY zookeeper.conf /programs/

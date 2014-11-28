@@ -5,6 +5,7 @@ import sys
 from serf_master import SerfHandler
 from utils import truncated_stdout, serf, with_member_info
 from docker_utils import docker
+from supervisor import start, stop
 
 
 TEMPLATE = dedent(
@@ -40,12 +41,14 @@ def update_zookeeper():
                for member in serf('members')['members']
                if member['status'] == 'alive']
     myself = serf('info')['agent']['name']
-    stop_zookeeper(myself)
+    stop('zookeeper')
     sorted_members = sort_members(members)
     write_members(sorted_members)
     id_num = myid(myself, sorted_members)
     write_myid(id_num)
-    start_zookeeper(myself)
+    start('zookeeper',
+          name='{}_zookeeper'.format(myself),
+          volume=data_volume_name())
 
 
 def data_volume_name():
@@ -54,23 +57,6 @@ def data_volume_name():
 
 def service_name():
     return 'zookeeper_zookeeper_1'
-
-
-def stop_zookeeper(agent):
-    try:
-        docker('rm', '-f', '{}_zookeeper'.format(agent))
-    except Exception:
-        pass
-
-
-def start_zookeeper(agent):
-    docker('run', '-d',
-           '-p', '2181:2181',
-           '-p', '2888:2888',
-           '-p', '3888:3888',
-           '--name', '{}_zookeeper'.format(agent),
-           '--net', 'host',
-           '--volumes-from', data_volume_name(), 'jplock/zookeeper')
 
 
 def write_myid(n):

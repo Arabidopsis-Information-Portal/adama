@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+import docker_utils
 import jinja2
 env = jinja2.Environment(loader=jinja2.FileSystemLoader('/programs'))
 
@@ -13,9 +14,14 @@ def supervisor_install(block, **kwargs):
     - `kwargs` are the key/values to use in the template
 
     """
-    template = env.get_template(block)
+    conf_filename = '{}.conf'.format(block)
+    template = env.get_template(conf_filename)
+    kwargs.update({
+        'DOCKER': docker_utils.DOCKER,
+        'DOCKER_SOCKET': docker_utils.DOCKER_SOCKET})
     conf = template.render(kwargs)
-    with open(os.path.join('/etc/supervisor/conf.d', block), 'w') as f:
+    with open(os.path.join(
+            '/etc/supervisor/conf.d', conf_filename), 'w') as f:
         f.write(conf)
 
 
@@ -27,3 +33,13 @@ def supervisor_exec(*args):
 def supervisor_update():
     supervisor_exec('reread')
     supervisor_exec('update')
+
+
+def start(block, **kwargs):
+    supervisor_install(block, **kwargs)
+    supervisor_update()
+    supervisor_exec('start', block)
+
+
+def stop(block):
+    supervisor_exec('stop', block)
