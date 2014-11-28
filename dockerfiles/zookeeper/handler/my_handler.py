@@ -3,7 +3,7 @@ from textwrap import dedent
 import sys
 
 from serf_master import SerfHandler
-from utils import truncated_stdout, serf, with_member_info
+from utils import truncated_stdout, serf, with_member_info, with_payload
 from docker_utils import docker
 from supervisor import start, stop
 
@@ -23,17 +23,13 @@ class MyHandler(SerfHandler):
 
     @truncated_stdout
     @with_member_info
-    def member_join(self, members):
+    def update(self, members):
         if any(member['role'] == 'zookeeper' for member in members):
             update_zookeeper()
 
-    @truncated_stdout
-    def member_leave(self):
-        update_zookeeper()
-
-    @truncated_stdout
-    def member_failed(self):
-        update_zookeeper()
+    member_join = update
+    member_leave = update
+    member_failed = update
 
 
 def update_zookeeper():
