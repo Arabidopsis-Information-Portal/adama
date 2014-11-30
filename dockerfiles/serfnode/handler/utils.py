@@ -58,6 +58,10 @@ def member_info(lines):
         yield member
 
 
+def is_self(node):
+    return serf('info')['agent']['name'] == node
+
+
 def serf(*args):
     cmd = ['serf'] + list(args) + ['-format=json']
     return json.loads(subprocess.check_output(cmd))
