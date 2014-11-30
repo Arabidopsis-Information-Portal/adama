@@ -16,8 +16,10 @@ class MyHandler(SerfHandler):
         args = args or []
         remote_image = remote(image)
         docker_utils.docker('pull', remote_image)
-        for i in range(int(num_workers)):
-            _start(remote_image, args)
+        supervisor.start('worker',
+                         image=remote_image,
+                         numprocs=num_workers,
+                         args=' '.join(args))
 
 
 def remote(image):
