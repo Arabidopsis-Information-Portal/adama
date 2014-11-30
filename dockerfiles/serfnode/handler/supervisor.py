@@ -38,8 +38,8 @@ def supervisor_update():
 def start(block, **kwargs):
     supervisor_install(block, **kwargs)
     supervisor_update()
-    supervisor_exec('start', block)
+    supervisor_exec('start', '{}:*'.format(block))
 
 
 def stop(block):
-    supervisor_exec('stop', block)
+    supervisor_exec('stop', '{}:*'.format(block))
