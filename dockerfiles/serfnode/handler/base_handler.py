@@ -6,6 +6,13 @@ from utils import with_payload, truncated_stdout
 
 class BaseHandler(SerfHandler):
 
+    def __init__(self, *args, **kwargs):
+        super(BaseHandler, self).__init__(*args, **kwargs)
+        self.setup()
+
+    def setup(self):
+        pass
+
     @truncated_stdout
     @with_payload
     def where(self, role=None):
