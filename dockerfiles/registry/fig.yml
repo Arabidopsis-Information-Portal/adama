@@ -2,9 +2,17 @@ registry:
   build: .
   volumes:
     - /:/host
+  volumes_from:
+    - registrydata
   environment:
     ROLE: registry
     CONTACT:
     ADVERTISE:
     RPC_PORT:
     NODE:
+
+registrydata:
+  image: ubuntu
+  volumes:
+    - ./:/data
+
