@@ -1,0 +1,12 @@
+---
+
+rabbitmq:
+  build: .
+  volumes:
+    - /:/host
+  environment:
+    ROLE: rabbitmq
+    CONTACT:
+    ADVERTISE:
+    RPC_PORT:
+    NODE:
