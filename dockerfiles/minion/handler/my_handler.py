@@ -2,14 +2,14 @@
 import json
 import os
 
-from serf_master import SerfHandler
+from base_handler import BaseHandler
 import docker_utils
 import firewall
 import supervisor
 from utils import truncated_stdout, with_payload, is_self
 
 
-class MyHandler(SerfHandler):
+class MyHandler(BaseHandler):
 
     @truncated_stdout
     @with_payload

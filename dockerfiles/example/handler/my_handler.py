@@ -3,10 +3,10 @@ import json
 import pprint
 import sys
 
-from serf_master import SerfHandler
+from base_handler import BaseHandler
 
 
-class MyHandler(SerfHandler):
+class MyHandler(BaseHandler):
 
     def supervisor(self):
         print 'Got a supervisor event with payload:'
