@@ -1,0 +1,10 @@
+registry:
+  build: .
+  volumes:
+    - /:/host
+  environment:
+    ROLE: registry
+    CONTACT:
+    ADVERTISE:
+    RPC_PORT:
+    NODE:
