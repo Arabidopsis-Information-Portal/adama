@@ -2,7 +2,7 @@
 from textwrap import dedent
 import sys
 
-from serf_master import SerfHandler
+from base_handler import BaseHandler
 from utils import truncated_stdout, serf, with_member_info, with_payload
 from docker_utils import docker
 from supervisor import start, stop
@@ -19,7 +19,7 @@ TEMPLATE = dedent(
     """)
 
 
-class MyHandler(SerfHandler):
+class MyHandler(BaseHandler):
 
     @truncated_stdout
     @with_member_info
