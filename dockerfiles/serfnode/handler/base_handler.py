@@ -1,4 +1,5 @@
 import os
+import socket
 
 from serf_master import SerfHandler
 from utils import with_payload, truncated_stdout
@@ -21,6 +22,6 @@ class BaseHandler(SerfHandler):
             print(self.my_info())
 
     def my_info(self):
-        return {
-            'ip': os.environ.get('ADVERTISE', None)
-        }
+        ip = (os.environ.get('ADVERTISE') or
+              socket.gethostbyname(socket.gethostname()))
+        return {'ip': ip}
