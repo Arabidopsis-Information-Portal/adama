@@ -2,7 +2,9 @@
 COMPONENTS=\
 	serfnode \
 	minion \
-	zookeeper
+	zookeeper \
+	rabbitmq \
+	registry
 
 .PHONY: build
 
