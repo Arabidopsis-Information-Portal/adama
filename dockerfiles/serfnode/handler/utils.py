@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from functools import wraps
 import json
 import subprocess
@@ -20,13 +22,14 @@ def truncated_stdout(f):
         out = ''
         try:
             result = f(*args, **kwargs)
-            out = sys.stdout.getvalue() + '\nSUCCESS'
+            stdout = sys.stdout.getvalue()
+            out = stdout + '\nSUCCESS' if stdout else ''
             return result
         except Exception:
             out = traceback.format_exc() + '\nERROR'
         finally:
             sys.stdout = old_stdout
-            print out[-MAX_OUTPUT:]
+            print(out[-MAX_OUTPUT:], end='')
     return wrapper
 
 
