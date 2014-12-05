@@ -73,3 +73,12 @@ def serf(*args):
 def serf_event(name, *args):
     cmd = ['serf', 'event', name] + list(args)
     subprocess.check_call(cmd, stdout=sys.stderr)
+
+
+def where(service):
+    cmd = ['serf', 'query', '-format=json', 'where',
+           json.dumps({'role': service})]
+    out = json.loads(subprocess.check_output(cmd))
+    for node, response in out['Responses'].items():
+        if response.endswith('SUCCESS'):
+            yield json.loads(response[:-len('SUCCESS')])
