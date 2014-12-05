@@ -49,6 +49,7 @@ def main():
     advertise = os.environ.get('ADVERTISE')
     if advertise:
         cmd.extend(['-advertise', advertise])
+        cmd.extend(['-tag', 'adv={}'.format(advertise)])
 
     bind_port = find_port(start=7946)
     try:
@@ -56,12 +57,14 @@ def main():
     except ValueError:
         pass
     cmd.extend(['-bind', '0.0.0.0:{}'.format(bind_port)])
+    cmd.extend(['-tag', 'bind={}'.format(bind_port)])
 
     node = os.environ.get('NODE') or uuid.uuid4().hex
     cmd.extend(['-node', node])
 
     rpc_port = os.environ.get('RPC_PORT') or find_port(start=7373)
     cmd.extend(['-rpc-addr', '127.0.0.1:{}'.format(rpc_port)])
+    cmd.extend(['-tag', 'rpc={}'.format(rpc_port)])
 
     print('node name:   {}'.format(node))
     print('advertising: {}'.format(advertise))
