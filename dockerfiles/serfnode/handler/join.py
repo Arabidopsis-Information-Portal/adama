@@ -9,8 +9,31 @@ address.
 
 """
 
+import bisect
 import os
 import subprocess
+import uuid
+
+
+def find_port(start=1234):
+    """Find an unused port starting at ``start``. """
+
+    out = subprocess.check_output('netstat -antup'.split())
+    used_ports = sorted(set(int(line.split()[3].split(':')[-1])
+                            for line in out.splitlines()[2:]))
+    return _find(used_ports, start)
+
+
+def _find(lst, x):
+    if not lst:
+        return x
+    idx = bisect.bisect_left(lst, x)
+    if len(lst) <= idx:
+        return x
+    if lst[idx] == x:
+        return _find(lst[idx:], x+1)
+    else:
+        return x
 
 
 def main():
@@ -26,19 +49,24 @@ def main():
     advertise = os.environ.get('ADVERTISE')
     if advertise:
         cmd.extend(['-advertise', advertise])
-        try:
-            _, bind_port = advertise.split(':')
-        except ValueError:
-            bind_port = '7946'
-        cmd.extend(['-bind', '0.0.0.0:{}'.format(bind_port)])
 
-    node = os.environ.get('NODE')
-    if node:
-        cmd.extend(['-node', node])
+    bind_port = find_port(start=7946)
+    try:
+        _, bind_port = advertise.split(':')
+    except ValueError:
+        pass
+    cmd.extend(['-bind', '0.0.0.0:{}'.format(bind_port)])
 
-    rpc_port = os.environ.get('RPC_PORT', '7373')
-    if rpc_port:
-        cmd.extend(['-rpc-addr', '127.0.0.1:{}'.format(rpc_port)])
+    node = os.environ.get('NODE') or uuid.uuid4().hex
+    cmd.extend(['-node', node])
+
+    rpc_port = os.environ.get('RPC_PORT') or find_port(start=7373)
+    cmd.extend(['-rpc-addr', '127.0.0.1:{}'.format(rpc_port)])
+
+    print('node name:   {}'.format(node))
+    print('advertising: {}'.format(advertise))
+    print('bound to:    0.0.0.0:{}'.format(bind_port))
+    print('rpc port:    {}'.format(rpc_port))
 
     subprocess.check_call(cmd)
 
