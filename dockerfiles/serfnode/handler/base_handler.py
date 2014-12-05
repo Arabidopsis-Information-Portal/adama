@@ -1,3 +1,4 @@
+import json
 import os
 import socket
 
@@ -24,4 +25,4 @@ class BaseHandler(SerfHandler):
     def my_info(self):
         ip = (os.environ.get('ADVERTISE') or
               socket.gethostbyname(socket.gethostname()))
-        return {'ip': ip}
+        return json.dumps({'ip': ip})
