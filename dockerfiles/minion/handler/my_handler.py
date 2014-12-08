@@ -21,7 +21,8 @@ class MyHandler(BaseHandler):
         args = args or []
         remote_image = remote(image)
         docker_utils.docker('pull', remote_image)
-        supervisor.start('worker',
+        supervisor.start('worker.conf',
+                         target='worker_{}.conf'.format(image),
                          image=remote_image,
                          numprocs=num_workers,
                          args=' '.join(args))
