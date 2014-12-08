@@ -7,7 +7,7 @@ import docker_utils
 import firewall
 import supervisor
 from utils import truncated_stdout, with_payload
-from serf import is_self
+from serf import is_self, where
 
 
 class MyHandler(BaseHandler):
@@ -31,8 +31,8 @@ def remote(image):
     """Find the name of image in the registry: `LOCAL_REGISTRY`. """
 
     try:
-        registry = os.environ['LOCAL_REGISTRY']
+        registry = list(where('registry'))[0]
         return '{}/{}'.format(registry, image)
-    except KeyError:
+    except IndexError:
         # if LOCAL_REGISTRY is not set, default to docker hub
         return image
