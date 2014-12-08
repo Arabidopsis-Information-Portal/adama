@@ -6,7 +6,8 @@ from base_handler import BaseHandler
 import docker_utils
 import firewall
 import supervisor
-from utils import truncated_stdout, with_payload, is_self
+from utils import truncated_stdout, with_payload
+from serf import is_self
 
 
 class MyHandler(BaseHandler):

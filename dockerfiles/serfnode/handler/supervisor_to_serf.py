@@ -3,7 +3,7 @@
 import json
 import sys
 
-from utils import serf, serf_event
+from serf import serf, serf_event
 
 
 def write_stdout(s):

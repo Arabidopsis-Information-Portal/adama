@@ -14,6 +14,8 @@ import os
 import subprocess
 import uuid
 
+from utils import save_info
+
 
 def find_port(start=1234):
     """Find an unused port starting at ``start``. """
@@ -54,7 +56,7 @@ def main():
     bind_port = find_port(start=7946)
     try:
         _, bind_port = advertise.split(':')
-    except ValueError:
+    except (ValueError, AttributeError):
         pass
     cmd.extend(['-bind', '0.0.0.0:{}'.format(bind_port)])
     cmd.extend(['-tag', 'bind={}'.format(bind_port)])
@@ -65,6 +67,8 @@ def main():
     rpc_port = os.environ.get('RPC_PORT') or find_port(start=7373)
     cmd.extend(['-rpc-addr', '127.0.0.1:{}'.format(rpc_port)])
     cmd.extend(['-tag', 'rpc={}'.format(rpc_port)])
+
+    save_info(node, advertise, bind_port, rpc_port)
 
     print('node name:   {}'.format(node))
     print('advertising: {}'.format(advertise))

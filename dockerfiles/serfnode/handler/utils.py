@@ -2,8 +2,9 @@ from __future__ import print_function
 
 from functools import wraps
 import json
-import subprocess
+import os
 import sys
+import time
 import traceback
 import cStringIO
 
@@ -61,24 +62,24 @@ def member_info(lines):
         yield member
 
 
-def is_self(node):
-    return serf('info')['agent']['name'] == node
+def save_info(node, advertise, bind_port, rpc_port):
+    info = {
+        'node': node,
+        'advertise': advertise,
+        'bind_port': bind_port,
+        'rpc_port': rpc_port
+    }
+    with open('/node_info', 'w') as out:
+        json.dump(info, out)
 
 
-def serf(*args):
-    cmd = ['serf'] + list(args) + ['-format=json']
-    return json.loads(subprocess.check_output(cmd))
+def load_info():
+    """Load information about the node.
 
+    Block until the information is available.
 
-def serf_event(name, *args):
-    cmd = ['serf', 'event', name] + list(args)
-    subprocess.check_call(cmd, stdout=sys.stderr)
+    """
+    while not os.path.exists('/node_info'):
+        time.sleep(0.1)
 
-
-def where(service):
-    cmd = ['serf', 'query', '-format=json', 'where',
-           json.dumps({'role': service})]
-    out = json.loads(subprocess.check_output(cmd))
-    for node, response in out['Responses'].items():
-        if response.endswith('SUCCESS'):
-            yield json.loads(response[:-len('SUCCESS')])
+    return json.load(open('/node_info'))
