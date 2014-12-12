@@ -14,7 +14,7 @@ def supervisor_install(block, **kwargs):
     - `kwargs` are the key/values to use in the template
 
     """
-    conf_filename = kwargs['target']
+    conf_filename = '{}.conf'.format(kwargs['target'])
     template = env.get_template(block)
     kwargs.update({
         'DOCKER': docker_utils.DOCKER,
@@ -38,7 +38,7 @@ def supervisor_update():
 def start(block, **kwargs):
     supervisor_install(block, **kwargs)
     supervisor_update()
-    supervisor_exec('start', '{}:*'.format(block))
+    supervisor_exec('start', '{}:*'.format(kwargs['target']))
 
 
 def stop(block):
