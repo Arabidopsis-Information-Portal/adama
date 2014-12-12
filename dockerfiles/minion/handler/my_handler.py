@@ -19,13 +19,20 @@ class MyHandler(BaseHandler):
         if node is not None and not is_self(node):
             return
         args = args or []
-        remote_image = remote(image)
+        print('going to pull', image)
+        #remote_image = remote(image)
+        remote_image = image
         docker_utils.docker('pull', remote_image)
         supervisor.start('worker.conf',
-                         target='worker_{}.conf'.format(image),
+                         target='worker_{}'.format(image),
                          image=remote_image,
                          numprocs=num_workers,
                          args=' '.join(args))
+
+    @truncated_stdout
+    @with_payload
+    def check(self, image=None, num_workers=None, **kwargs):
+        pass
 
 
 def remote(image):
