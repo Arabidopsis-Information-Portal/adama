@@ -31,11 +31,28 @@ class BaseHandler(SerfHandler):
     def where(self, role=None):
         my_role = os.environ.get('ROLE', 'no_role')
         if my_role == role:
-            print(self.my_info())
+            print(my_info())
 
-    def my_info(self):
-        ip = os.environ.get('ADVERTISE') or get_ip_address('eth0')
-        return json.dumps({'ip': ip,
-                           'bind': os.environ['SERF_TAG_BIND'],
-                           'advertise': os.environ.get('SERF_TAG_ADV'),
-                           'rpc': os.environ['SERF_TAG_RPC']})
+    @truncated_stdout
+    @with_payload
+    def where_actor(self, role=None):
+        my_role = os.environ.get('ROLE', 'no_role')
+        if my_role == role:
+            print(actor_info())
+
+
+def my_info():
+    ip = os.environ.get('ADVERTISE') or get_ip_address('eth0')
+    return json.dumps({'ip': ip,
+                       'bind': os.environ['SERF_TAG_BIND'],
+                       'advertise': os.environ.get('SERF_TAG_ADV'),
+                       'rpc': os.environ['SERF_TAG_RPC']})
+
+
+def actor_info():
+    try:
+        with open('/actor_info') as f:
+            return f.read()
+    except IOError:
+        return json.dumps({})
+
