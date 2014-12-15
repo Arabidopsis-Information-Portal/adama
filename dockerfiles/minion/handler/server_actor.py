@@ -1,3 +1,5 @@
+import json
+
 from mischief.actors.process_actor import ProcessActor
 
 
@@ -10,4 +12,5 @@ class MinionServer(ProcessActor):
             )
 
     def start(self, msg):
-        print('got', msg)
+        with open('/msg', 'w') as f:
+            f.write(json.dumps(msg))

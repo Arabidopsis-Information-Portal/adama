@@ -8,6 +8,9 @@ import time
 import traceback
 import cStringIO
 
+import mischief.actors.pipe as p
+import mischief.actors.actor as a
+
 
 MAX_OUTPUT = 1000
 
@@ -83,3 +86,17 @@ def load_info():
         time.sleep(0.1)
 
     return json.load(open('/node_info'))
+
+
+def serf_aware_spawn(actor, **kwargs):
+    ip = os.environ['IP'] or p.get_local_ip('8.8.8.8')
+    kwargs['ip'] = ip
+    proc = a.spawn(actor, **kwargs)
+    with open('/actor_info', 'w') as f:
+        name, ip, port = proc.address()
+        f.write(json.dumps({
+            'name': name,
+            'ip': ip,
+            'port': port}))
+    return proc
+
