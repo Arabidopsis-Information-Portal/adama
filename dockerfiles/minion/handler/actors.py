@@ -1,9 +1,9 @@
 import json
 
-from mischief.actors.process_actor import ProcessActor
+import mischief.actors.process_actor as pa
 
 
-class MinionServer(ProcessActor):
+class MinionServer(pa.ProcessActor):
 
     def act(self):
         while True:
@@ -14,3 +14,11 @@ class MinionServer(ProcessActor):
     def start(self, msg):
         with open('/msg', 'w') as f:
             f.write(json.dumps(msg))
+
+
+class Another(pa.ProcessActor):
+
+    def act(self):
+        while True:
+            self.receive()
+

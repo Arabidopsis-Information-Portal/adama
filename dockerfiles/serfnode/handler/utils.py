@@ -88,15 +88,23 @@ def load_info():
     return json.load(open('/node_info'))
 
 
-def serf_aware_spawn(actor, **kwargs):
+def serf_aware_spawn(actor, name, **kwargs):
+    """Spawn actor and save address info in ``/actor_info``. """
+
     ip = os.environ['IP'] or p.get_local_ip('8.8.8.8')
     kwargs['ip'] = ip
     proc = a.spawn(actor, **kwargs)
+    actor_info = {}
+    try:
+        actor_info = json.load(open('/actor_info'))
+    except IOError:
+        pass
     with open('/actor_info', 'w') as f:
-        name, ip, port = proc.address()
-        f.write(json.dumps({
-            'name': name,
+        identifier, ip, port = proc.address()
+        actor_info[name] = {
+            'name': identifier,
             'ip': ip,
-            'port': port}))
+            'port': port}
+        json.dump(actor_info, f)
     return proc
 
