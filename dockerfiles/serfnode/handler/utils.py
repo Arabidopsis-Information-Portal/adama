@@ -94,17 +94,12 @@ def serf_aware_spawn(actor, name, **kwargs):
     ip = os.environ['IP'] or p.get_local_ip('8.8.8.8')
     kwargs['ip'] = ip
     proc = a.spawn(actor, **kwargs)
-    actor_info = {}
     try:
-        actor_info = json.load(open('/actor_info'))
-    except IOError:
+        os.makedirs('/actors')
+    except OSError:
         pass
-    with open('/actor_info', 'w') as f:
+    with open('/actors/{}'.format(name), 'w') as f:
         identifier, ip, port = proc.address()
-        actor_info[name] = {
-            'name': identifier,
-            'ip': ip,
-            'port': port}
-        json.dump(actor_info, f)
+        json.dump({'name': identifier, 'ip': ip, 'port': port}, f)
     return proc
 

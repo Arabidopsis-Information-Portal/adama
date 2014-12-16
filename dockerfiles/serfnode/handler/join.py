@@ -15,12 +15,6 @@ import subprocess
 import uuid
 
 from utils import save_info
-from mischief.actors.actor import Actor
-from utils import serf_aware_spawn
-try:
-    import actors
-except ImportError:
-    actors = None
 
 
 def find_port(start=1234):
@@ -80,15 +74,6 @@ def main():
     print('advertising: {}'.format(advertise))
     print('bound to:    0.0.0.0:{}'.format(bind_port))
     print('rpc port:    {}'.format(rpc_port))
-
-    if actors is not None:
-        for obj_name in dir(actors):
-            obj = getattr(actors, obj_name)
-            try:
-                if issubclass(obj, Actor):
-                    serf_aware_spawn(obj, obj_name)
-            except TypeError:
-                pass
 
     subprocess.check_call(cmd)
 
