@@ -1,6 +1,6 @@
 .PHONY: clean
 
-build: Dockerfile fig.yml handler/* *.conf ../serfnode/build
+build: Dockerfile fig.yml handler/* *.conf
 	fig build
 	touch build
 

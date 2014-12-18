@@ -1,6 +1,5 @@
 
 COMPONENTS=\
-	serfnode \
 	minion \
 	zookeeper \
 	rabbitmq \

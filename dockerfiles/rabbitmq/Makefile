@@ -1,6 +1,6 @@
 .PHONY: clean
 
-build: Dockerfile fig.yml handler/* rabbitmq.conf ../serfnode/build
+build: Dockerfile fig.yml handler/* rabbitmq.conf
 	fig build
 	touch build
 
