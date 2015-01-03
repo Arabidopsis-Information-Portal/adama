@@ -4,9 +4,13 @@ rabbitmq:
   build: .
   volumes:
     - /:/host
+  ports:
+    - 7373
+    - 7946
   environment:
     ROLE: rabbitmq
-    CONTACT:
-    ADVERTISE:
+    PEER:
+    IP:
+    SERF_PORT:
     RPC_PORT:
-    NODE:
+    NODE_NAME:

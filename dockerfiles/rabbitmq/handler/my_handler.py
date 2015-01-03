@@ -5,4 +5,5 @@ import supervisor
 class MyHandler(BaseHandler):
 
     def setup(self):
-        supervisor.start('rabbitmq')
+        super(MyHandler, self).setup()
+        supervisor.start('rabbitmq.conf', target='rabbitmq')
