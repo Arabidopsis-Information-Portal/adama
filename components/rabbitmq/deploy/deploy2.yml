@@ -1,0 +1,25 @@
+---
+
+- hosts: local
+  roles:
+    - role: serfnode
+      image_name: rabbitmq
+      my_role: rabbitmq
+      serfnode_name: node_rabbitmq4
+  #    ip: 172.17.42.1
+      ip: 192.168.33.10
+      serf_port: 7947
+      exposed_ports:
+        - 5672
+        - 15672
+        - "7946/udp"
+        - 7947
+        - "7947/udp"
+      mapped_ports:
+        - "5674:5672"
+        - "15674:15672"
+        - "7947:7947"
+        - "7947:7947/udp"
+      peer: 192.168.33.10:7946
+#      app_volumes:
+#        - /tmp:/data

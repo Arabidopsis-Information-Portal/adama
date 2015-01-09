@@ -6,4 +6,6 @@ class MyHandler(BaseHandler):
 
     def setup(self):
         super(MyHandler, self).setup()
-        supervisor.start('rabbitmq.conf', target='rabbitmq')
+        supervisor.start_docker(
+            'rabbitmq.conf',
+            '--rm {} dockerfile/rabbitmq'.format(self.volumes))
