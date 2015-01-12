@@ -1,0 +1,24 @@
+
+---
+
+- name: Tag serfnode image for remote registry
+  command: docker tag -f serfnode {{ remote_registry }}/serfnode
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+
+- name: Push image to remote registry
+  command: docker push {{ remote_registry }}/serfnode
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+
+- name: Pull image from remote registry
+  command: docker pull {{ remote_registry }}/serfnode
+  changed_when: false
+
+- name: Tag image locally
+  command: docker tag -f {{ remote_registry }}/serfnode serfnode
+  changed_when: false
+
+

@@ -1,0 +1,14 @@
+---
+
+- hosts: local
+  roles:
+    - role: serfnode
+      image_name: serf-redis
+      my_role: redis
+      serfnode_name: node_redis
+      exposed_ports:
+        - 6379
+#      mapped_ports:
+#        - "6379:6379"
+      app_volumes:
+        - /tmp/foo:/data
