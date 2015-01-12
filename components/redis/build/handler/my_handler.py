@@ -7,5 +7,5 @@ class MyHandler(BaseHandler):
     def setup(self):
         super(MyHandler, self).setup()
         supervisor.start_docker(
-            'redis.conf',
+            'redis',
             '--rm {} redis redis-server --appendonly yes'.format(self.volumes))

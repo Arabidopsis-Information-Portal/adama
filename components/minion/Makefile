@@ -1,9 +1,9 @@
 .PHONY: clean
 
-build: Dockerfile fig.yml handler/* *.conf
-	fig build
-	touch build
+build: Dockerfile handler/* *.conf
+	docker build -t minion .
+	touch .build
 
 clean:
-	rm build
+	rm .build
 
