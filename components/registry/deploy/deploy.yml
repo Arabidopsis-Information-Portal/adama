@@ -1,0 +1,14 @@
+---
+
+- hosts: local
+  roles:
+    - role: serfnode
+      image_name: ubuntu
+      my_role: registry
+      serfnode_name: registry_node
+      exposed_ports:
+        - 15672
+      mapped_ports:
+        - "15672:15672"
+      app_volumes:
+        - /tmp:/data
