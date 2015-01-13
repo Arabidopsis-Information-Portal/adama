@@ -2,13 +2,19 @@
 
 - hosts: local
   roles:
+
+    - role: serfvolume
+      serfvolume_name: registry_data
+      volumes:
+        - /tmp/registry:/data
+
     - role: serfnode
-      image_name: ubuntu
+      image_name: serf-registry
       my_role: registry
       serfnode_name: registry_node
       exposed_ports:
-        - 15672
+        - 5000
       mapped_ports:
-        - "15672:15672"
-      app_volumes:
-        - /tmp:/data
+        - "5000:5000"
+      app_volumes_from:
+        - registry_data

@@ -1,9 +1,9 @@
 .PHONY: clean
 
-build: Dockerfile fig.yml handler/* registry.conf
-	fig build
-	touch build
+build: Dockerfile handler/*
+	docker build -t serf-registry .
+	touch .build
 
 clean:
-	rm build
+	rm .build
 

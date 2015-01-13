@@ -61,4 +61,4 @@ app_volumes:
 app_volumes_from:
 
 # whether the container will run in privileged mode
-privileged:
+privileged: no

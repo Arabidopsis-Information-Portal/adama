@@ -13,7 +13,7 @@
     expose: "{{ exposed_ports }}"
     ports: "{{ exposed_ports|union(mapped_ports)|union([7946]) }}"
     state: running
-    privileged: "{{ privileged|default('no') }}"
+    privileged: "{{ privileged }}"
     env:
       ROLE: "{{ my_role }}"
       PEER: "{{ peer }}"
