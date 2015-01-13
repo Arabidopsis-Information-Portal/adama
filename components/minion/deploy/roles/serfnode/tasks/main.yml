@@ -23,4 +23,4 @@
       SERF_PORT: "{{ serf_port }}"
       RPC_PORT: "{{ rpc_port }}"
       APP_VOLUMES: "{{ app_volumes }}"
-
+      APP_VOLUMES_FROM: "{{ app_volumes_from }}"
