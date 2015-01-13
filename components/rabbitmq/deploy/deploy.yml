@@ -6,8 +6,6 @@
       image_name: rabbitmq
       my_role: rabbitmq
       serfnode_name: node_rabbitmq1
-      #ip: 172.17.42.1
-      ip: 192.168.33.10
       serf_port: 7946
       exposed_ports:
         - 5672
