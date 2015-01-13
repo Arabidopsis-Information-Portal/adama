@@ -1,0 +1,10 @@
+
+---
+
+- name: Start serfvolume
+  docker:
+    image: ubuntu
+    name: "{{ serfvolume_name }}"
+    volumes: "{{ volumes }}"
+    state: present
+

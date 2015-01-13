@@ -46,9 +46,19 @@ serf_port:
 # port where the serf agent accepts commands (int)
 rpc_port:
 
-# list of volumes to mount in the application container (str)
+# list of volumes to mount in the application container ([str])
 # For example:
 # app_volumes:
 #   - /tmp:/foo
 #   - /bin:/bar
 app_volumes:
+
+# list of containers from where to mount volumes in the application
+# container ([str])
+# For example:
+# app_volumes_from:
+#   - containerA
+app_volumes_from:
+
+# whether the container will run in privileged mode
+privileged:
