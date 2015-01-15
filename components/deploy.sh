@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IP=$(./registry/deploy/deploy.sh 2>/dev/null)
-./rabbitmq/deploy/deploy.sh peer=$IP
-./redis/deploy/deploy.sh peer=$IP
-./minion/deploy/deploy.sh peer=$IP
+IP=$(./rabbitmq/deploy/deploy.sh @../../defaults.yml)
+./rabbitmq/deploy/deploy.sh peer=$IP @../../defaults.yml
+./redis/deploy/deploy.sh peer=$IP @../../defaults.yml
+./minion/deploy/deploy.sh peer=$IP @../../defaults.yml
