@@ -1,0 +1,7 @@
+---
+
+# name of the container holding the volumes
+serfvolume_name:
+
+# volumes to mount
+volumes:

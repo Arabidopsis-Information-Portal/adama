@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Araport Data Mediator API</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+          rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}"
+          rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="{{ url_for('static', filename='js/ie-emulation-modes-warning.js') }}">
+    </script>
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{{ url_for('static', filename='js/ie10-viewport-bug-workaround.js') }}">
+    </script>
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+
+  <body role="document">
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Adama</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>
+          <img src="{{ url_for('static', filename='img/commander.png') }}"
+               class="line-image" />
+          Adama
+        </h1>
+        <h2>
+          <b>A</b>raport <b>Da</b>ta <b>M</b>ediator <b>A</b>pi
+        </h2>
+        <p>
+          Showcasing data federation services for the
+          <a href="http://araport.org">Arabidopsis Information Portal</a>.
+        </p>
+      </div>
+
+      <h1 class="page-header">
+        Instructions
+      </h1>
+
+      <p>
+        <ul>
+          <li>
+            <a href="/api/adama.html">API documentation and
+            playground</a>.
+          </li>
+          <li>
+            See <a href="https://github.com/Arabidopsis-Information-Portal/adama">project
+            page at Github</a>.
+          </li>
+        </ul>
+      </p>
+
+      <h1 class="page-header">
+        Services
+      </h1>
+
+      <p>
+        <button id="refreshServices" class="btn btn-primary" type="button">
+          Refresh
+        </button>
+        Last refreshed:
+        <abbr id="refreshedServices" class="timeago" title=""></abbr>
+      </p>
+
+      <p>
+        Currently registered services:
+        <ul id="namespaces">
+        </ul>
+
+        <pre id="services">
+        </pre>
+      </p>
+
+    </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/docs.min.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/collapsible-list.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/jquery.timeago.js') }}">
+    </script>
+    <script src="{{ url_for('static', filename='js/adama-site.js') }}">
+    </script>
+  </body>
+</html>

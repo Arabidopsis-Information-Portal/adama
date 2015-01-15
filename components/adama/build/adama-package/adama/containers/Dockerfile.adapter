@@ -1,0 +1,17 @@
+FROM {{ language }}
+
+ADD . /root/user_code
+{% if main_module_path %}
+ENV MAIN_MODULE_PATH {{ main_module_path }}
+{% endif %}
+{% if main_module_name %}
+ENV MAIN_MODULE_NAME {{ main_module_name }}
+{% endif %}
+
+ENV WHITELIST {{ whitelist }}
+ENV QUEUE_HOST {{ queue_host }}
+ENV QUEUE_PORT {{ queue_port }}
+ENV QUEUE_NAME {{ queue_name }}
+ENV ADAPTER_TYPE {{ adapter_type }}
+
+{{ requirement_cmds }}

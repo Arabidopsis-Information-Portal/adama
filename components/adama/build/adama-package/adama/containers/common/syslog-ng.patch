@@ -1,0 +1,11 @@
+--- syslog-ng.conf.orig	2014-05-29 13:38:02.000000000 -0500
++++ syslog-ng.conf	2014-05-29 13:38:09.000000000 -0500
+@@ -17,7 +17,7 @@
+ # Logs may come from unix stream, but not from another machine.
+ #
+ source s_src {
+-       system();
++#       system();
+        internal();
+ };
+ 
