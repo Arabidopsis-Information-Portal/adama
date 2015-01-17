@@ -1,0 +1,28 @@
+workers:
+  python: 1
+  ruby: 1
+  javascript: 1
+
+server:
+  # Address where server binds
+  bind: 0.0.0.0:8000
+  pid_file: /var/run/adama_server.pid
+  # prefix for the app (leave empty if endpoints should be at the root)
+  prefix: /adama
+  # what kind of control on requests to the server:
+  # - none: all requests allowed
+  # - jwt: check JWT token is valid
+  # - bearer_token: check Bearer token against redis
+  access_control: none
+  # WSO2 public key to verify jwt
+  apim_public_key: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzOM4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXnRS4HrKGJTzxaCcU7OQIDAQAB
+
+api:
+  tenant_name: araport-org
+  # WSO2 API prefix
+  prefix: /community/v0.3
+  # WSO2 url of the api
+  url: https://araport-api.tacc.utexas.edu
+
+# where the host root directory is mounted
+host_dir:
