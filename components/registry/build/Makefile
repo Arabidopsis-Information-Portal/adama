@@ -1,6 +1,8 @@
 .PHONY: clean
 
-build: Dockerfile handler/*
+all: .build
+
+.build: Dockerfile handler/*
 	docker build -t serf-registry .
 	touch .build
 

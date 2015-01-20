@@ -1,6 +1,8 @@
 .PHONY: clean
 
-build: Dockerfile handler/* *.conf
+all: .build
+
+.build: Dockerfile handler/* *.conf
 	docker build -t minion .
 	touch .build
 
