@@ -1,0 +1,2 @@
+class AdamaError(Exception):
+    pass
