@@ -15,7 +15,7 @@ billiard==3.3.0.17
 binaryornot==0.3.0
 blessings==1.6
 celery==3.1.11
-chardet==2.0.1
+chardet==2.3.0
 click==3.3
 colorama==0.2.5
 cookiecutter==0.7.2
