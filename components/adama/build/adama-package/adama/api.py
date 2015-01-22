@@ -1,40 +1,21 @@
+from typing import Any, Dict, cast
+
 import subprocess
 import textwrap
 import traceback
 
 from flask import url_for
-from flask.ext import restful
-from adama.swagger import swagger
+from flask.ext.restful import Api
+from .swagger.swagger import docs
 
 from . import __version__, app
 from .config import Config
+from .exceptions import APIException, RegisterException
 
 
-class APIException(Exception):
+class MyApi(Api):
 
-    def __init__(self, message, code=400):
-        Exception.__init__(self, message)
-        self.message = message
-        self.code = code
-
-
-class RegisterException(Exception):
-
-    def __init__(self, total_workers, logs):
-        super(Exception, self).__init__(
-            'register failed (see "logs" attribute)')
-        self.total_workers = total_workers
-        self.failed_count = len(logs)
-        self.logs = logs
-
-    def __str__(self):
-        s = super(RegisterException, self).__str__()
-        return s + '\n\nLogs:\n' + '\n'.join(self.logs)
-
-
-class MyApi(restful.Api):
-
-    def handle_error(self, exc):
+    def handle_error(self, exc: Exception) -> Any:
         if isinstance(exc, APIException):
             return self.with_traceback(
                 {'message': 'API error: {0}'.format(exc.message)},
@@ -57,42 +38,44 @@ class MyApi(restful.Api):
                                    all_logs)}, exc)
 
         if isinstance(exc, Exception):
-            child_tb = getattr(exc, 'child_traceback', None)
             trace = traceback.format_exc()
+            child_tb = getattr(exc, 'child_traceback', None)
+            message = getattr(exc, 'message', None)
             return self.with_traceback(
                 {'trace': trace,
                  'worker_trace': child_tb,
-                 'message': str(exc.message)}, exc)
+                 'message': str(message)}, exc)
 
-    def with_traceback(self, data, exc, code=500):
+    def with_traceback(self, data: dict, exc: Exception,
+                       code: int = 500) -> Any:
         data['traceback'] = traceback.format_exc()
         data['exception'] = exc.__class__.__name__
         return self.make_response(error(data), code)
 
 
-def ok(obj):
+def ok(obj: Dict) -> Dict:
     obj['status'] = 'success'
     return obj
 
 
-def error(obj):
+def error(obj: Dict) -> Dict:
     obj['status'] = 'error'
     return obj
 
 
-def api_url_for(endpoint, **kwargs):
+def api_url_for(endpoint: str, **kwargs: Any) -> str:
     status_endpoint = url_for('status')
     prefix = status_endpoint[:-len('/status')]
     api_endpoint = url_for(endpoint, **kwargs)
-    return (Config.get('server', 'api_url') +
-            Config.get('server', 'api_prefix') +
+    return (cast(str, Config['api']['url']) +
+            cast(str, Config['api']['prefix']) +
             api_endpoint[len(prefix):])
 
 
-api = swagger.docs(MyApi(app),
-                   apiVersion=__version__,
-                   basePath=(Config.get('server', 'api_url') +
-                             Config.get('server', 'api_prefix')),
-                   resourcePath='/',
-                   produces=["application/json"],
-                   api_spec_url='/api/adama')
+api = docs(MyApi(app),
+           apiVersion=__version__,
+           basePath=(cast(str, Config['api']['url']) +
+                     cast(str, Config['api']['prefix'])),
+           resourcePath='/',
+           produces=["application/json"],
+           api_spec_url='/api/adama')

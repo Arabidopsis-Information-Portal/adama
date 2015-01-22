@@ -1,3 +1,5 @@
+from typing import Undefined
+
 from flask import Response, url_for
 from jinja2 import Template
 
@@ -11,6 +13,7 @@ def render_homepage(resource_list_url):
           'swagger_ui': url_for('swagger_ui')}
   return Response(template.render(conf), mimetype='text/html')
 
+homepage_html = Undefined(str)
 homepage_html = """
 <!DOCTYPE html>
 <html>
@@ -89,6 +92,7 @@ homepage_html = """
 </html>
 """
 
+endpoint_html = Undefined(str)
 endpoint_html = """
 <!DOCTYPE html>
 <html lang="en">

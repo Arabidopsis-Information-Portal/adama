@@ -1,3 +1,5 @@
+from typing import Undefined, Any
+
 from flask.ext.restful import Resource, fields
 from flask import request
 import inspect
@@ -7,6 +9,7 @@ from . import registry, registered, api_spec_endpoint
 from . import html
 
 basestring = str
+resource_listing_endpoint = Undefined(Any)
 resource_listing_endpoint = None
 
 def docs(api, apiVersion='0.0', swaggerVersion='1.2',

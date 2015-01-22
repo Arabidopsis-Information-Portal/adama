@@ -1,3 +1,6 @@
+from typing import Undefined
+
+registry = Undefined(dict)
 registry = {
     'apis': [],
     'models': {}

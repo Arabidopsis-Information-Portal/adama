@@ -1,13 +1,18 @@
 """Read config files from /adama-package/conf.yml """
 
-from typing import Dict, cast
+from typing import List, Dict, cast, Union, typevar
 
 import yaml
 
 from .exceptions import AdamaError
 
 
-def read() -> Dict:
+ConfigDict = typevar(
+    'ConfigDict',
+    values=(Dict[str, Dict[str, Union[str, int, float, List]]],))
+
+
+def read() -> ConfigDict:
     conf_file = open('/adama-package/conf.yml')
     try:
         conf_yaml = yaml.load(conf_file)
