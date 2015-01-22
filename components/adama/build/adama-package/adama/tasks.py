@@ -1,4 +1,4 @@
-from __future__ import print_function
+import typing
 
 from functools import partial
 import json

@@ -26,7 +26,7 @@ from .status import StatusResource
 from .token_store import token_store
 from .tools import location_of
 
-PREFIX = Config.get('server', 'prefix')
+PREFIX = Config['server']['prefix']
 HERE = location_of(__file__)
 
 print('Using PREFIX = {}'.format(PREFIX))

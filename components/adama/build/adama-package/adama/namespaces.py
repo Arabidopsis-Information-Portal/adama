@@ -1,5 +1,3 @@
-import urlparse
-
 from flask import g
 from flask.ext import restful
 

@@ -1,26 +1,25 @@
 import collections
-import cPickle
+import pickle
 
 import redis
 
-from .config import Config
+from .serf import node
 
 
 class Store(collections.MutableMapping):
 
     def __init__(self, db=0):
-        self._db = redis.StrictRedis(host=Config.get('store', 'host'),
-                                     port=Config.getint('store', 'port'),
-                                     db=db)
+        host, port = node(role='redis', port=6379)
+        self._db = redis.StrictRedis(host=host, port=port, db=db)
 
     def __getitem__(self, key):
         obj = self._db.get(key)
         if obj is None:
             raise KeyError('"{}" not found'.format(key))
-        return cPickle.loads(obj)
+        return pickle.loads(obj)
 
     def __setitem__(self, key, value):
-        obj = cPickle.dumps(value)
+        obj = pickle.dumps(value)
         self._db.set(key, obj)
 
     def __delitem__(self, key):
