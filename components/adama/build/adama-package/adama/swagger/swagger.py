@@ -3,11 +3,10 @@ from flask import request
 import inspect
 import functools
 import re
-import flask_restful
 from . import registry, registered, api_spec_endpoint
 from . import html
 
-
+basestring = str
 resource_listing_endpoint = None
 
 def docs(api, apiVersion='0.0', swaggerVersion='1.2',
