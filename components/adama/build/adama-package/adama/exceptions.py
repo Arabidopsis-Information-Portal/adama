@@ -2,7 +2,10 @@ import typing
 
 
 class AdamaError(Exception):
-    pass
+
+    def __init__(self, message: str, exc: Exception = None) -> None:
+        msg = message + ('\n{}'.format(exc) if exc is not None else '')
+        super(AdamaError, self).__init__(msg)
 
 
 class APIException(AdamaError):
