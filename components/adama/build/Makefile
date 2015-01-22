@@ -2,7 +2,7 @@
 
 all: .build
 
-.build: Dockerfile handler/*
+.build: Dockerfile handler/* adama-package/*
 	docker build -t adama .
 	touch .build
 
