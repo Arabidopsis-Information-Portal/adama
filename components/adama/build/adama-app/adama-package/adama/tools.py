@@ -1,7 +1,17 @@
 from contextlib import contextmanager
 import itertools
+import json
 import os
 import signal
+
+from typing import typevar, Dict, List, Union, Undefined
+
+from .exceptions import AdamaError
+
+
+FileNotFoundError = Undefined(Exception)
+Ports = typevar('Ports', values=(Dict[str, List[str]],))
+NodeInfo = typevar('NodeInfo', values=(Dict[str, Union[str, Ports]],))
 
 
 def location_of(filename):
@@ -66,3 +76,16 @@ def chdir(directory):
         yield
     finally:
         os.chdir(old_wd)
+
+
+def node(role: str) -> NodeInfo:
+    try:
+        with open('/serfnode/nodes.json') as nodes_file:
+            nodes = json.load(nodes_file)
+            return nodes[role]
+    except KeyError:
+        raise AdamaError('could not find node with role "{}"'.format(role))
+    except FileNotFoundError:
+        raise AdamaError('missing info from parent at "/serfnode/nodes.json"')
+    except ValueError:
+        raise AdamaError('invalid JSON object received from parent')
