@@ -8,3 +8,4 @@ RUN apt-get update -y && \
 COPY adama-package/ /adama-package
 WORKDIR adama-package/
 RUN pip3 install -r requirements.txt
+ENV MYPYPATH /adama-package/stubs
