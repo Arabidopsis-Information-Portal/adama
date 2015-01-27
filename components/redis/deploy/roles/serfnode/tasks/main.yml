@@ -11,7 +11,8 @@
     volumes:
       - /:/host
     expose: "{{ exposed_ports }}"
-    ports: "{{ exposed_ports|union(mapped_ports)|union([7946]) }}"
+    ports: "{{ mapped_ports|union([7946]) }}"
+#    ports: "{{ exposed_ports|union(mapped_ports)|union([7946]) }}"
     state: running
     privileged: "{{ privileged }}"
     env:
