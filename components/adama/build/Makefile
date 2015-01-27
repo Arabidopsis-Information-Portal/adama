@@ -2,7 +2,7 @@
 
 all: .build
 
-.build: Dockerfile handler/* adama-package/*
+.build: Dockerfile handler/* serfnode.yml
 	docker build -t adama .
 	touch .build
 
