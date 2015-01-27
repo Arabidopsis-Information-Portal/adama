@@ -13,7 +13,7 @@ import textwrap
 import tempfile
 import threading
 import traceback
-import urlparse
+import urllib.parse as urlparse
 import zipfile
 
 from enum import Enum

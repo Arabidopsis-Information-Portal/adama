@@ -6,7 +6,7 @@ import traceback
 
 from flask import url_for
 from flask.ext.restful import Api
-from .swagger.swagger import docs
+from flask_restful_swagger import swagger
 
 from . import __version__, app
 from .config import Config
@@ -72,10 +72,10 @@ def api_url_for(endpoint: str, **kwargs: Any) -> str:
             api_endpoint[len(prefix):])
 
 
-api = docs(MyApi(app),
-           apiVersion=__version__,
-           basePath=(cast(str, Config['api']['url']) +
-                     cast(str, Config['api']['prefix'])),
-           resourcePath='/',
-           produces=["application/json"],
-           api_spec_url='/api/adama')
+api = MyApi(app) #,
+           # apiVersion=__version__,
+           # basePath=(cast(str, Config['api']['url']) +
+           #           cast(str, Config['api']['prefix'])),
+           # resourcePath='/',
+           # produces=["application/json"],
+           # api_spec_url='/api/adama')

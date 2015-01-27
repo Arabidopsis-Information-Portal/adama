@@ -7,8 +7,9 @@
       my_role: adama
       serfnode_name: node_adama
       exposed_ports:
-        - 15672
+        - 8080
       mapped_ports:
-        - "15672:15672"
+        - "8080:8080"
       app_volumes:
         - /tmp:/data
+        - /host/adama/components/adama/build/adama-app/adama-package:/adama-package
