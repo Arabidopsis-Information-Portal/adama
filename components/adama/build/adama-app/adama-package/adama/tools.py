@@ -4,14 +4,9 @@ import json
 import os
 import signal
 
-from typing import typevar, Dict, List, Union, Undefined
+from typing import Dict, List, Union, Undefined, Any, Tuple
 
 from .exceptions import AdamaError
-
-
-FileNotFoundError = Undefined(Exception)
-Ports = typevar('Ports', values=(Dict[str, List[str]],))
-NodeInfo = typevar('NodeInfo', values=(Dict[str, Union[str, Ports]],))
 
 
 def location_of(filename):
@@ -78,14 +73,26 @@ def chdir(directory):
         os.chdir(old_wd)
 
 
-def node(role: str) -> NodeInfo:
+def node(role: str) -> Dict[str, Any]:
     try:
         with open('/serfnode/nodes.json') as nodes_file:
-            nodes = json.load(nodes_file)
-            return nodes[role]
+            all_nodes = json.load(nodes_file)
+            nodes = all_nodes[role]
+            nodes.sort(key=lambda obj: float(obj['timestamp']))
+            return nodes[0]
     except KeyError:
         raise AdamaError('could not find node with role "{}"'.format(role))
     except FileNotFoundError:
         raise AdamaError('missing info from parent at "/serfnode/nodes.json"')
     except ValueError:
         raise AdamaError('invalid JSON object received from parent')
+
+
+def location(role: str, port: int) -> Tuple[str, int]:
+    info = node(role)
+    try:
+        port = int(info['ports']['{}/tcp'.format(port)][0])
+    except KeyError:
+        raise AdamaError('port {}/tcp not found for role {}'
+                         .format(port, role))
+    return info['ip'], port
