@@ -86,7 +86,7 @@ def check_access():
     # don't control access to OPTIONS verb
     if request.method == 'OPTIONS':
         return
-    access_control_type = Config.get('server', 'access_control')
+    access_control_type = Config['server']['access_control']
     if access_control_type == 'none':
         g.user = 'anonymous'
         return
@@ -105,7 +105,7 @@ def get_pub_key():
 PUB_KEY = get_pub_key()
 
 def check_jwt(request):
-    tenant_name = Config.get('server', 'tenant_name')
+    tenant_name = Config['api']['tenant_name']
     try:
         decoded = jwt.decode(
             request.headers['X-JWT-Assertion-{0}'.format(tenant_name)],
