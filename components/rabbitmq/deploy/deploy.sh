@@ -10,6 +10,6 @@ for var in $*; do
     EXTRA_VARS="$EXTRA_VARS --extra-vars \"$var\"";
 done
 EXTRA_VARS="$EXTRA_VARS --extra-vars \"tempfile=$TEMPFILE\""
-echo eval ansible-playbook -i hosts $EXTRA_VARS deploy.yml >&2
+eval ansible-playbook -i hosts $EXTRA_VARS deploy.yml >&2
 cat $TEMPFILE
 rm -rf $TEMPFILE
