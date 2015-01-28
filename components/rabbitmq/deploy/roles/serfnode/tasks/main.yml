@@ -1,43 +1,10 @@
 
 ---
 
-- include: push.yml
-  when: remote_registry is defined
+- include: stop.yml
+  when: stop is defined
 
-- name: Start serfnode
-  docker:
-    image: "{{ image_name }}"
-    name: "{{ serfnode_name }}"
-    volumes:
-      - /:/host
-    expose: "{{ exposed_ports }}"
-    ports: "{{ exposed_ports|union(mapped_ports)|union([7946]) }}"
-    state: running
-    privileged: "{{ privileged }}"
-    env:
-      ROLE: "{{ my_role }}"
-      PEER: "{{ peer }}"
-      IP: "{{ ip }}"
-      SERVICE_IP: "{{ service_ip }}"
-      SERVICE_PORT: "{{ service_port }}"
-      SERF_PORT: "{{ serf_port }}"
-      RPC_PORT: "{{ rpc_port }}"
-      APP_VOLUMES: "{{ app_volumes }}"
-      APP_VOLUMES_FROM: "{{ app_volumes_from }}"
-
-- name: Collect location of node
-  shell: docker exec {{ serfnode_name }} /me
-  register: output
-  changed_when: false
-
-- name: Save location of node
-  lineinfile:
-    dest: "{{ tempfile }}"
-    line: "{{ output.stdout }}"
-    create: yes
-    insertafter: EOF
-    state: present
-  run_once: yes
-  delegate_to: localhost
-  changed_when: false
+- include: deploy.yml
+  when: stop is not defined
+  
 

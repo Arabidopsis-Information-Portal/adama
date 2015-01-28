@@ -1,0 +1,4 @@
+#!/bin/bash
+
+docker exec "$1" bash -c "cat /child_app_*" | xargs docker rm -f
+docker rm -f "$1"
