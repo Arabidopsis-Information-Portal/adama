@@ -1,6 +1,8 @@
 from flask import g
 from flask.ext import restful
 
+from typing import Dict, Any
+
 from .api import APIException, ok, api_url_for
 from .namespace_store import namespace_store
 from .swagger import swagger
@@ -58,7 +60,7 @@ class Namespace(object):
             raise APIException(
                 'Namespace cannot be an empty string')
 
-    def to_json(self):
+    def to_json(self) -> Dict[str, Any]:
         obj = {
             'name': self.name,
             'url': self.url,

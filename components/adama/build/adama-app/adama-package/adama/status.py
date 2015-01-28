@@ -1,5 +1,4 @@
 import json
-import subprocess
 
 from flask.ext import restful
 from typing import Tuple, Dict
@@ -7,7 +6,6 @@ from typing import Tuple, Dict
 from . import __version__
 from .swagger import swagger
 from .api import ok
-from .tools import location_of
 
 
 @swagger.model
