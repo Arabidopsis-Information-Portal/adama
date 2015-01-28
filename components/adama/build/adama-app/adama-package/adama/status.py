@@ -1,6 +1,8 @@
+import json
 import subprocess
 
 from flask.ext import restful
+from typing import Tuple, Dict
 
 from . import __version__
 from .swagger import swagger
@@ -40,16 +42,26 @@ class StatusResource(restful.Resource):
     def get(self):
         """Return status of the server"""
 
-        return ok({
-            'api': 'Adama v{}'.format(__version__),
-            'hash': head_hash()
-        })
+        return ok(status())
 
 
-def head_hash():
-    try:
-        return subprocess.check_output(
-            'cd {} && git rev-parse HEAD'.format(location_of(__file__)),
-            shell=True).strip()
-    except OSError:
-        return '<could not retrieve hash of HEAD commit>'
+def my_info() -> Tuple[str, str]:
+    me = json.load(open('/me.json'))
+    return me['Image'], me['Id']
+
+
+def my_parent() -> Tuple[str, str]:
+    parent = json.load(open('/serfnode/parent.json'))
+    return parent['Image'], parent['Id']
+
+
+def status() -> Dict[str, str]:
+    my_img, my_cid = my_info()
+    parent_img, parent_cid = my_parent()
+    return {
+        'api': 'Adama v{}'.format(__version__),
+        'serfnode_image': parent_img,
+        'serfnode_container': parent_cid,
+        'adama_image': my_img,
+        'adama_container': my_cid
+    }
