@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+  roles:
+    - role: serfnode
+      image_name: rabbitmq
+      my_role: rabbitmq
+      serfnode_name: node_rabbitmq
+      serf_port: 7946
+      exposed_ports:
+        - 5672
+        - 15672
+      mapped_ports:
+        - "5672:5672"
+        - "15672:15672"
