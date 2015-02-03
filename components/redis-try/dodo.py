@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-from doit.tools import result_dep, title_with_actions
+from doit.tools import result_dep
 
 
 DOIT_CONFIG = {'default_tasks': ['build']}
