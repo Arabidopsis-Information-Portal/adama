@@ -70,12 +70,12 @@ def task_push():
     """Push image to docker hub"""
 
     return {
-        'actions': ['docker tag -f serf-redis waltermoreira/serf-redis',
-                    'docker push waltermoreira/serf-redis',
+        'actions': ['docker tag -f serf-redis adama/serf-redis',
+                    'docker push adama/serf-redis',
                     'touch .push'],
         'targets': ['.push'],
         'file_dep': ['.build'],
         'task_dep': ['build'],
-        'uptodate': [remote_image_exists('waltermoreira/serf-redis')],
+        'uptodate': [remote_image_exists('adama/serf-redis')],
         'verbosity': 2
     }

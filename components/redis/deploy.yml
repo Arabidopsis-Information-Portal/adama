@@ -3,7 +3,7 @@
 - hosts: all
   roles:
     - role: serfnode
-      image_name: serf-redis
+      image_name: adama/serf-redis
       my_role: redis
       serfnode_name: node_redis
       exposed_ports:
