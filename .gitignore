@@ -63,3 +63,4 @@ tests/python_map_filter_test_adapter/
 tests/python_test_adapter/Dockerfile
 tests/wrong_python_test_adapter/
 tests/main.rb
+.doit.db
