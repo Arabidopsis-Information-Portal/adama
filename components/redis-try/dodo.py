@@ -61,6 +61,7 @@ def task_build():
         'task_dep': ['_check_images'],
         'uptodate': [result_dep('_check_images'),
                      target_image_exists('serf-redis')],
+        'clean': True,
         'verbosity': 2
     }
 
