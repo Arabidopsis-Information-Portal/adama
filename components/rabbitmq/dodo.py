@@ -55,7 +55,7 @@ def task_build():
 
     return {
         'actions': ['docker build -t rabbitmq .',
-                    'touch .build'],
+                    'docker inspect -f "{{ .Id }}" rabbitmq > .build'],
         'targets': ['.build'],
         'file_dep': all_files,
         'task_dep': ['_check_images'],
@@ -72,7 +72,7 @@ def task_push():
     return {
         'actions': ['docker tag -f rabbitmq adama/rabbitmq',
                     'docker push adama/rabbitmq',
-                    'touch .push'],
+                    'docker inspect -f "{{ .Id }}" rabbitmq > .push'],
         'targets': ['.push'],
         'file_dep': ['.build'],
         'task_dep': ['build'],
