@@ -55,7 +55,7 @@ def task_build():
 
     return {
         'actions': ['docker build -t serf-redis .',
-                    'touch .build'],
+                    'docker inspect -f "{{ .Id }}" serf-redis > .build'],
         'targets': ['.build'],
         'file_dep': all_files,
         'task_dep': ['_check_images'],
@@ -72,7 +72,7 @@ def task_push():
     return {
         'actions': ['docker tag -f serf-redis adama/serf-redis',
                     'docker push adama/serf-redis',
-                    'touch .push'],
+                    'docker inspect -f "{{ .Id }}" serf-redis > .push'],
         'targets': ['.push'],
         'file_dep': ['.build'],
         'task_dep': ['build'],
