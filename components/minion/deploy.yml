@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+  roles:
+    - role: serfnode
+      image_name: minion
+      my_role: minion
+      serfnode_name: node_minion
+      exposed_ports:
+        - 1234
+      privileged: true
+#      mapped_ports:
+#        - "6379:6379"
+#      app_volumes:
+#        - /tmp/foo:/data
