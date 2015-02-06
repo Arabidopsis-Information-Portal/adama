@@ -16,6 +16,8 @@ import traceback
 import urllib.parse as urlparse
 import zipfile
 
+from typing import List, Dict
+
 from enum import Enum
 from flask import request, Response, g
 from flask.ext import restful
@@ -30,9 +32,7 @@ from .requestparser import RequestParser
 from .api import APIException, RegisterException, ok, api_url_for, error
 from .config import Config
 from .docker import docker_output, start_container, tail_logs, safe_docker
-from .firewall import allow
-from .tools import (location_of, identifier, service_iden,
-                    adapter_iden, interleave)
+from .tools import identifier, service_iden, adapter_iden, interleave
 from .tasks import Producer
 from .service_store import service_store
 from .swagger import swagger
@@ -66,8 +66,6 @@ TIMEOUT = 3  # second
 
 # Timout to wait while stopping workers
 STOP_TIMEOUT = 5
-
-HERE = location_of(__file__)
 
 
 class WorkerState(Enum):
@@ -202,6 +200,8 @@ class Service(AbstractService):
             os.path.basename(self.main_module_path),
             self.language,
             self.requirements,
+            self.whitelist,
+            self.type,
             into=self.code_dir)
         self.build()
 
@@ -925,8 +925,13 @@ def check(producer):
     return state
 
 
-def render_template(main_module_path, main_module_name,
-                    language, requirements, into):
+def render_template(main_module_path: str,
+                    main_module_name: str,
+                    language: str,
+                    requirements: List[str],
+                    whitelist: List[str],
+                    adapter_type: str,
+                    into):
     """Create Dockerfile for ``language``.
 
     Consider a list of ``requirements``, and write the Dockerfile in
@@ -935,7 +940,7 @@ def render_template(main_module_path, main_module_name,
     """
 
     dockerfile_template = jinja2.Template(
-        open(os.path.join(HERE, 'containers/Dockerfile.adapter')).read())
+        open('/adama-package/adama/containers/Dockerfile.adapter').read())
     requirement_cmds = (
         'RUN ' + requirements_installer(language, requirements)
         if requirements else '')
@@ -944,12 +949,15 @@ def render_template(main_module_path, main_module_name,
         main_module_path=main_module_path,
         main_module_name=main_module_name,
         language=language,
-        requirement_cmds=requirement_cmds)
+        requirement_cmds=requirement_cmds,
+        whitelist=json.dumps(whitelist),
+        adapter_type=adapter_type
+    )
     with open(os.path.join(into, 'Dockerfile'), 'w') as f:
         f.write(dockerfile)
 
 
-def requirements_installer(language, requirements):
+def requirements_installer(language: str, requirements: List[str]) -> str:
     """Return the command to install requirements.
 
     ``requirements`` is a list of packages to be installed in the

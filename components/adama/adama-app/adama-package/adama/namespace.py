@@ -1,7 +1,7 @@
 from flask import g
 from flask.ext import restful
 
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from .api import APIException, ok, api_url_for
 from .namespace_store import namespace_store
@@ -46,7 +46,9 @@ class DeleteResponseModel(object):
 
 class Namespace(object):
 
-    def __init__(self, name, url, description, users=None):
+    def __init__(self, name: str, url: str,
+                 description: str,
+                 users: Dict[str, List[str]] = None):
         self.name = name
         self.url = url
         self.description = description
