@@ -3,7 +3,7 @@
 - hosts: all
   roles:
     - role: serfnode
-      image_name: minion
+      image_name: adama/minion
       my_role: minion
       serfnode_name: node_minion
       exposed_ports:
