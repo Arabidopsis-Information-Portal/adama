@@ -38,12 +38,10 @@ class MyApi(Api):
                                    all_logs)}, exc)
 
         if isinstance(exc, Exception):
-            trace = traceback.format_exc()
             child_tb = getattr(exc, 'child_traceback', None)
             message = getattr(exc, 'message', None)
             return self.with_traceback(
-                {'trace': trace,
-                 'worker_trace': child_tb,
+                {'worker_trace': child_tb,
                  'message': str(message)}, exc)
 
     def with_traceback(self, data: dict, exc: Exception,
