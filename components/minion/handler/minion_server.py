@@ -10,6 +10,17 @@ class MinionServer(server.Server):
         super(MinionServer, self).__init__(ip, port)
 
     def handle(self, data):
+        """Start a worker.
+
+        Message format:
+
+            {
+              'image': 'image name'
+              'numprocs': number of workers,
+              'args': 'extra arguments for "docker run -d image ..."'
+            }
+
+        """
         supervisor.start(
             'worker.conf',
             target='worker_{}'.format(data['image']),
