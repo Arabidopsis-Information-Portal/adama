@@ -55,3 +55,10 @@ docs/_build/
 
 .idea
 .vagrant
+ansible/host_vars/attic/
+ansible/roles/common/files/public_keys/*.pub
+tests/passthrough_test_adapter/
+tests/python_map_filter_test_adapter/
+tests/python_test_adapter/Dockerfile
+tests/wrong_python_test_adapter/
+
