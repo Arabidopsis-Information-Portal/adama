@@ -4,6 +4,32 @@ from .api import APIException
 from .config import Config
 
 
+DOCS = {
+    '/search': {
+        'get': {
+            'summary': 'Search',
+            'description': 'do a search'
+        }
+    },
+    '/list': {
+        'get': {
+            'summary': 'List',
+            'description': 'list all'
+        }
+    },
+    '/access': {
+        'get': {
+            'summary': 'Access get',
+            'description': 'do a get to a passthrough'
+        },
+        'post': {
+            'summary': 'Access post',
+            'description': 'do a post to a passthrough'
+        }
+    }
+}
+
+
 def metadata_to_swagger(metadata):
     """
 
@@ -44,7 +70,7 @@ def endpoints_to_paths(metadata):
         else:
             raise APIException(
                 'unrecognized keys: {}'.format(list(keys)))
-        out = dict(fix_parameters(fix_responses(item))
+        out = dict(fix_summary(fix_parameters(fix_responses(item)), endpoint)
                    for item in new_descr.items())
         yield endpoint, out
 
@@ -60,6 +86,20 @@ def fix_parameters(item):
     parameters = new_descr.setdefault('parameters', [])
     for parameter in parameters:
         parameter.setdefault('in', 'query')
+    return verb, new_descr
+
+
+def fix_summary(item, endpoint):
+    """
+
+    :type item: (str, dict)
+    :type endpoint: str
+    :rtype: (str, dict)
+    """
+    verb, descr = item
+    new_descr = copy.deepcopy(descr)
+    for field, value in DOCS[endpoint][verb].items():
+        new_descr.setdefault(field, value)
     return verb, new_descr
 
 
@@ -96,57 +136,3 @@ def get_definitions():
     :rtype: dict[str, object]
     """
     return {}
-
-
-
-def fill(endpoint, verbs):
-    """Add summary, description, and responses.
-
-    :type endpoint: str
-    :type verbs: dict[str, dict]
-    :rtype: dict[str, dict]
-    """
-
-    output = dict(verbs)
-    for verb, content in verbs.items():
-        output[verb] = dict(content)
-        for field, value in DOCS[endpoint][verb].items():
-            if field not in content:
-                output[verb][field] = value
-    return output
-
-
-def add_responses(paths, metadata):
-    """
-
-    :type paths: dict[str, object]
-    :type metadata: dict[str, object]
-    :rtype: dict[str, object]
-    """
-
-
-
-DOCS = {
-    '/search': {
-        'get': {
-            'summary': 'Search',
-            'description': 'do a search'
-        }
-    },
-    '/list': {
-        'get': {
-            'summary': 'List',
-            'description': 'list all'
-        }
-    },
-    '/access': {
-        'get': {
-            'summary': 'Access get',
-            'description': 'do a get to a passthrough'
-        },
-        'post': {
-            'summary': 'Access post',
-            'description': 'do a post to a passthrough'
-        }
-    }
-}
