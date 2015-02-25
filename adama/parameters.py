@@ -31,6 +31,51 @@ DOCS = {
 }
 
 
+DEFS = {
+    'Generic': {
+        'properties': {
+            'status': {
+                'type': 'string',
+                'enum': ['success', 'error'],
+                'description': 'Status of response'
+            },
+            'message': {
+                'type': 'string',
+                'description': 'Human readable message'
+            },
+            'result': {
+                'type': 'object',
+                'description': 'Result'
+            }
+        }
+    }
+}
+
+
+def fix_metadata(metadata):
+    """
+
+    :type metadata: dict[str, object|dict]
+    :rtype: dict[str, object|dict]
+    """
+
+    md = copy.deepcopy(metadata)
+    endpoints = md['endpoints']
+    for endpoint in endpoints:
+        descr = endpoints[endpoint]
+        keys = set(descr.keys())
+        if keys.issubset(['parameters', 'responses', 'response']):
+            # simple declaration of a GET
+            endpoints[endpoint] = {'get': descr}
+        elif keys.issubset(['post', 'get', 'put']):
+            # full declaration of verbs
+            endpoints[endpoint] = descr
+        else:
+            raise APIException(
+                'unrecognized keys: {}'.format(list(keys)))
+    return md
+
+
 def metadata_to_swagger(metadata):
     """
 
@@ -48,7 +93,7 @@ def metadata_to_swagger(metadata):
         'schemes': ['https'],
         'basePath': Config.get('server', 'api_prefix'),
         'paths': dict(endpoints_to_paths(metadata)),
-        'definitions': get_definitions()
+        'definitions': dict(get_definitions(metadata))
     }
     return swagger
 
@@ -61,18 +106,10 @@ def endpoints_to_paths(metadata):
     """
     md = copy.deepcopy(metadata)
     for endpoint, descr in md['endpoints'].items():
-        keys = set(descr.keys())
-        if keys.issubset(['parameters', 'responses', 'response']):
-            # simple declaration of a GET
-            new_descr = {'get': descr}
-        elif keys.issubset(['post', 'get', 'put']):
-            # full declaration of verbs
-            new_descr = descr
-        else:
-            raise APIException(
-                'unrecognized keys: {}'.format(list(keys)))
-        out = dict(fix_summary(fix_parameters(fix_responses(item)), endpoint)
-                   for item in new_descr.items())
+        out = dict(fix_summary(fix_parameters(fix_responses(item,
+                                                            endpoint)),
+                               endpoint)
+                   for item in descr.items())
         yield endpoint, out
 
 
@@ -104,10 +141,11 @@ def fix_summary(item, endpoint):
     return verb, new_descr
 
 
-def fix_responses(item):
+def fix_responses(item, endpoint):
     """
 
     :type item: (str, dict)
+    :type endpoint: str
     :rtype: (str, dict)
     """
     verb, descr = item
@@ -118,10 +156,12 @@ def fix_responses(item):
         responses = new_descr.setdefault('responses', {})
         responses['200'] = {
             'description': 'successful response',
-            'schema': new_descr.get('response',
-                                    {
-                                        '$ref': '#/definitions/Generic'
-                                    })
+            'schema': {
+                '$ref': '#/definitions{}'.format(
+                    endpoint.title()
+                    if 'response' in new_descr
+                    else '/Generic')
+            }
         }
         new_descr['responses'] = responses
         try:
@@ -131,9 +171,20 @@ def fix_responses(item):
     return verb, new_descr
 
 
-def get_definitions():
+def get_definitions(metadata):
     """
 
-    :rtype: dict[str, object]
+    :type metadata: dict[str, dict]
+    :rtype: collections.Iterable[(str, object)]
     """
-    return {}
+    yield 'Generic', copy.deepcopy(DEFS['Generic'])
+    endpoints = metadata.get('endpoints', {})
+    for endpoint_name, endpoint in endpoints.items():
+        print '---', endpoint_name
+        for descr in endpoint.values():
+            print(descr)
+            print '--'
+            if 'response' in descr:
+                defs = copy.deepcopy(DEFS['Generic'])
+                defs['properties']['result'] = descr['response']
+                yield endpoint_name[1:].title(), defs
