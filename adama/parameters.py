@@ -1,4 +1,5 @@
 import copy
+import urlparse
 
 from .api import APIException
 from .config import Config
@@ -43,7 +44,7 @@ def metadata_to_swagger(metadata):
             'description': metadata.get('description', ''),
             'version': metadata.get('version', '0.1')
         },
-        'host': Config.get('server', 'api_url'),
+        'host': urlparse.urlsplit(Config.get('server', 'api_url')).netloc,
         'schemes': ['https'],
         'basePath': Config.get('server', 'api_prefix'),
         'paths': dict(endpoints_to_paths(metadata)),
