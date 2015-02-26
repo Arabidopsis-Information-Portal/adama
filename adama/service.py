@@ -843,7 +843,7 @@ class FileLikeWrapper(object):
         self.src = itertools.chain.from_iterable(self.it)
 
     def read(self, n=512):
-        return ''.join(itertools.islice(self.src, None, n))
+        return ''.join(itertools.islice(self.src, 0, n))
 
 
 def process_by_client(service, results):
