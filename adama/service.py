@@ -124,7 +124,9 @@ class AbstractService(object):
                                .format(self.name))
 
     def to_json(self):
-        return {key[0]: getattr(self, key[0]) for key in self.PARAMS}
+        obj = {key[0]: getattr(self, key[0]) for key in self.PARAMS}
+        obj['endpoints'] = self.endpoints
+        return obj
 
     def make_image(self):
         raise NotImplementedError
@@ -1210,3 +1212,18 @@ def extract(filename, code, into):
             'unknown extension: {0}'.format(filename), 400)
 
     return user_code_dir
+
+
+def get_service(namespace, service):
+    """
+
+    :type namespace: str
+    :type service: str
+    :rtype: Service
+    """
+    name = service_iden(namespace, service)
+    try:
+        slot = service_store[name]
+        return slot['service']
+    except KeyError:
+        raise APIException('service not found: {}'.format(name), 404)
