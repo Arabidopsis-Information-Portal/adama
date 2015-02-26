@@ -21,11 +21,11 @@ from .entity import get_permissions
 )
 class ServicesResponseModel(object):
 
-     resource_fields = {
-         'status': restful.fields.String(attribute='success or error'),
-         'result': restful.fields.List(
-             restful.fields.Nested(ServiceModel.resource_fields))
-     }
+    resource_fields = {
+        'status': restful.fields.String(attribute='success or error'),
+        'result': restful.fields.List(
+            restful.fields.Nested(ServiceModel.resource_fields))
+    }
 
 
 @swagger.model
