@@ -93,6 +93,7 @@ class AbstractService(object):
         ('json_path', False, ''),
         ('main_module', False, 'main'),
         ('users', False, {}),
+        ('endpoints', False, {}),
         ('metadata', False, METADATA_DEFAULT)
     ]
 
@@ -124,9 +125,7 @@ class AbstractService(object):
                                .format(self.name))
 
     def to_json(self):
-        obj = {key[0]: getattr(self, key[0]) for key in self.PARAMS}
-        obj['endpoints'] = self.endpoints
-        return obj
+        return {key[0]: getattr(self, key[0]) for key in self.PARAMS}
 
     def make_image(self):
         raise NotImplementedError
