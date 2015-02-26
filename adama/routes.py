@@ -104,11 +104,12 @@ def get_pub_key():
 
 PUB_KEY = get_pub_key()
 
-def check_jwt(request):
+
+def check_jwt(req):
     tenant_name = Config.get('server', 'tenant_name')
     try:
         decoded = jwt.decode(
-            request.headers['X-JWT-Assertion-{0}'.format(tenant_name)],
+            req.headers['X-JWT-Assertion-{0}'.format(tenant_name)],
             PUB_KEY)
         g.user = decoded['http://wso2.org/claims/enduser']
     except (jwt.DecodeError, KeyError):
@@ -117,18 +118,19 @@ def check_jwt(request):
 
 TOKEN_RE = re.compile('Bearer (.+)')
 
-def check_bearer_token(request):
+
+def check_bearer_token(req):
     # --- REVIEW THIS ---
     # Allow unauthorized GET requests for now
-    if request.method == 'GET':
+    if req.method == 'GET':
         return
     # ------
     # bypass auth in /json and non-prefixed urls
-    if request.path == PREFIX + '/json':
+    if req.path == PREFIX + '/json':
         return
-    if not request.path.startswith(PREFIX):
+    if not req.path.startswith(PREFIX):
         return
-    auth = request.headers['Authorization']
+    auth = req.headers['Authorization']
     match = TOKEN_RE.match(auth)
     if not match:
         abort(400)
@@ -143,4 +145,3 @@ def check_bearer_token(request):
 def add_cors(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
-
