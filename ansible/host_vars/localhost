@@ -7,6 +7,15 @@ config:
   - section: server
     option: prefix
     value: /community/v{{ lookup('file', '../adama/VERSION') }}
+  - section: server
+    option: api_prefix
+    value: /community/v{{ lookup('file', '../adama/VERSION') }}
+  - section: server
+    option: api_url
+    value: http://localhost
+  - section: server
+    option: swagger_ui
+    value: http://localhost
   - section: queue
     option: host
     value: 172.17.42.1
