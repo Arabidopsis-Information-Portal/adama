@@ -228,7 +228,7 @@ class ServicesResource(restful.Resource):
                 service=service.adapter_name),
             'notification': service.notify
         }
-        for endpoint in service.endpoints():
+        for endpoint in service.endpoint_names():
             result[endpoint+'_url'] = api_url_for(
                 endpoint,
                 namespace=service.namespace,

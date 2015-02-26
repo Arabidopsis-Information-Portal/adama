@@ -186,7 +186,7 @@ class Service(AbstractService):
             pass
         return obj
 
-    def endpoints(self):
+    def endpoint_names(self):
         if self.type == 'passthrough':
             return ['access']
         else:
