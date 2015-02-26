@@ -138,7 +138,7 @@ class AbstractService(object):
     def check_health(self):
         raise NotImplementedError
 
-    def exec_worker(self, endpoint, args, request):
+    def exec_worker(self, endpoint, args, req):
         """Exercise worker with data from the request.
 
         ``endpoint`` denotes which endpoint is using the worker (search,
@@ -303,10 +303,10 @@ class Service(AbstractService):
 
         q = multiprocessing.Queue()
 
-        def log(worker, q):
-            producer = tail_logs(worker, timeout=TIMEOUT)
-            v = (check(producer), worker)
-            q.put(v)
+        def log(wkr, qq):
+            producer = tail_logs(wkr, timeout=TIMEOUT)
+            v = (check(producer), wkr)
+            qq.put(v)
 
         # Ask for logs from workers. We do it in processes so we can
         # poll for a little while the workers in parallel.
@@ -330,18 +330,18 @@ class Service(AbstractService):
         if logs:
             raise RegisterException(len(self.workers), logs)
 
-    def exec_worker(self, endpoint, args, request):
+    def exec_worker(self, endpoint, args, req):
         """Process a request through the worker."""
 
         meth = getattr(self, 'exec_worker_{}'.format(self.type))
-        return meth(endpoint, args, request)
+        return meth(endpoint, args, req)
 
-    def exec_worker_query(self, endpoint, args, request):
+    def exec_worker_query(self, endpoint, args, req):
         """Send ``args`` to ``queue`` in QueryWorker model."""
 
         queue = self.iden
         args['endpoint'] = endpoint
-        args['headers'] = dict(request.headers)
+        args['headers'] = dict(req.headers)
         client = Producer(queue_host=Config.get('queue', 'host'),
                           queue_port=Config.getint('queue', 'port'),
                           queue_name=queue)
@@ -350,7 +350,7 @@ class Service(AbstractService):
         return Response(result_generator(gen, lambda: client.metadata),
                         mimetype='application/json')
 
-    def exec_worker_map_filter(self, endpoint, args, request):
+    def exec_worker_map_filter(self, endpoint, args, req):
         """Forward request and process response.
 
         Forward the request to the third party service, and map the
@@ -361,17 +361,16 @@ class Service(AbstractService):
             raise APIException("service of type 'map_filter' does "
                                "not support /list")
 
-        if is_https(self.url) and request.method == 'GET':
+        if is_https(self.url) and req.method == 'GET':
             method = tls1_get
         else:
-            method = getattr(requests, request.method.lower())
+            method = getattr(requests, req.method.lower())
         try:
-            headers = {'Authorization':
-                           request.headers['Authorization']}
+            headers = {'Authorization': req.headers['Authorization']}
         except KeyError:
             headers = {}
         response = method(self.url,
-                          params=request.args,
+                          params=req.args,
                           headers=headers,
                           stream=True)
         if response.ok:
@@ -386,7 +385,7 @@ class Service(AbstractService):
             raise APIException('response from external service: {}'
                                .format(response))
 
-    def exec_worker_generic(self, endpoint, args, request):
+    def exec_worker_generic(self, endpoint, args, req):
         queue = self.iden
         args['endpoint'] = endpoint
         client = Producer(queue_host=Config.get('queue', 'host'),
@@ -399,7 +398,7 @@ class Service(AbstractService):
                 'Wrong return type of generic adapter: got {} results'
                 .format(len(response)))
         response = response[0]
-        if not 'error' in response:
+        if 'error' not in response:
             return Response(base64.b64decode(response['body']),
                             content_type=response['content_type'])
         else:
@@ -539,6 +538,7 @@ class ModifyServiceResponseModel(object):
     resource_fields = {
         'status': restful.fields.String(attribute='success or error')
     }
+
 
 class ServiceResource(restful.Resource):
 
@@ -1188,8 +1188,8 @@ def extract(filename, code, into):
         zip_file = os.path.join(into, 'contents.zip')
         with open(zip_file, 'w') as f:
             f.write(contents)
-        zip = zipfile.ZipFile(zip_file)
-        zip.extractall(user_code_dir)
+        zipball = zipfile.ZipFile(zip_file)
+        zipball.extractall(user_code_dir)
 
     elif ext in TARBALLS:
         # it's a tarball
