@@ -1,0 +1,37 @@
+---
+
+- name: Clone swagger-ui
+  git:
+    repo: https://github.com/swagger-api/swagger-ui.git
+    dest: /home/adama/swagger-ui
+    update: yes
+  sudo: yes
+  sudo_user: adama
+  register: clone_swagger_ui
+
+- name: Rebuild swagger-ui image
+  docker_image:
+    path: /home/adama/swagger-ui
+    name: swagger-ui-builder
+    state: build
+  sudo: yes
+  when: clone_swagger_ui|changed
+  register: rebuild_swagger_ui
+
+- name: Ensure old container is removed
+  docker:
+    image: swagger-ui-builder
+    name: swagger_ui
+    state: absent
+  sudo: yes
+  when: rebuild_swagger_ui|changed
+
+- name: Ensure swagger-ui is running
+  docker:
+    image: swagger-ui-builder
+    name: swagger_ui
+    state: running
+    expose: 9000
+    ports: "9000:9000"
+  sudo: yes
+  sudo_user: adama
