@@ -19,6 +19,7 @@ class StatusModel(object):
             attribute='commit hash of Adama server currently running')
     }
 
+
 class StatusResource(restful.Resource):
 
     @swagger.operation(
