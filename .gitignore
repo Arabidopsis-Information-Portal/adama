@@ -61,4 +61,4 @@ tests/passthrough_test_adapter/
 tests/python_map_filter_test_adapter/
 tests/python_test_adapter/Dockerfile
 tests/wrong_python_test_adapter/
-
+tests/test_docs_adapter/
