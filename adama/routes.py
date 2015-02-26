@@ -22,7 +22,7 @@ from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
                       ServiceListResource, ServiceHealthResource)
 from .passthrough import PassthroughServiceResource
-from .servicedocs import ServiceDocsResource
+from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
 from .status import StatusResource
 from .token_store import token_store
 from .tools import location_of
@@ -59,9 +59,14 @@ api.add_resource(PassthroughServiceResource,
                      '<path:path>'),
                  endpoint='access')
 api.add_resource(ServiceHealthResource,
-                 url('/<string:namespace>/<string:service>/_health'))
+                 url('/<string:namespace>/<string:service>/_health'),
+                 endpoint='health')
 api.add_resource(ServiceDocsResource,
-                 url('/<string:namespace>/<string:service>/docs'))
+                 url('/<string:namespace>/<string:service>/docs'),
+                 endpoint='service_docs')
+api.add_resource(ServiceDocsUIResource,
+                 url('/<string:namespace>/<string:service>/docs/swagger'),
+                 endpoint='service_swagger')
 
 
 @app.route('/home')
