@@ -1223,6 +1223,9 @@ def get_service(namespace, service):
     name = service_iden(namespace, service)
     try:
         slot = service_store[name]
-        return slot['service']
+        srv = slot['service']
+        if srv is None:
+            raise APIException('service is not ready: {}'.format(name), 400)
+        return srv
     except KeyError:
         raise APIException('service not found: {}'.format(name), 404)
