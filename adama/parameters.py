@@ -180,10 +180,7 @@ def get_definitions(metadata):
     yield 'Generic', copy.deepcopy(DEFS['Generic'])
     endpoints = metadata.get('endpoints', {})
     for endpoint_name, endpoint in endpoints.items():
-        print '---', endpoint_name
         for descr in endpoint.values():
-            print(descr)
-            print '--'
             if 'response' in descr:
                 defs = copy.deepcopy(DEFS['Generic'])
                 defs['properties']['result'] = descr['response']
