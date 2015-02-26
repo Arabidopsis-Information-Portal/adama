@@ -9,7 +9,7 @@ from adama.docker import docker_output
 from adama.tools import location_of
 HERE = location_of(__file__)
 
-URL = 'http://localhost/adama'
+URL = 'http://localhost/community/v0.3'
 NAMESPACE = 'foox'
 SERVICE = 'spam'
 PORT = 1234
@@ -326,8 +326,31 @@ def test_passthrough_get_extra_fragment():
         URL+'/{}/{}_v10/access/get?foo=3'.format(NAMESPACE, SERVICE)).json()
     assert response['args']['foo'] == '3'
 
+def test_register_with_docs():
+    subprocess.check_call(
+        'tar zxf test_docs_adapter.tgz'.split())
+    resp = requests.post(
+        URL+'/'+NAMESPACE+'/services',
+        data={'git_repository':
+                  os.path.join(HERE, 'test_docs_adapter'),
+              'version': 12
+              })
+    response = resp.json()
+    assert response['status'] == 'success'
+    while True:
+        response = requests.get(
+            URL+'/{}/{}_v12'.format(NAMESPACE, SERVICE)).json()
+        assert response['status'] == 'success'
+        if response['result'].get('service'):
+            break
+        time.sleep(1)
+    response = requests.get(
+        URL+'/{}/{}_v12/docs'.format(NAMESPACE, SERVICE)).json()
+    assert response['paths']['/search']['get']['description']
+    assert response['paths']['/search']['get']['responses']['200']
+
 def test_delete_service():
-    for i in range(1, 12):
+    for i in range(1, 13):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'
