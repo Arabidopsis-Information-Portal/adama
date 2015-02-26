@@ -22,6 +22,7 @@ from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
                       ServiceListResource, ServiceHealthResource)
 from .passthrough import PassthroughServiceResource
+from .servicedocs import ServiceDocsResource
 from .status import StatusResource
 from .token_store import token_store
 from .tools import location_of
@@ -59,6 +60,8 @@ api.add_resource(PassthroughServiceResource,
                  endpoint='access')
 api.add_resource(ServiceHealthResource,
                  url('/<string:namespace>/<string:service>/_health'))
+api.add_resource(ServiceDocsResource,
+                 url('/<string:namespace>/<string:service>/docs'))
 
 
 @app.route('/home')
