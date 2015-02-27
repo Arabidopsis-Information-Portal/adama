@@ -15,6 +15,7 @@
     name: swagger-ui-builder
     state: build
   sudo: yes
+  sudo_user: adama
   when: clone_swagger_ui|changed
   register: rebuild_swagger_ui
 
@@ -24,6 +25,7 @@
     name: swagger_ui
     state: absent
   sudo: yes
+  sudo_user: adama
   when: rebuild_swagger_ui|changed
 
 - name: Ensure swagger-ui is running
