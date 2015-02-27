@@ -1,10 +1,10 @@
-from flask.ext import restful
+import flask.ext.restful.reqparse as reqparse
 from werkzeug.exceptions import ClientDisconnected
 
 from .api import APIException
 
 
-class RequestParser(restful.reqparse.RequestParser):
+class RequestParser(reqparse.RequestParser):
     """Wrap reqparse to raise APIException."""
 
     def parse_args(self, *args, **kwargs):
