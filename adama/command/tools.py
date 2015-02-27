@@ -18,10 +18,10 @@ def service(name):
     return srv_slot['service']
 
 
-def save_service(service):
-    srv_slot = service_store[service.iden]
-    srv_slot['service'] = service
-    service_store[service.iden] = srv_slot
+def save_service(srv):
+    srv_slot = service_store[srv.iden]
+    srv_slot['service'] = srv
+    service_store[srv.iden] = srv_slot
 
 
 def stop_workers(name):
@@ -56,6 +56,7 @@ def veth_ifaces():
             continue
         if iface.startswith('A'):
             yield iface[:-1]
+
 
 def firewall_flush(iface):
     """Remove all rules associated to ``iface``."""
@@ -117,6 +118,7 @@ def restore_code(directory):
             rebuild_service(name)
             print('  Restarting {}'.format(name))
             restart_workers(name)
+
 
 def restore_redis(directory):
     tar = os.path.join(directory, 'redis.tar.bz2')
