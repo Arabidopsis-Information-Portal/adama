@@ -149,6 +149,7 @@ def check_bearer_token(req):
     except KeyError:
         abort(400)
 
+
 @app.after_request
 def add_cors(response):
     response.headers['Access-Control-Allow-Origin'] = '*'

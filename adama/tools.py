@@ -54,8 +54,8 @@ def service_iden(namespace, service):
     return '{}.{}'.format(namespace, service)
 
 
-def namespace_of(identifier):
-    return identifier.split('.')[0]
+def namespace_of(iden):
+    return iden.split('.')[0]
 
 
 @contextmanager
