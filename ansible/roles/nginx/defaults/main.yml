@@ -1,2 +1,3 @@
 ---
 # defaults file for nginx
+swagger_ui_location: /swagger-ui/

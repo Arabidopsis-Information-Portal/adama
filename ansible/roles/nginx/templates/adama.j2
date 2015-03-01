@@ -1,6 +1,9 @@
 server {
         listen 80;
         server_name {{ nginx_server_name }};
+        location {{ swagger_ui_location }} {
+            proxy_pass http://localhost:9000/;
+        }
         location / { try_files $uri @adama; }
         location @adama {
             include uwsgi_params;
@@ -24,6 +27,9 @@ server {
         ssl_ciphers "HIGH:!aNULL:!MD5 or HIGH:!aNULL:!MD5:!3DES";
         ssl_prefer_server_ciphers on;
 
+        location {{ swagger_ui_location }} {
+            proxy_pass http://localhost:9000/;
+        }
         location / { try_files $uri @adama; }
         location @adama {
             include uwsgi_params;
