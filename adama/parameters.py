@@ -113,11 +113,32 @@ def endpoints_to_paths(metadata):
     """
     md = copy.deepcopy(metadata)
     for endpoint, descr in md['endpoints'].items():
-        out = dict(fix_summary(fix_parameters(fix_responses(item,
-                                                            endpoint)),
-                               endpoint)
-                   for item in descr.items())
+        out = dict(
+            fix_id(
+                fix_summary(
+                    fix_parameters(
+                        fix_responses(item, endpoint)),
+                    endpoint),
+                md, endpoint)
+            for item in descr.items())
         yield endpoint, out
+
+
+def fix_id(item, metadata, endpoint):
+    """
+
+    :type item: (str, dict)
+    :type metadata: dict[str, dict]
+    :type endpoint: str
+    :rtype: (str, dict)
+    """
+    verb, descr = item
+    new_descr = copy.deepcopy(descr)
+    op_id = '{}_{}'.format(
+        endpoint[1:],
+        verb)
+    new_descr.setdefault('operationId', op_id)
+    return verb, new_descr
 
 
 def fix_parameters(item):
