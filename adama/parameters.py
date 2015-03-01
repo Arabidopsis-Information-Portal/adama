@@ -89,7 +89,7 @@ def metadata_to_swagger(metadata):
         'swagger': '2.0',
         'info': {
             'title': 'Adapter: {} v{}'.format(metadata['name'],
-                                             metadata['version']),
+                                              metadata['version']),
             'description': metadata.get('description', ''),
             'version': metadata.get('version', '0.1')
         },
@@ -119,16 +119,15 @@ def endpoints_to_paths(metadata):
                     fix_parameters(
                         fix_responses(item, endpoint)),
                     endpoint),
-                md, endpoint)
+                endpoint)
             for item in descr.items())
         yield endpoint, out
 
 
-def fix_id(item, metadata, endpoint):
+def fix_id(item, endpoint):
     """
 
     :type item: (str, dict)
-    :type metadata: dict[str, dict]
     :type endpoint: str
     :rtype: (str, dict)
     """
