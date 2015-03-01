@@ -33,7 +33,7 @@
     image: swagger-ui-builder
     name: swagger_ui
     state: running
-    expose: 9000
-    ports: "9000:9000"
+    expose: 8080
+    ports: "9000:8080"
   sudo: yes
   sudo_user: adama
