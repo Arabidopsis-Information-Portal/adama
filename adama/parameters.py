@@ -84,10 +84,12 @@ def metadata_to_swagger(metadata):
     :type metadata: dict[str, object|dict]
     :rtype: dict[str, object]
     """
+    adapter_name = adapter_iden(metadata['name'], metadata['version'])
     swagger = {
         'swagger': '2.0',
         'info': {
-            'title': 'Adapter: {}'.format(metadata['name']),
+            'title': 'Adapter: {} v{}'.format(metadata['name'],
+                                             metadata['version']),
             'description': metadata.get('description', ''),
             'version': metadata.get('version', '0.1')
         },
@@ -96,7 +98,7 @@ def metadata_to_swagger(metadata):
         'basePath': os.path.join(
             Config.get('server', 'api_prefix'),
             metadata['namespace'],
-            adapter_iden(metadata['name'], metadata['version'])),
+            adapter_name),
         'paths': dict(endpoints_to_paths(metadata)),
         'definitions': dict(get_definitions(metadata))
     }
