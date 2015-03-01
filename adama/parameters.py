@@ -1,8 +1,10 @@
 import copy
 import urlparse
+import os
 
 from .api import APIException
 from .config import Config
+from .tools import adapter_iden
 
 
 DOCS = {
@@ -91,7 +93,10 @@ def metadata_to_swagger(metadata):
         },
         'host': urlparse.urlsplit(Config.get('server', 'api_url')).netloc,
         'schemes': ['https'],
-        'basePath': Config.get('server', 'api_prefix'),
+        'basePath': os.path.join(
+            Config.get('server', 'api_prefix'),
+            metadata['namespace'],
+            adapter_iden(metadata['name'], metadata['version'])),
         'paths': dict(endpoints_to_paths(metadata)),
         'definitions': dict(get_definitions(metadata))
     }
