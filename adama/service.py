@@ -96,7 +96,7 @@ class AbstractService(object):
         ('json_path', False, ''),
         ('main_module', False, 'main'),
         ('users', False, {}),
-        ('validate_request', False, True),
+        ('validate_request', False, False),
         ('validate_response', False, False),
         ('endpoints', False, {}),
         ('metadata', False, METADATA_DEFAULT)
