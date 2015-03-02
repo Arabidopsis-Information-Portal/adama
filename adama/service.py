@@ -24,6 +24,8 @@ import requests
 import ijson
 import yaml
 from werkzeug.datastructures import FileStorage
+import pyswagger
+import pyswagger.getter
 
 from . import app
 from .requestparser import RequestParser
@@ -39,6 +41,7 @@ from .swagger import swagger
 from .namespace import DeleteResponseModel
 from .tools import chdir
 from .entity import get_permissions
+from .parameters import fix_metadata, metadata_to_swagger
 
 
 LANGUAGES = {
@@ -93,6 +96,8 @@ class AbstractService(object):
         ('json_path', False, ''),
         ('main_module', False, 'main'),
         ('users', False, {}),
+        ('validate_request', False, True),
+        ('validate_response', False, False),
         ('endpoints', False, {}),
         ('metadata', False, METADATA_DEFAULT)
     ]
@@ -331,8 +336,14 @@ class Service(AbstractService):
         if logs:
             raise RegisterException(len(self.workers), logs)
 
+
     def exec_worker(self, endpoint, args, req):
         """Process a request through the worker."""
+
+        if self.validate_request:
+            sw_req = validate_swagger_request(self, endpoint, req)
+            if args is not None:
+                args.update(sw_req.query)
 
         meth = getattr(self, 'exec_worker_{}'.format(self.type))
         return meth(endpoint, args, req)
@@ -1229,3 +1240,35 @@ def get_service(namespace, service):
         return srv
     except KeyError:
         raise APIException('service not found: {}'.format(name), 404)
+
+
+def get_swagger(srv):
+    md = srv.to_json()
+    fixed_md = fix_metadata(md)
+    return metadata_to_swagger(fixed_md)
+
+
+class JsonGetter(pyswagger.getter.Getter):
+
+    def __init__(self, obj):
+        super(JsonGetter, self).__init__('')
+        self.urls = [('', '')]
+        self.result_obj = obj
+
+    def load(self, path):
+        return json.dumps(self.result_obj)
+
+
+def validate_swagger_request(srv, endpoint, req):
+    sw = get_swagger(srv)
+    getter = JsonGetter(sw)
+    sw_app = pyswagger.SwaggerApp.load('', getter=getter)
+    sw_app.prepare(strict=True)
+    operation = '{}_{}'.format(endpoint, req.method.lower())
+    args = req.args.to_dict(flat=True)
+    import ipdb; ipdb.set_trace()
+    try:
+        (sw_req, _) = sw_app.op[operation](**args)
+    except ValueError as exc:
+        raise APIException(exc.message)
+    return sw_req
