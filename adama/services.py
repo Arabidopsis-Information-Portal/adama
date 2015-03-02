@@ -253,7 +253,8 @@ class ServicesResource(restful.Resource):
         parser.add_argument('main_module', type=str)
         # The following two options are exclusive
         parser.add_argument('code', type=FileStorage, location='files')
-        parser.add_argument('git_repository', type=str)
+        parser.add_argument('git_repository', type=str),
+        parser.add_argument('validate_request', type=bool),
         parser.add_argument('metadata', type=str)
 
         args = parser.parse_args()
