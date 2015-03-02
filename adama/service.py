@@ -368,6 +368,7 @@ class Service(AbstractService):
         response through the ``process`` user function.
 
         """
+        del args
         if endpoint != 'search':
             raise APIException("service of type 'map_filter' does "
                                "not support /list")
@@ -397,6 +398,7 @@ class Service(AbstractService):
                                .format(response))
 
     def exec_worker_generic(self, endpoint, args, req):
+        del req
         queue = self.iden
         args['endpoint'] = endpoint
         client = Producer(queue_host=Config.get('queue', 'host'),
@@ -416,17 +418,18 @@ class Service(AbstractService):
             return Response(json.dumps(response),
                             content_type='application/json')
 
-    def exec_worker_passthrough(self, endpoint, args, request):
+    def exec_worker_passthrough(self, endpoint, args, req):
         """Pass a request straight to a pre-defined url.
 
         ``endpoint`` is what comes after the /access endpoint, and it
         should be added to the final url.
 
         """
-        method = getattr(requests, request.method.lower())
-        data = request.data if request.data else request.form
+        del args
+        method = getattr(requests, req.method.lower())
+        data = req.data if req.data else req.form
         url = _join(self.url, endpoint)
-        response = method(url, params=request.args, data=data)
+        response = method(url, params=req.args, data=data)
         return Response(
             response=response.content,
             status=response.status_code,
