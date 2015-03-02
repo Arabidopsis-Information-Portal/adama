@@ -336,14 +336,13 @@ class Service(AbstractService):
         if logs:
             raise RegisterException(len(self.workers), logs)
 
-
     def exec_worker(self, endpoint, args, req):
         """Process a request through the worker."""
 
         if self.validate_request:
-            sw_req = validate_swagger_request(self, endpoint, req)
+            params = validate_swagger_request(self, endpoint, req)
             if args is not None:
-                args.update(sw_req.query)
+                args.update(params)
 
         meth = getattr(self, 'exec_worker_{}'.format(self.type))
         return meth(endpoint, args, req)
@@ -1266,8 +1265,11 @@ def validate_swagger_request(srv, endpoint, req):
     sw_app.prepare(strict=True)
     operation = '{}_{}'.format(endpoint, req.method.lower())
     args = req.args.to_dict(flat=True)
+    op = sw_app.op[operation]
     try:
-        (sw_req, _) = sw_app.op[operation](**args)
+        (sw_req, _) = op(**args)
     except ValueError as exc:
         raise APIException(exc.message)
-    return sw_req
+    d = dict(sw_req.query)
+    params = {o.name: o._prim_(d[o.name]) for o in op.parameters}
+    return params
