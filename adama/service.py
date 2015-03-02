@@ -1266,7 +1266,6 @@ def validate_swagger_request(srv, endpoint, req):
     sw_app.prepare(strict=True)
     operation = '{}_{}'.format(endpoint, req.method.lower())
     args = req.args.to_dict(flat=True)
-    import ipdb; ipdb.set_trace()
     try:
         (sw_req, _) = sw_app.op[operation](**args)
     except ValueError as exc:
