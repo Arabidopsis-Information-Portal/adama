@@ -1261,18 +1261,43 @@ class JsonGetter(pyswagger.getter.Getter):
         return json.dumps(self.result_obj)
 
 
+def multi_to_dict(md):
+    """
+
+    :type md: list[(str, object)]
+    :rtype: dict[str, object]
+    """
+    d = {}
+    for k, v in md:
+        try:
+            prev_value = d[k]
+            try:
+                prev_value.append(v)
+            except AttributeError:
+                d[k] = [prev_value, v]
+        except KeyError:
+            d[k] = v
+    return d
+
+
 def validate_swagger_request(srv, endpoint, req):
     sw = get_swagger(srv)
     getter = JsonGetter(sw)
     sw_app = pyswagger.SwaggerApp.load('', getter=getter)
     sw_app.prepare(strict=True)
     operation = '{}_{}'.format(endpoint, req.method.lower())
-    args = req.args.to_dict(flat=True)
+    args = req.args.to_dict(flat=False)
     op = sw_app.op[operation]
+    for param in op.parameters:
+        if param.type != 'array':
+            try:
+                args[param.name] = args[param.name][0]
+            except (KeyError, IndexError):
+                pass
     try:
         (sw_req, _) = op(**args)
     except ValueError as exc:
         raise APIException(exc.message)
-    d = dict(sw_req.query)
+    d = multi_to_dict(sw_req.query)
     params = {o.name: o._prim_(d[o.name]) for o in op.parameters}
     return params
