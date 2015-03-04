@@ -1261,21 +1261,19 @@ class JsonGetter(pyswagger.getter.Getter):
         return json.dumps(self.result_obj)
 
 
-def multi_to_dict(md):
+def multi_to_dict(md, parameters):
     """
 
     :type md: list[(str, object)]
+    :type parameters: Iterable
     :rtype: dict[str, object]
     """
     d = {}
+    param_dict = {p.name: p for p in parameters}
     for k, v in md:
-        try:
-            prev_value = d[k]
-            try:
-                prev_value.append(v)
-            except AttributeError:
-                d[k] = [prev_value, v]
-        except KeyError:
+        if param_dict[k].type == 'array':
+            d.setdefault(k, []).append(v)
+        else:
             d[k] = v
     return d
 
@@ -1298,6 +1296,6 @@ def validate_swagger_request(srv, endpoint, req):
         (sw_req, _) = op(**args)
     except ValueError as exc:
         raise APIException(exc.message)
-    d = multi_to_dict(sw_req.query)
+    d = multi_to_dict(sw_req.query, op.parameters)
     params = {o.name: o._prim_(d[o.name]) for o in op.parameters}
     return params
