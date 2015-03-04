@@ -58,11 +58,10 @@ class MyApi(restful.Api):
 
         if isinstance(exc, Exception):
             child_tb = getattr(exc, 'child_traceback', None)
-            trace = traceback.format_exc()
+            message = getattr(exc, 'message', '')
             return self.with_traceback(
-                {'trace': trace,
-                 'worker_trace': child_tb,
-                 'message': str(exc.message)}, exc)
+                {'worker_trace': child_tb,
+                 'message': str(message)}, exc)
 
     def with_traceback(self, data, exc, code=500):
         data['traceback'] = traceback.format_exc()
