@@ -135,7 +135,7 @@ performing the requests:
 
 .. code-block:: bash
 
-   export ADAMA=https://araport-dev.cloudapp.net/community/v0.3
+   export ADAMA=https://adama-dev.cloudapp.net/community/v0.3
    export TOKEN=...my token...
    http POST https://$ADAMA/my_namespace/services \
        Authorization:"Bearer $TOKEN" \
@@ -150,7 +150,7 @@ Accessing the documentation
 
 .. _base tutorial: https://www.araport.org/docs/building-community-apis-adama
 .. _github.com/waltermoreira/sample-parameter-docs: https://github.com/waltermoreira/sample-parameter-docs
-.. _Swagger spec: http://swagger.io
+.. _Swagger spec: https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#fixed-fields-7
 .. _Swagger 2.0: http://swagger.io
 .. _httpie: http://httpie.org
 
