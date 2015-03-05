@@ -55,6 +55,18 @@ The file ``metadata.yml`` accepts the following fields:
 ``notify``
    An url that will receive a POST with the data of the new registered
    adapter once it is ready to receive requests.
+   
+``requirements``
+   A list of extra modules to add to the adapter at installation time.  
+   These modules should be installable via the standard package manager
+   of the language used by the adapter (for example: ``pip`` for Python, 
+   ``gem`` for Ruby, etc.)
+ 
+``validate_request``
+   Whether to validate the parameters according to the provided 
+   documentation.  By default this option is ``no``.  If enabled,
+   the parameters of a request are validated before passing control to
+   the user's code in the adapter.
 
 ``json_path``
    This field is meaningful only for ``map_filter`` adapters.
