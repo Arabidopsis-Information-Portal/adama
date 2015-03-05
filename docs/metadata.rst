@@ -68,6 +68,12 @@ The file ``metadata.yml`` accepts the following fields:
    the parameters of a request are validated before passing control to
    the user's code in the adapter.
 
+``endpoints``
+   Documentation about the parameters accepted by this adapter
+   (see `documenting parameters`_).
+   
+.. _documenting parameters: https://adama-dev.tacc.utexas.edu/docs/parameters/index.html
+
 ``json_path``
    This field is meaningful only for ``map_filter`` adapters.
    If the third party service returns an array of JSON objects to be
