@@ -66,7 +66,8 @@ def fix_metadata(metadata):
     for endpoint in endpoints:
         descr = endpoints[endpoint]
         keys = set(descr.keys())
-        if keys.issubset(['parameters', 'responses', 'response']):
+        if keys.issubset(['parameters', 'responses', 'response',
+                          'summary', 'description']):
             # simple declaration of a GET
             endpoints[endpoint] = {'get': descr}
         elif keys.issubset(['post', 'get', 'put']):
