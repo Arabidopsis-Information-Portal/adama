@@ -142,9 +142,43 @@ performing the requests:
        git_repository=https://github.com/waltermoreira/sample-parameter-docs \
        validate_request=yes
 
+The adapter health can be checked with the request:
+
+.. code-block:: bash
+
+   http https://$ADAMA/my_namespace/my_adapter_v0.1 Authorization:"Bearer $TOKEN"
+
+which should return the a successful response with a lot of "nerd stats".
+
 
 Accessing the documentation
 ---------------------------
+
+Once the adapter is successfully registered, the full Swagger
+documentation can be accessed in the ``/docs`` endpoint of the
+adapter.  For example:
+
+.. code-block:: bash
+
+   # return Swagger documentation in JSON format
+   http https://$ADAMA/my_namespace/my_service_v0.1/docs \
+       Authorization:"Bearer $TOKEN"
+
+   # return Swagger documentation in YAML format
+   http https://$ADAMA/my_namespace/my_service_v0.1/docs?format=yaml \
+       Authorization:"Bearer $TOKEN"
+
+This output is usually not meant for human consumption (although the
+YAML output is very readable).  The main goal of this endpoint is to
+be fed to any Swagger 2.0 complaint browser.  Araport near future
+plans include to provide a developer console that will include all the
+adapters documentation, the Agave API, and the Adama base API.  In the
+meantime, Adama provides the endpoint ``/docs/swagger`` which is a
+basic instance of a Swagger browser.
+
+To interact with the documentation, access with the browser the URL::
+
+    https://adama-dev.cloudapp.net/community/v0.3/my_namespace/my_adapter_v0.1/docs/swagger
 
 
 
