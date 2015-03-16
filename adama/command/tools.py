@@ -3,9 +3,11 @@ import os
 import subprocess
 import tarfile
 import time
+import tempfile
 
 from ..service_store import service_store
 from ..firewall import Firewall
+from ..docker import safe_docker
 
 
 def rebuild_service(name):
@@ -73,8 +75,14 @@ def _backup_code(srv, destination):
     adapters_path = os.path.join(destination, 'adapters')
     subprocess.check_call('mkdir -p {}'.format(adapters_path).split())
     target = os.path.join(adapters_path, srv.iden+'.tar.bz2')
+    try:
+        worker = srv.workers[0]
+        tempdir = tempfile.mkdtemp()
+        safe_docker('cp', '{}:/root/user_code'.format(worker), tempdir)
+    except IndexError:
+        return
     with tarfile.open(target, 'w:bz2') as tar:
-        tar.add(srv.code_dir)
+        tar.add(tempdir)
 
 
 def backup_code(destination):
