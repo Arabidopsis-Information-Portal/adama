@@ -89,7 +89,8 @@ def docs_adapters(path):
 def check_access():
     # allow unrestricted access to docs
     if (request.path.startswith('/api/adama') or
-            request.path.startswith('/docs')):
+            request.path.startswith('/docs') or
+            request.path.startswith('/swagger-ui')):
         return
     # don't control access to OPTIONS verb
     if request.method == 'OPTIONS':
