@@ -9,6 +9,17 @@
   sudo_user: adama
   register: clone_swagger_ui
 
+- name: Add Adama modifications to swagger-ui
+  copy:
+    src: "{{ item.src }}"
+    dest: "/home/adama/swagger-ui/{{ item.dest }}"
+  sudo: yes
+  sudo_user: adama
+  with_items:
+    - { src: 'index.html', dest: 'dist/index.html' }
+    - { src: 'gulpfile.js', dest: 'gulpfile.js' }
+  register: adama_swagger_ui
+
 - name: Rebuild swagger-ui image
   docker_image:
     path: /home/adama/swagger-ui
@@ -16,7 +27,7 @@
     state: build
   sudo: yes
   sudo_user: adama
-  when: clone_swagger_ui|changed
+  when: clone_swagger_ui|changed or adama_swagger_ui|changed
   register: rebuild_swagger_ui
 
 - name: Ensure old container is removed
