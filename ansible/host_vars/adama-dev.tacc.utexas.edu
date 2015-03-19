@@ -3,13 +3,13 @@
 config:
   - section: server
     option: url
-    value: http://adama-dev.tacc.utexas.edu
+    value: https://adama-dev.tacc.utexas.edu
   - section: server
     option: bind
     value: 0.0.0.0:80
   - section: server
     option: prefix
-    value: /community/v{{ lookup('file', '../adama/VERSION') }}
+    value: 
   - section: store
     option: host
     value: localhost
@@ -28,5 +28,8 @@ config:
   - section: docker
     option: host
     value: ""
+  - section: server
+    option: swagger_ui
+    value: https://adama-dev.tacc.utexas.edu/swagger-ui
 
 nginx_server_name: adama-dev.tacc.utexas.edu
