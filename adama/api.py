@@ -79,13 +79,29 @@ def error(obj):
     return obj
 
 
-def api_url_for(endpoint, **kwargs):
+def based_url_for(url, url_prefix, endpoint, **kwargs):
     status_endpoint = url_for('status')
     prefix = status_endpoint[:-len('/status')]
     api_endpoint = url_for(endpoint, **kwargs)
-    return (Config.get('server', 'api_url') +
-            Config.get('server', 'api_prefix') +
-            api_endpoint[len(prefix):])
+    return url + url_prefix + api_endpoint[len(prefix):]
+
+
+def api_url_for(endpoint, **kwargs):
+    return based_url_for(Config.get('server', 'api_url'),
+                         Config.get('server', 'api_prefix'),
+                         endpoint, **kwargs)
+
+
+def unauthenticated_url_for(endpoint, **kwargs):
+    """
+
+    :type endpoint: str
+    :type kwargs: dict
+    :rtype: str
+    """
+    return based_url_for(Config.get('server', 'url'),
+                         Config.get('server', 'prefix'),
+                         endpoint, **kwargs)
 
 
 api = swagger.docs(MyApi(app),
