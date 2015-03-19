@@ -4,7 +4,7 @@ import yaml
 
 from .parameters import fix_metadata, metadata_to_swagger
 from .service import get_service
-from .api import APIException, api_url_for
+from .api import APIException, unauthenticated_url_for
 from .config import Config
 
 
@@ -40,7 +40,7 @@ class ServiceDocsUIResource(restful.Resource):
         :type service: str
         :rtype: object
         """
-        docs = api_url_for(
+        docs = unauthenticated_url_for(
             'service_docs', namespace=namespace, service=service)
         ui = Config.get('server', 'swagger_ui')
         return redirect('{}?url={}'.format(ui, docs), 301)
