@@ -85,12 +85,22 @@ def docs_adapters(path):
         os.path.join(HERE, 'static/html/'), path)
 
 
+def is_docs_endpoint(req):
+    """
+
+    :type req: Request
+    :rtype: bool
+    """
+    return req.path.endswith('/docs') or req.path.endswith('/docs/swagger')
+
+
 @app.before_request
 def check_access():
     # allow unrestricted access to docs
     if (request.path.startswith('/api/adama') or
             request.path.startswith('/docs') or
-            request.path.startswith('/swagger-ui')):
+            request.path.startswith('/swagger-ui') or
+            is_docs_endpoint(request)):
         return
     # don't control access to OPTIONS verb
     if request.method == 'OPTIONS':
