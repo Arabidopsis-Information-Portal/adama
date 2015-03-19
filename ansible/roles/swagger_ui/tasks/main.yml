@@ -4,7 +4,7 @@
   git:
     repo: https://github.com/swagger-api/swagger-ui.git
     dest: /home/adama/swagger-ui
-    update: yes
+    update: no
   sudo: yes
   sudo_user: adama
   register: clone_swagger_ui
