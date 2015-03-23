@@ -13,6 +13,7 @@
     src: certs
     dest: /etc/nginx
   sudo: yes
+  when: self_sign is defined and self_sign
 
 - name: Add config file
   template:

@@ -56,8 +56,8 @@ type :math:`[JSON]`:
 
   .. math::
 
-     \bigl[ \{k:v\} \to \text{Stream}(\text{JSON})
-     \bigr] \to \text{SimpleWS}_{[\text{JSON}]}
+     \bigl( \{k:v\} \to \text{Stream}(\text{JSON})
+     \bigr) \to \text{SimpleWS}_{[\text{JSON}]}
 
   This means that the developer provides a function that accepts a set
   of key/values and that returns a stream of JSON objects.  Given this
@@ -72,8 +72,8 @@ type :math:`[JSON]`:
 
   .. math::
 
-     \bigl[ \text{JSON}\to\text{JSON}, \text{SimpleWS}_{[\text{JSON}]}
-     \bigr] \to \text{SimpleWS}_{[\text{JSON}]}
+     \bigl( \text{JSON}\to\text{JSON}, \text{SimpleWS}_{[\text{JSON}]}
+     \bigr) \to \text{SimpleWS}_{[\text{JSON}]}
 
   This adapter takes two arguments: a function that transforms JSON
   objects, and an existing simple webservice returning an array of
@@ -89,7 +89,7 @@ for the cases when returning JSON objects is not feasible:
 
   .. math::
 
-     \bigl[ \{k:v\} \to T \bigr] \to \text{SimpleWS}_T
+     \bigl( \{k:v\} \to T \bigr) \to \text{SimpleWS}_T
 
   Also, rather than returning an stream via printing to standard
   output, a generic adapter simply returns the object of type
@@ -100,7 +100,7 @@ for the cases when returning JSON objects is not feasible:
 
   .. math::
 
-     \bigl[ \text{WS}_T \bigr] \to \text{WS}_T
+     \bigl( \text{WS}_T \bigr) \to \text{WS}_T
 
   That is, it takes an existing webservice and it constructs the same
   webservice, except by changing the URL and by providing extra

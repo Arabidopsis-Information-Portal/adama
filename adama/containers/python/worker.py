@@ -114,7 +114,7 @@ class Results(object):
         self.old_stdout.flush()
         sys.stdout = self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, tb):
         sys.stdout = self.old_stdout
 
     def write(self, data):
@@ -163,12 +163,11 @@ def find_main_module():
 def get_class_for(kind):
     """Map the type of adapter to the proper class."""
 
-    map = {
+    return {
         'map_filter': ProcessWorker,
         'query': QueryWorker,
         'generic': GenericWorker
-    }
-    return map[kind]
+    }[kind]
 
 
 def run_worker(worker_type, args):

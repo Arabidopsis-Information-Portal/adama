@@ -1,4 +1,4 @@
-from flask.ext.restful import reqparse
+import flask.ext.restful.reqparse as reqparse
 from werkzeug.exceptions import ClientDisconnected
 
 from .api import APIException

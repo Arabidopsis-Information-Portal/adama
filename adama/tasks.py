@@ -93,7 +93,8 @@ class QueueConnection(AbstractQueueConnection):
                     pika.ConnectionParameters(host=self.queue_host,
                                               port=self.queue_port))
                 self.channel = self.connection.channel()
-                self.channel.queue_declare(queue=self.queue_name, durable=True)
+                self.channel.queue_declare(queue=self.queue_name,
+                                           durable=True)
                 return
             except pika.exceptions.AMQPConnectionError:
                 if time.time() - start_t > self.CONNECTION_TIMEOUT:
@@ -150,7 +151,7 @@ class QueueConnection(AbstractQueueConnection):
                     # 'exclusive', just return. This is so temporary
                     # connections can be clean up automatically.
                     return
-            except Exception as exc:
+            except Exception:
                 # on exceptions, try to reconnect to the queue
                 # it will give up after CONNECTION_TIMEOUT
                 pass

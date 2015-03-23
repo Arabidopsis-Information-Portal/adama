@@ -1,0 +1,38 @@
+---
+
+config:
+  - section: server
+    option: url
+    value: http://localhost
+  - section: server
+    option: prefix
+    value: /community/v{{ lookup('file', '../adama/VERSION') }}
+  - section: server
+    option: api_prefix
+    value: /community/v{{ lookup('file', '../adama/VERSION') }}
+  - section: server
+    option: api_url
+    value: http://localhost
+  - section: queue
+    option: host
+    value: 172.17.42.1
+  - section: queue
+    option: port
+    value: 5672
+  - section: docker
+    option: command
+    value: docker
+  - section: server
+    option: bind
+    value: 0.0.0.0:80
+  - section: store
+    option: host
+    value: localhost
+  - section: store
+    option: port
+    value: 6379
+  - section: docker
+    option: host
+    value: ""
+
+nginx_server_name: localhost

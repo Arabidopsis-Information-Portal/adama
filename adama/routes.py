@@ -22,6 +22,7 @@ from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
                       ServiceListResource, ServiceHealthResource)
 from .passthrough import PassthroughServiceResource
+from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
 from .status import StatusResource
 from .token_store import token_store
 from .tools import location_of
@@ -58,7 +59,14 @@ api.add_resource(PassthroughServiceResource,
                      '<path:path>'),
                  endpoint='access')
 api.add_resource(ServiceHealthResource,
-                 url('/<string:namespace>/<string:service>/_health'))
+                 url('/<string:namespace>/<string:service>/_health'),
+                 endpoint='health')
+api.add_resource(ServiceDocsResource,
+                 url('/<string:namespace>/<string:service>/docs'),
+                 endpoint='service_docs')
+api.add_resource(ServiceDocsUIResource,
+                 url('/<string:namespace>/<string:service>/docs/swagger'),
+                 endpoint='service_swagger')
 
 
 @app.route('/home')
@@ -77,11 +85,22 @@ def docs_adapters(path):
         os.path.join(HERE, 'static/html/'), path)
 
 
+def is_docs_endpoint(req):
+    """
+
+    :type req: Request
+    :rtype: bool
+    """
+    return req.path.endswith('/docs') or req.path.endswith('/docs/swagger')
+
+
 @app.before_request
 def check_access():
     # allow unrestricted access to docs
     if (request.path.startswith('/api/adama') or
-            request.path.startswith('/docs')):
+            request.path.startswith('/docs') or
+            request.path.startswith('/swagger-ui') or
+            is_docs_endpoint(request)):
         return
     # don't control access to OPTIONS verb
     if request.method == 'OPTIONS':
@@ -104,11 +123,12 @@ def get_pub_key():
 
 PUB_KEY = get_pub_key()
 
-def check_jwt(request):
+
+def check_jwt(req):
     tenant_name = Config.get('server', 'tenant_name')
     try:
         decoded = jwt.decode(
-            request.headers['X-JWT-Assertion-{0}'.format(tenant_name)],
+            req.headers['X-JWT-Assertion-{0}'.format(tenant_name)],
             PUB_KEY)
         g.user = decoded['http://wso2.org/claims/enduser']
     except (jwt.DecodeError, KeyError):
@@ -117,18 +137,19 @@ def check_jwt(request):
 
 TOKEN_RE = re.compile('Bearer (.+)')
 
-def check_bearer_token(request):
+
+def check_bearer_token(req):
     # --- REVIEW THIS ---
     # Allow unauthorized GET requests for now
-    if request.method == 'GET':
+    if req.method == 'GET':
         return
     # ------
     # bypass auth in /json and non-prefixed urls
-    if request.path == PREFIX + '/json':
+    if req.path == PREFIX + '/json':
         return
-    if not request.path.startswith(PREFIX):
+    if not req.path.startswith(PREFIX):
         return
-    auth = request.headers['Authorization']
+    auth = req.headers['Authorization']
     match = TOKEN_RE.match(auth)
     if not match:
         abort(400)
@@ -139,8 +160,8 @@ def check_bearer_token(request):
     except KeyError:
         abort(400)
 
+
 @app.after_request
 def add_cors(response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     return response
-

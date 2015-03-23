@@ -24,3 +24,9 @@
 - name: Ensure bridge utils are installed
   apt: name=bridge-utils state=present
   sudo: yes
+
+- name: Ensure docker-py is installed
+  pip:
+    name: docker-py
+    state: present
+  sudo: yes

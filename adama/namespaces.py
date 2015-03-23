@@ -1,4 +1,3 @@
-import urlparse
 
 from flask import g
 from flask.ext import restful
@@ -6,7 +5,7 @@ from flask.ext import restful
 from .swagger import swagger
 from .api import APIException, ok, api_url_for
 from .requestparser import RequestParser
-from .namespace import Namespace, NamespaceModel, NamespaceResponseModel
+from .namespace import Namespace, NamespaceModel
 from .namespace_store import namespace_store
 
 
@@ -15,13 +14,13 @@ from .namespace_store import namespace_store
     result=NamespaceModel.__name__
 )
 class NamespacesResponseModel(object):
-     """List of namespaces"""
+    """List of namespaces"""
 
-     resource_fields = {
-         'status': restful.fields.String(attribute='success or error'),
-         'result': restful.fields.List(
-             restful.fields.Nested(NamespaceModel.resource_fields))
-     }
+    resource_fields = {
+        'status': restful.fields.String(attribute='success or error'),
+        'result': restful.fields.List(
+            restful.fields.Nested(NamespaceModel.resource_fields))
+    }
 
 
 @swagger.model
@@ -32,6 +31,7 @@ class CreatedNamespaceModel(object):
         'result': restful.fields.String(
             attribute='Url of the new created namespace')
     }
+
 
 class NamespacesResource(restful.Resource):
 

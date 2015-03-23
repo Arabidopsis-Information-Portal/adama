@@ -7,7 +7,6 @@
 
 import ConfigParser
 import os
-import sys
 
 from .tools import location_of
 

@@ -16,6 +16,7 @@ VETH_LENGTH = 14
 # max number of attempts to try to find a free ip
 MAX_ATTEMPTS = 10
 
+
 def docker(*args, **kwargs):
     host = Config.get('docker', 'host')
     cmd = [Config.get('docker', 'command')] + (['-H', host] if host else [])

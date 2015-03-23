@@ -21,11 +21,11 @@ from .entity import get_permissions
 )
 class ServicesResponseModel(object):
 
-     resource_fields = {
-         'status': restful.fields.String(attribute='success or error'),
-         'result': restful.fields.List(
-             restful.fields.Nested(ServiceModel.resource_fields))
-     }
+    resource_fields = {
+        'status': restful.fields.String(attribute='success or error'),
+        'result': restful.fields.List(
+            restful.fields.Nested(ServiceModel.resource_fields))
+    }
 
 
 @swagger.model
@@ -228,7 +228,7 @@ class ServicesResource(restful.Resource):
                 service=service.adapter_name),
             'notification': service.notify
         }
-        for endpoint in service.endpoints():
+        for endpoint in service.endpoint_names():
             result[endpoint+'_url'] = api_url_for(
                 endpoint,
                 namespace=service.namespace,
@@ -253,7 +253,8 @@ class ServicesResource(restful.Resource):
         parser.add_argument('main_module', type=str)
         # The following two options are exclusive
         parser.add_argument('code', type=FileStorage, location='files')
-        parser.add_argument('git_repository', type=str)
+        parser.add_argument('git_repository', type=str),
+        parser.add_argument('validate_request', type=bool),
         parser.add_argument('metadata', type=str)
 
         args = parser.parse_args()

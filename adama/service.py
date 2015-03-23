@@ -24,6 +24,8 @@ import requests
 import ijson
 import yaml
 from werkzeug.datastructures import FileStorage
+import pyswagger
+import pyswagger.getter
 
 from . import app
 from .requestparser import RequestParser
@@ -39,6 +41,7 @@ from .swagger import swagger
 from .namespace import DeleteResponseModel
 from .tools import chdir
 from .entity import get_permissions
+from .parameters import fix_metadata, metadata_to_swagger
 
 
 LANGUAGES = {
@@ -93,6 +96,9 @@ class AbstractService(object):
         ('json_path', False, ''),
         ('main_module', False, 'main'),
         ('users', False, {}),
+        ('validate_request', False, False),
+        ('validate_response', False, False),
+        ('endpoints', False, {}),
         ('metadata', False, METADATA_DEFAULT)
     ]
 
@@ -138,7 +144,7 @@ class AbstractService(object):
     def check_health(self):
         raise NotImplementedError
 
-    def exec_worker(self, endpoint, args, request):
+    def exec_worker(self, endpoint, args, req):
         """Exercise worker with data from the request.
 
         ``endpoint`` denotes which endpoint is using the worker (search,
@@ -186,7 +192,7 @@ class Service(AbstractService):
             pass
         return obj
 
-    def endpoints(self):
+    def endpoint_names(self):
         if self.type == 'passthrough':
             return ['access']
         else:
@@ -303,10 +309,10 @@ class Service(AbstractService):
 
         q = multiprocessing.Queue()
 
-        def log(worker, q):
-            producer = tail_logs(worker, timeout=TIMEOUT)
-            v = (check(producer), worker)
-            q.put(v)
+        def log(wkr, qq):
+            producer = tail_logs(wkr, timeout=TIMEOUT)
+            v = (check(producer), wkr)
+            qq.put(v)
 
         # Ask for logs from workers. We do it in processes so we can
         # poll for a little while the workers in parallel.
@@ -330,18 +336,23 @@ class Service(AbstractService):
         if logs:
             raise RegisterException(len(self.workers), logs)
 
-    def exec_worker(self, endpoint, args, request):
+    def exec_worker(self, endpoint, args, req):
         """Process a request through the worker."""
 
-        meth = getattr(self, 'exec_worker_{}'.format(self.type))
-        return meth(endpoint, args, request)
+        if self.validate_request:
+            params = validate_swagger_request(self, endpoint, req)
+            if args is not None:
+                args.update(params)
 
-    def exec_worker_query(self, endpoint, args, request):
+        meth = getattr(self, 'exec_worker_{}'.format(self.type))
+        return meth(endpoint, args, req)
+
+    def exec_worker_query(self, endpoint, args, req):
         """Send ``args`` to ``queue`` in QueryWorker model."""
 
         queue = self.iden
         args['endpoint'] = endpoint
-        args['headers'] = dict(request.headers)
+        args['headers'] = dict(req.headers)
         client = Producer(queue_host=Config.get('queue', 'host'),
                           queue_port=Config.getint('queue', 'port'),
                           queue_name=queue)
@@ -350,28 +361,28 @@ class Service(AbstractService):
         return Response(result_generator(gen, lambda: client.metadata),
                         mimetype='application/json')
 
-    def exec_worker_map_filter(self, endpoint, args, request):
+    def exec_worker_map_filter(self, endpoint, args, req):
         """Forward request and process response.
 
         Forward the request to the third party service, and map the
         response through the ``process`` user function.
 
         """
+        del args
         if endpoint != 'search':
             raise APIException("service of type 'map_filter' does "
                                "not support /list")
 
-        if is_https(self.url) and request.method == 'GET':
+        if is_https(self.url) and req.method == 'GET':
             method = tls1_get
         else:
-            method = getattr(requests, request.method.lower())
+            method = getattr(requests, req.method.lower())
         try:
-            headers = {'Authorization':
-                           request.headers['Authorization']}
+            headers = {'Authorization': req.headers['Authorization']}
         except KeyError:
             headers = {}
         response = method(self.url,
-                          params=request.args,
+                          params=req.args,
                           headers=headers,
                           stream=True)
         if response.ok:
@@ -386,7 +397,8 @@ class Service(AbstractService):
             raise APIException('response from external service: {}'
                                .format(response))
 
-    def exec_worker_generic(self, endpoint, args, request):
+    def exec_worker_generic(self, endpoint, args, req):
+        del req
         queue = self.iden
         args['endpoint'] = endpoint
         client = Producer(queue_host=Config.get('queue', 'host'),
@@ -399,24 +411,25 @@ class Service(AbstractService):
                 'Wrong return type of generic adapter: got {} results'
                 .format(len(response)))
         response = response[0]
-        if not 'error' in response:
+        if 'error' not in response:
             return Response(base64.b64decode(response['body']),
                             content_type=response['content_type'])
         else:
             return Response(json.dumps(response),
                             content_type='application/json')
 
-    def exec_worker_passthrough(self, endpoint, args, request):
+    def exec_worker_passthrough(self, endpoint, args, req):
         """Pass a request straight to a pre-defined url.
 
         ``endpoint`` is what comes after the /access endpoint, and it
         should be added to the final url.
 
         """
-        method = getattr(requests, request.method.lower())
-        data = request.data if request.data else request.form
+        del args
+        method = getattr(requests, req.method.lower())
+        data = req.data if req.data else req.form
         url = _join(self.url, endpoint)
-        response = method(url, params=request.args, data=data)
+        response = method(url, params=req.args, data=data)
         return Response(
             response=response.content,
             status=response.status_code,
@@ -539,6 +552,7 @@ class ModifyServiceResponseModel(object):
     resource_fields = {
         'status': restful.fields.String(attribute='success or error')
     }
+
 
 class ServiceResource(restful.Resource):
 
@@ -843,7 +857,7 @@ class FileLikeWrapper(object):
         self.src = itertools.chain.from_iterable(self.it)
 
     def read(self, n=512):
-        return ''.join(itertools.islice(self.src, None, n))
+        return ''.join(itertools.islice(self.src, 0, n))
 
 
 def process_by_client(service, results):
@@ -1188,8 +1202,8 @@ def extract(filename, code, into):
         zip_file = os.path.join(into, 'contents.zip')
         with open(zip_file, 'w') as f:
             f.write(contents)
-        zip = zipfile.ZipFile(zip_file)
-        zip.extractall(user_code_dir)
+        zipball = zipfile.ZipFile(zip_file)
+        zipball.extractall(user_code_dir)
 
     elif ext in TARBALLS:
         # it's a tarball
@@ -1210,3 +1224,78 @@ def extract(filename, code, into):
             'unknown extension: {0}'.format(filename), 400)
 
     return user_code_dir
+
+
+def get_service(namespace, service):
+    """
+
+    :type namespace: str
+    :type service: str
+    :rtype: Service
+    """
+    name = service_iden(namespace, service)
+    try:
+        slot = service_store[name]
+        srv = slot['service']
+        if srv is None:
+            raise APIException('service is not ready: {}'.format(name), 400)
+        return srv
+    except KeyError:
+        raise APIException('service not found: {}'.format(name), 404)
+
+
+def get_swagger(srv):
+    md = srv.to_json()
+    fixed_md = fix_metadata(md)
+    return metadata_to_swagger(fixed_md)
+
+
+class JsonGetter(pyswagger.getter.Getter):
+
+    def __init__(self, obj):
+        super(JsonGetter, self).__init__('')
+        self.urls = [('', '')]
+        self.result_obj = obj
+
+    def load(self, path):
+        return json.dumps(self.result_obj)
+
+
+def multi_to_dict(md, parameters):
+    """
+
+    :type md: list[(str, object)]
+    :type parameters: Iterable
+    :rtype: dict[str, object]
+    """
+    d = {}
+    param_dict = {p.name: p for p in parameters}
+    for k, v in md:
+        if param_dict[k].type == 'array':
+            d.setdefault(k, []).append(v)
+        else:
+            d[k] = v
+    return d
+
+
+def validate_swagger_request(srv, endpoint, req):
+    sw = get_swagger(srv)
+    getter = JsonGetter(sw)
+    sw_app = pyswagger.SwaggerApp.load('', getter=getter)
+    sw_app.prepare(strict=True)
+    operation = '{}_{}'.format(endpoint, req.method.lower())
+    args = req.args.to_dict(flat=False)
+    op = sw_app.op[operation]
+    for param in op.parameters:
+        if param.type != 'array':
+            try:
+                args[param.name] = args[param.name][0]
+            except (KeyError, IndexError):
+                pass
+    try:
+        (sw_req, _) = op(**args)
+    except ValueError as exc:
+        raise APIException(exc.message)
+    d = multi_to_dict(sw_req.query, op.parameters)
+    params = {o.name: o._prim_(d[o.name]) for o in op.parameters}
+    return params
