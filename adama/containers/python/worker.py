@@ -115,6 +115,7 @@ class Results(object):
         sys.stdout = self
 
     def __exit__(self, exc_type, exc_value, tb):
+        del exc_type, exc_value, tb
         sys.stdout = self.old_stdout
 
     def write(self, data):
