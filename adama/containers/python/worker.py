@@ -10,8 +10,10 @@ import os
 import sys
 import time
 import traceback
+import inspect
 
 from tasks import QueueConnection
+from adamalib import Adama
 
 logging.basicConfig()
 
@@ -40,7 +42,13 @@ class QueryWorker(QueueConnection):
         endpoint = d['endpoint']
         t_start = time.time()
 
-        getattr(self.module, endpoint)(d)
+        adama = Adama(d.get('token'), d.get('_url'))
+        fun = getattr(self.module, endpoint)
+        if len(inspect.getargspec(fun).args) == 1:
+            # old style function: don't use Adama object
+            fun(d)
+        else:
+            fun(d, adama)
 
         t_end = time.time()
         return t_end - t_start
