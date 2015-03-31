@@ -1,6 +1,9 @@
 import requests
 
 
+REGISTER_TIMEOUT = 30  # seconds
+
+
 class Adama(object):
 
     def __init__(self, token, url=None):
@@ -133,7 +136,7 @@ class Services(list):
         self.adama = adama
         self.namespace = namespace
 
-    def add(self, mod):
+    def add(self, mod, async=False, timeout=REGISTER_TIMEOUT):
         """
         :type mod: module
         :rtype: Service
