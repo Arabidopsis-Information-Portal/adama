@@ -28,6 +28,7 @@ class QueryWorker(QueueConnection):
             try:
                 t = self.operation(message)
             except Exception as exc:
+                print('ERROR')
                 print(json.dumps({
                     'error': str(exc.message),
                     'traceback': traceback.format_exc()
@@ -132,6 +133,8 @@ class Results(object):
             line = ' '.join(self.current).strip()
             if line == '---' or (line == 'END' and self.lines):
                 self.responder('\n'.join(self.lines))
+                self.lines = []
+            elif line == 'ERROR':
                 self.lines = []
             else:
                 self.lines.append(line)
