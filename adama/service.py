@@ -39,7 +39,7 @@ from .tasks import Producer
 from .service_store import service_store
 from .swagger import swagger
 from .namespace import DeleteResponseModel
-from .tools import chdir
+from .tools import chdir, get_token
 from .entity import get_permissions
 from .parameters import fix_metadata, metadata_to_swagger
 
@@ -353,6 +353,9 @@ class Service(AbstractService):
         queue = self.iden
         args['endpoint'] = endpoint
         args['headers'] = dict(req.headers)
+        args['_token'] = get_token(req.headers)
+        args['_url'] = (Config.get('server', 'api_url') +
+                        Config.get('server', 'api_prefix'))
         client = Producer(queue_host=Config.get('queue', 'host'),
                           queue_port=Config.getint('queue', 'port'),
                           queue_name=queue)
