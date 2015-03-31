@@ -25,6 +25,8 @@ class Adama(object):
         :type obj: object
         :rtype: None
         """
+        raise APIException(message, obj=None)
+
 
     def get(self, url, **kwargs):
         """
