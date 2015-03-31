@@ -2,6 +2,7 @@ from contextlib import contextmanager
 import itertools
 import os
 import signal
+import re
 
 
 def location_of(filename):
@@ -66,3 +67,19 @@ def chdir(directory):
         yield
     finally:
         os.chdir(old_wd)
+
+
+TOKEN_RE = re.compile('Bearer (.+)')
+
+
+def get_token(headers):
+    """
+    :type headers: dict
+    :rtype: str|None
+    """
+    auth = headers.get('Authorization', '')
+    match = TOKEN_RE.match(auth)
+    if not match:
+        return None
+    else:
+        return match.group(1)

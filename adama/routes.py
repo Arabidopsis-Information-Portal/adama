@@ -1,6 +1,5 @@
 import base64
 import os
-import re
 
 from flask import render_template, request, abort, send_from_directory, g
 from Crypto.PublicKey import RSA
@@ -25,7 +24,7 @@ from .passthrough import PassthroughServiceResource
 from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
 from .status import StatusResource
 from .token_store import token_store
-from .tools import location_of
+from .tools import location_of, get_token
 
 PREFIX = Config.get('server', 'prefix')
 HERE = location_of(__file__)
@@ -135,9 +134,6 @@ def check_jwt(req):
         abort(400)
 
 
-TOKEN_RE = re.compile('Bearer (.+)')
-
-
 def check_bearer_token(req):
     # --- REVIEW THIS ---
     # Allow unauthorized GET requests for now
@@ -149,11 +145,9 @@ def check_bearer_token(req):
         return
     if not req.path.startswith(PREFIX):
         return
-    auth = req.headers['Authorization']
-    match = TOKEN_RE.match(auth)
-    if not match:
+    token = get_token(req.headers)
+    if token is None:
         abort(400)
-    token = match.group(1)
     try:
         g.user = token_store[token]
         app.logger.debug('user {}'.format(g.user))
