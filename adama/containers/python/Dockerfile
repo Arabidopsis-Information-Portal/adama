@@ -5,6 +5,7 @@ RUN pip install pika
 
 ADD worker.py /root/worker.py
 ADD tasks.py /root/tasks.py
+ADD adamalib.py /root/adamalib.py
 
 EXPOSE 22
 
