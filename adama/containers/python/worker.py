@@ -38,10 +38,9 @@ class QueryWorker(QueueConnection):
         d = json.loads(body)
         d['worker'] = os.uname()[1]
         endpoint = d['endpoint']
-        body = json.dumps(d)
         t_start = time.time()
 
-        getattr(self.module, endpoint)(json.loads(body))
+        getattr(self.module, endpoint)(d)
 
         t_end = time.time()
         return t_end - t_start
