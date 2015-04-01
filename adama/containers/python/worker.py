@@ -39,8 +39,8 @@ class QueryWorker(QueueConnection):
 
     def operation(self, body):
         d = json.loads(body)
-        d['worker'] = os.uname()[1]
-        endpoint = d['endpoint']
+        d['_worker'] = os.uname()[1]
+        endpoint = d['_endpoint']
         t_start = time.time()
 
         adama = Adama(d.get('token'), d.get('_url'))
@@ -67,8 +67,8 @@ class GenericWorker(QueueConnection):
 
     def operation(self, body):
         d = json.loads(body)
-        d['worker'] = os.uname()[1]
-        endpoint = d['endpoint']
+        d['_worker'] = os.uname()[1]
+        endpoint = d['_endpoint']
 
         return getattr(self.module, endpoint)(d)
 

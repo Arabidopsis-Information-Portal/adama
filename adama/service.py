@@ -351,8 +351,8 @@ class Service(AbstractService):
         """Send ``args`` to ``queue`` in QueryWorker model."""
 
         queue = self.iden
-        args['endpoint'] = endpoint
-        args['headers'] = dict(req.headers)
+        args['_endpoint'] = endpoint
+        args['_headers'] = dict(req.headers)
         args['_token'] = get_token(req.headers)
         args['_url'] = (Config.get('server', 'api_url') +
                         Config.get('server', 'api_prefix'))
@@ -403,7 +403,7 @@ class Service(AbstractService):
     def exec_worker_generic(self, endpoint, args, req):
         del req
         queue = self.iden
-        args['endpoint'] = endpoint
+        args['_endpoint'] = endpoint
         client = Producer(queue_host=Config.get('queue', 'host'),
                           queue_port=Config.getint('queue', 'port'),
                           queue_name=queue)
