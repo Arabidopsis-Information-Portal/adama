@@ -356,9 +356,10 @@ class Service(AbstractService):
         args['_token'] = get_token(req.headers)
         args['_url'] = (Config.get('server', 'api_url') +
                         Config.get('server', 'api_prefix'))
-        client = Producer(queue_host=Config.get('queue', 'host'),
-                          queue_port=Config.getint('queue', 'port'),
-                          queue_name=queue)
+        args['_queue_host'] = qh = Config.get('queue', 'host')
+        args['_queue_port'] = qp = Config.getint('queue', 'port')
+        args['_queue_name'] = queue
+        client = Producer(queue_host=qh, queue_port=qp, queue_name=queue)
         client.send(args)
         gen = itertools.imap(json.dumps, client.receive())
         return Response(result_generator(gen, lambda: client.metadata),

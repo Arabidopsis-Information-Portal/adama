@@ -43,7 +43,8 @@ class QueryWorker(QueueConnection):
         endpoint = d['_endpoint']
         t_start = time.time()
 
-        adama = Adama(d.get('token'), d.get('_url'))
+        adama = Adama(d.get('_token'), d.get('_url'),
+                      d.get('_queue_host'), d.get('_queue_port'))
         fun = getattr(self.module, endpoint)
         if len(inspect.getargspec(fun).args) == 1:
             # old style function: don't use Adama object

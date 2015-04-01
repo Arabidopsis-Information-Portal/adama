@@ -6,14 +6,18 @@ REGISTER_TIMEOUT = 30  # seconds
 
 class Adama(object):
 
-    def __init__(self, token, url=None):
+    def __init__(self, token, url=None, queue_host=None, queue_port=None):
         """
         :type token: str
         :type url: str
+        :type queue_host: str
+        :type queue_port: int
         :rtype: None
         """
         self.token = token
         self.url = url
+        self.queue_host = queue_host
+        self.queue_port = queue_port
 
     @property
     def utils(self):
