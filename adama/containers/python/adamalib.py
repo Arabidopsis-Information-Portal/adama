@@ -1,4 +1,8 @@
+import itertools
+import json
+
 import requests
+from tasks import Producer
 
 
 REGISTER_TIMEOUT = 30  # seconds
@@ -30,7 +34,6 @@ class Adama(object):
         :rtype: None
         """
         raise APIException(message, obj=None)
-
 
     def get(self, url, **kwargs):
         """
@@ -203,6 +206,26 @@ class Endpoint(object):
         :type kwargs: dict
         :rtype: object
         """
+        queue = '{}.{}_v{}'.format(self.namespace.namespace,
+                                   self.service.service,
+                                   self.service._version)
+        client = Producer(self.adama.queue_host,
+                          self.adama.queue_port,
+                          queue)
+        kwargs['_endpoint'] = self.endpoint
+        kwargs['_token'] = self.adama.token
+        kwargs['_url'] = self.adama.url
+        kwargs['_queue_host'] = self.adama.queue_host
+        kwargs['_queue_port'] = self.adama.queue_port
+        client.send(kwargs)
+        response = client.receive()
+        if self.service.type in ('query', 'map_filter'):
+            gen = itertools.imap(json.dumps, response)
+            return list(gen)
+        elif self.service.type in ('generic',):
+            return list(response)[0]
+        else:
+            return response
 
 
 class Utils(object):
