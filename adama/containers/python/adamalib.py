@@ -3,6 +3,7 @@ import json
 
 import requests
 from tasks import Producer
+from store import Store
 
 
 REGISTER_TIMEOUT = 30  # seconds
@@ -10,7 +11,9 @@ REGISTER_TIMEOUT = 30  # seconds
 
 class Adama(object):
 
-    def __init__(self, token, url=None, queue_host=None, queue_port=None):
+    def __init__(self, token, url=None,
+                 queue_host=None, queue_port=None,
+                 store_host=None, store_port=None):
         """
         :type token: str
         :type url: str
@@ -22,6 +25,8 @@ class Adama(object):
         self.url = url
         self.queue_host = queue_host
         self.queue_port = queue_port
+        self.store_host = store_host
+        self.store_port = store_port
 
     @property
     def utils(self):
@@ -163,6 +168,21 @@ class Service(object):
         self._namespace = namespace
         self.service = service
         self._version = '0.1'
+        self._store = Store(self._namespace.adama.store_host,
+                            self._namespace.adama.store_port,
+                            db=2)
+        self._preload()
+
+    def _preload(self):
+        iden = '{}.{}_v{}'.format(
+            self._namespace.namespace, self.service, self._version)
+        try:
+            data = self._store[iden]['service'].to_json()
+        except (KeyError, AttributeError):
+            raise
+            raise APIException(
+                'service not found: {}'.format(self._full_name))
+        self.__dict__.update(data)
 
     @property
     def _full_name(self):

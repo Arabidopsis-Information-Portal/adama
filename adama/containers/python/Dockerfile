@@ -1,11 +1,12 @@
 FROM common
 
 RUN apt-get install -y python python-dev python-pip ipython
-RUN pip install pika
+RUN pip install pika redis
 
 ADD worker.py /root/worker.py
 ADD tasks.py /root/tasks.py
 ADD adamalib.py /root/adamalib.py
+ADD store.py /root/store.py
 
 EXPOSE 22
 

@@ -358,6 +358,8 @@ class Service(AbstractService):
                         Config.get('server', 'api_prefix'))
         args['_queue_host'] = qh = Config.get('queue', 'host')
         args['_queue_port'] = qp = Config.getint('queue', 'port')
+        args['_store_host'] = Config.get('store', 'host')
+        args['_store_port'] = Config.getint('store', 'port')
         args['_queue_name'] = queue
         client = Producer(queue_host=qh, queue_port=qp, queue_name=queue)
         client.send(args)
