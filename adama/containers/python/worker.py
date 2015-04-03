@@ -45,7 +45,8 @@ class QueryWorker(QueueConnection):
 
         adama = Adama(d.get('_token'), d.get('_url'),
                       d.get('_queue_host'), d.get('_queue_port'),
-                      d.get('_store_host'), d.get('_store_port'))
+                      d.get('_store_host'), d.get('_store_port'),
+                      d.get('_headers'))
         fun = getattr(self.module, endpoint)
         if len(inspect.getargspec(fun).args) == 1:
             # old style function: don't use Adama object

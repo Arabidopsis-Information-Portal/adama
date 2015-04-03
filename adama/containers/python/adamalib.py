@@ -16,7 +16,8 @@ class Adama(object):
 
     def __init__(self, token, url=None,
                  queue_host=None, queue_port=None,
-                 store_host=None, store_port=None):
+                 store_host=None, store_port=None,
+                 headers=None):
         """
         :type token: str
         :type url: str
@@ -30,6 +31,7 @@ class Adama(object):
         self.queue_port = queue_port
         self.store_host = store_host
         self.store_port = store_port
+        self.headers = headers
 
     @property
     def utils(self):
@@ -241,6 +243,7 @@ class Endpoint(object):
         kwargs['_queue_port'] = self.adama.queue_port
         kwargs['_store_host'] = self.adama.store_host
         kwargs['_store_port'] = self.adama.store_port
+        kwargs['_headers'] = self.adama.headers
         client.send(kwargs)
         response = client.receive()
         if self.service.type in ('query', 'map_filter'):
