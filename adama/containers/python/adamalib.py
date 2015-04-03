@@ -242,6 +242,8 @@ class Endpoint(object):
         kwargs['_url'] = self.adama.url
         kwargs['_queue_host'] = self.adama.queue_host
         kwargs['_queue_port'] = self.adama.queue_port
+        kwargs['_store_host'] = self.adama.store_host
+        kwargs['_store_port'] = self.adama.store_port
         client.send(kwargs)
         response = client.receive()
         if self.service.type in ('query', 'map_filter'):
