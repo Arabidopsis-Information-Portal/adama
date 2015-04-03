@@ -182,7 +182,6 @@ class Service(object):
         try:
             data = self._store[iden]['service']
         except (KeyError, AttributeError):
-            raise
             raise APIException(
                 'service not found: {}'.format(self._full_name))
         self.__dict__.update(data.__dict__)
