@@ -36,7 +36,7 @@ from .firewall import Firewall
 from .tools import (location_of, identifier, service_iden,
                     adapter_iden, interleave)
 from .tasks import Producer
-from .service_store import service_store
+from .stores import service_store
 from .swagger import swagger
 from .namespace import DeleteResponseModel
 from .tools import chdir, get_token

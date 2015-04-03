@@ -3,7 +3,7 @@ from flask.ext import restful
 
 from .tools import service_iden
 from .api import APIException
-from .service_store import service_store
+from .stores import service_store
 from .swagger import swagger
 
 

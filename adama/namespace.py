@@ -2,7 +2,7 @@ from flask import g
 from flask.ext import restful
 
 from .api import APIException, ok, api_url_for
-from .namespace_store import namespace_store
+from .stores import namespace_store
 from .swagger import swagger
 from .entity import get_permissions
 

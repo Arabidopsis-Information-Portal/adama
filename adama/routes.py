@@ -23,7 +23,7 @@ from .service import (ServiceResource, ServiceQueryResource,
 from .passthrough import PassthroughServiceResource
 from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
 from .status import StatusResource
-from .token_store import token_store
+from .stores import token_store
 from .tools import location_of, get_token
 
 PREFIX = Config.get('server', 'prefix')

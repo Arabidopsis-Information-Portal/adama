@@ -4,22 +4,13 @@ import multiprocessing
 from .tasks import QueueConnection
 from .config import Config
 from .tools import TimeoutFunction
-from .store import Store
-
-
-class IPPool(Store):
-
-    def __init__(self):
-        # Use Redis db=4 for ip's
-        super(IPPool, self).__init__(db=4)
-        # Reserve the gateway ip: 172.17.42.1
-        self[(42, 1)] = True
+from .stores import ip_pool
 
 
 class IPPoolServer(object):
 
     def __init__(self):
-        self.ips = IPPool()
+        self.ips = ip_pool
         self.start()
 
     def act(self, message, responder):

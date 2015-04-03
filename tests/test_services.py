@@ -7,7 +7,7 @@ import Queue
 import pytest
 import adama.services
 from adama.tools import location_of
-from adama.service_store import service_store
+from adama.stores import service_store
 from adama.service import Service
 from adama.api import ok
 

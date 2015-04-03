@@ -1,4 +1,4 @@
-from .entity_store import entity_store
+from .stores import entity_store
 
 
 class Entity(object):

@@ -6,7 +6,7 @@ from .swagger import swagger
 from .api import APIException, ok, api_url_for
 from .requestparser import RequestParser
 from .namespace import Namespace, NamespaceModel
-from .namespace_store import namespace_store
+from .stores import namespace_store
 
 
 @swagger.model

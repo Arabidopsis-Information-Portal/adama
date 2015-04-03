@@ -5,7 +5,7 @@ import tarfile
 import time
 import tempfile
 
-from ..service_store import service_store
+from ..stores import service_store
 from ..firewall import Firewall
 from ..docker import safe_docker
 

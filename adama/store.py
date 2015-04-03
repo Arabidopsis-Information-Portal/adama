@@ -3,15 +3,11 @@ import cPickle
 
 import redis
 
-from .config import Config
-
 
 class Store(collections.MutableMapping):
 
-    def __init__(self, db=0):
-        self._db = redis.StrictRedis(host=Config.get('store', 'host'),
-                                     port=Config.getint('store', 'port'),
-                                     db=db)
+    def __init__(self, host, port, db=0):
+        self._db = redis.StrictRedis(host=host, port=port, db=db)
 
     def __getitem__(self, key):
         obj = self._db.get(key)
@@ -31,6 +27,3 @@ class Store(collections.MutableMapping):
 
     def __len__(self):
         return self._db.dbsize()
-
-
-store = Store()
