@@ -7,6 +7,7 @@ ADD worker.py /root/worker.py
 ADD tasks.py /root/tasks.py
 ADD adamalib.py /root/adamalib.py
 ADD store.py /root/store.py
+ADD service.py /root/service.py
 
 EXPOSE 22
 

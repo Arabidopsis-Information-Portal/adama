@@ -1,9 +1,14 @@
 import itertools
 import json
+import sys
 
 import requests
 from tasks import Producer
 from store import Store
+
+import service
+sys.modules['adama.service'] = service
+sys.modules['adama.firewall'] = service
 
 
 REGISTER_TIMEOUT = 30  # seconds
@@ -177,12 +182,12 @@ class Service(object):
         iden = '{}.{}_v{}'.format(
             self._namespace.namespace, self.service, self._version)
         try:
-            data = self._store[iden]['service'].to_json()
+            data = self._store[iden]['service']
         except (KeyError, AttributeError):
             raise
             raise APIException(
                 'service not found: {}'.format(self._full_name))
-        self.__dict__.update(data)
+        self.__dict__.update(data.__dict__)
 
     @property
     def _full_name(self):
