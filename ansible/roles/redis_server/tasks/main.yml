@@ -30,3 +30,12 @@
     line: appendonly yes
   sudo: yes
   notify: Ensure redis is using AOF
+
+- name: Ensure redis listens on docker0
+  lineinfile:
+    dest: /etc/redis/redis.conf
+    regexp: ^bind
+    line: bind 127.0.0.1 172.17.42.1
+    state: present
+  sudo: yes
+
