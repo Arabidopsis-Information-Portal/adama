@@ -1,5 +1,3 @@
-import itertools
-import json
 import sys
 
 import requests
@@ -247,8 +245,7 @@ class Endpoint(object):
         client.send(kwargs)
         response = client.receive()
         if self.service.type in ('query', 'map_filter'):
-            gen = itertools.imap(json.dumps, response)
-            return list(gen)
+            return list(response)
         elif self.service.type in ('generic',):
             return list(response)[0]
         else:
