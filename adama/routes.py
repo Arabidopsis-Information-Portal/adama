@@ -25,6 +25,8 @@ from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
 from .status import StatusResource
 from .stores import token_store
 from .tools import location_of, get_token
+from .prov import ProvResource
+
 
 PREFIX = Config.get('server', 'prefix')
 HERE = location_of(__file__)
@@ -66,6 +68,10 @@ api.add_resource(ServiceDocsResource,
 api.add_resource(ServiceDocsUIResource,
                  url('/<string:namespace>/<string:service>/docs/swagger'),
                  endpoint='service_swagger')
+api.add_resource(ProvResource,
+                 url('/<string:namespace>/<string:service>/'
+                     'prov/<string:uuid>'),
+                 endpoint='prov')
 
 
 @app.route('/home')
