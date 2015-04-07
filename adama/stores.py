@@ -12,6 +12,7 @@ service_store = config_store(db=2)
 token_store = config_store(db=3)
 ip_pool = config_store(db=4)
 entity_store = config_store(db=5)
+prov_store = config_store(db=6)
 
 # Reserve gateway ip: 172.17.42.1
 ip_pool[(42, 1)] = True
