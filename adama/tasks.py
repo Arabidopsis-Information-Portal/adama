@@ -184,7 +184,15 @@ class Producer(QueueConnection):
         """Receive messages until getting `END`."""
 
         g = super(Producer, self).receive()
+        first = True
         for message in g:
+            if first:
+                first = False
+                if message == 'HEADER':
+                    yield json.loads(next(g))
+                    continue
+                else:
+                    yield {}
             if message == 'END':
                 # save the object after 'END' as metadata, so the
                 # client can use it
