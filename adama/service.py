@@ -422,7 +422,10 @@ class Service(AbstractService):
                           queue_port=Config.getint('queue', 'port'),
                           queue_name=queue)
         client.send(args)
-        response = list(client.receive())
+        result = client.receive()
+        header = next(result)
+        print('header', header)
+        response = list(result)
         if len(response) != 1:
             raise APIException(
                 'Wrong return type of generic adapter: got {} results'
@@ -890,7 +893,10 @@ def process_by_client(service, results):
         queue_name=service.iden)
     for result in results:
         client.send(result)
-        for obj in client.receive():
+        response = client.receive()
+        header = next(response)
+        print('header', header)
+        for obj in response:
             yield json.dumps(obj)
             if 'error' in obj:
                 # abort as soon as there is an error
@@ -915,7 +921,7 @@ def result_generator(results, metadata):
         yield '\n],\n'
         md = metadata()
         yield '"metadata": {0},\n'.format(json.dumps({
-            'time_in_main': md['time_in_main']
+            'time_in_main': md.get('time_in_main', None)
         }))
         yield '"status": "success"}\n'
     except Exception:
