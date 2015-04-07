@@ -23,10 +23,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 class QueryWorker(QueueConnection):
 
     def callback(self, message, responder):
-        t = None
+        adama = None
         with Results(responder):
             try:
-                t = self.operation(message)
+                adama = self.operation(message, responder=responder)
             except Exception as exc:
                 print('ERROR')
                 print(json.dumps({
@@ -35,9 +35,10 @@ class QueryWorker(QueueConnection):
                 }))
             finally:
                 print('END')
-                responder(json.dumps({'time_in_main': t}))
+                responder(json.dumps({'time_in_main': adama._time,
+                                      'prov': adama._prov}))
 
-    def operation(self, body):
+    def operation(self, body, responder=None):
         d = json.loads(body)
         d['_worker'] = os.uname()[1]
         endpoint = d['_endpoint']
@@ -46,7 +47,8 @@ class QueryWorker(QueueConnection):
         adama = Adama(d.get('_token'), d.get('_url'),
                       d.get('_queue_host'), d.get('_queue_port'),
                       d.get('_store_host'), d.get('_store_port'),
-                      d.get('_headers'))
+                      d.get('_headers'),
+                      responder=responder)
         fun = getattr(self.module, endpoint)
         if len(inspect.getargspec(fun).args) == 1:
             # old style function: don't use Adama object
@@ -55,7 +57,8 @@ class QueryWorker(QueueConnection):
             fun(d, adama)
 
         t_end = time.time()
-        return t_end - t_start
+        adama._time = t_end - t_start
+        return adama
 
     def run(self):
         self.module = find_main_module()

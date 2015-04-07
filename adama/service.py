@@ -13,6 +13,7 @@ import textwrap
 import tempfile
 import threading
 import traceback
+import uuid
 import urlparse
 import zipfile
 
@@ -36,7 +37,7 @@ from .firewall import Firewall
 from .tools import (location_of, identifier, service_iden,
                     adapter_iden, interleave)
 from .tasks import Producer
-from .stores import service_store
+from .stores import service_store, prov_store
 from .swagger import swagger
 from .namespace import DeleteResponseModel
 from .tools import chdir, get_token
@@ -364,8 +365,19 @@ class Service(AbstractService):
         client = Producer(queue_host=qh, queue_port=qp, queue_name=queue)
         client.send(args)
         gen = itertools.imap(json.dumps, client.receive())
-        return Response(result_generator(gen, lambda: client.metadata),
-                        mimetype='application/json')
+        header = next(gen)
+        print('header', header)
+        key = uuid.uuid4().hex
+        prov_store[key] = json.loads(header)
+        response = Response(result_generator(gen, lambda: client.metadata),
+                            mimetype='application/json')
+        # store and add header for: client.metadata['prov']
+        response.headers['Araport-Prov'] = api_url_for(
+            'prov',
+            namespace=self.namespace,
+            service=self.adapter_name,
+            uuid=key)
+        return response
 
     def exec_worker_map_filter(self, endpoint, args, req):
         """Forward request and process response.
@@ -902,7 +914,10 @@ def result_generator(results, metadata):
         for line in interleave(['\n, '], results):
             yield line
         yield '\n],\n'
-        yield '"metadata": {0},\n'.format(json.dumps(metadata()))
+        md = metadata()
+        yield '"metadata": {0},\n'.format(json.dumps({
+            'time_in_main': md['time_in_main']
+        }))
         yield '"status": "success"}\n'
     except Exception:
         exc = traceback.format_exc()

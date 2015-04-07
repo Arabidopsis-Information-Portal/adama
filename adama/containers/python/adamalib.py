@@ -1,4 +1,5 @@
 import sys
+import json
 
 import requests
 from tasks import Producer
@@ -17,7 +18,7 @@ class Adama(object):
     def __init__(self, token, url=None,
                  queue_host=None, queue_port=None,
                  store_host=None, store_port=None,
-                 headers=None):
+                 headers=None, responder=None):
         """
         :type token: str
         :type url: str
@@ -32,6 +33,9 @@ class Adama(object):
         self.store_host = store_host
         self.store_port = store_port
         self.headers = headers
+        self.responder = responder
+        self._prov = None
+        self._time = None
 
     @property
     def utils(self):
@@ -80,6 +84,11 @@ class Adama(object):
     def namespaces(self):
         nss = self.get_json('/namespaces')['result']
         return Namespaces(self, [Namespace(self, ns['name']) for ns in nss])
+
+    def prov(self, obj):
+        self._prov = obj
+        self.responder('HEADER')
+        self.responder(json.dumps(obj))
 
     def __getattr__(self, item):
         """
