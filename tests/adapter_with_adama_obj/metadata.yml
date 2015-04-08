@@ -1,0 +1,4 @@
+---
+name: adapter_with_adama_obj
+type: query
+main_module: tests/adapter_with_adama_obj/main.py
