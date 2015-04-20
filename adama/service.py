@@ -1011,7 +1011,7 @@ def get_metadata_from(directory):
     Return an empty dict if no file is found.
 
     """
-    for filename in ['metadata.yml', 'metadata.json']:
+    for filename in ['metadata.yml', 'metadata.yaml', 'metadata.json']:
         try:
             f = open(os.path.join(directory, filename))
             break
