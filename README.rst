@@ -8,6 +8,10 @@ Araport Data Mediator API
 .. image:: http://img.shields.io/badge/version-0.3-brightgreen.svg
    :target: https://github.com/Arabidopsis-Information-Portal/adama
 
+.. image:: https://readthedocs.org/projects/adama/badge/?version=latest
+   :target: https://readthedocs.org/projects/adama/?badge=latest
+   :alt: Documentation Status
+
 This project implements a data federation strategy for the `Arabidopsis Information Portal`_.
 
 Quickstart
