@@ -29,23 +29,15 @@ Grab a token from `Araport API Store`_.  After getting it, check access to Adama
 The access to Adama is granted if the response looks like the above.  Otherwise, please, 
 report the output to @waltermoreira, or to the issues_ page.
 
-If everything looks ok, proceed to the tutorial.
+If everything looks ok, proceed to the tutorial_.
 
-Tutorial
-========
+Documentation
+=============
 
-The tutorial_ illustrates the main features of Adama by going over a couple of examples.
-This document is useful for people who consume Adama services, and for developers that wish to
-add new data sources.
+Documentation is now being consolidated in one `document at Read The Docs`_. 
+The sources for the documentation are in ``docs/full``.
 
 You can also read the `live docs of the API`_.
-
-Developing in/for Adama
-=======================
-
-The docs_ directory contains more in-depth documentation.
-Those documents are aimed to developers who wish to write new adapters, 
-as well as developers who wish to contribute to the Adama codebase.
 
 
 License
@@ -60,5 +52,6 @@ Free software: MIT license
 .. _ansible: http://www.ansible.com/
 .. _quickstart: https://github.com/waltermoreira/adama/blob/master/QUICKSTART.rst
 .. _issues: https://github.com/Arabidopsis-Information-Portal/adama/issues
-.. _tutorial: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/tutorial/tutorial.rst
+.. _tutorial: http://adama.readthedocs.org/en/latest/tutorial.html
 .. _live docs of the API: https://adama-dev.tacc.utexas.edu/api/adama.html
+.. _document at Read The Docs: http://adama.readthedocs.org/en/latest/
