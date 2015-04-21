@@ -1,4 +1,3 @@
-==============================
 Using and Developing for Adama
 ==============================
 
@@ -16,7 +15,7 @@ This section shows very basic and quick examples of using the
 .. _roles:
 
 Roles
-=====
+-----
 
 We called *developer* an individual who has access or knowledge of an
 existing data source, and he or she wants to register it into Adama.
@@ -36,7 +35,7 @@ tools are also planned in the future.
 .. _developer_role:
 
 Developer Role Quickstart
-=========================
+-------------------------
 
 In this setion we register an adapter for the service *Expressolog by
 locus* at ``bar.utoronto.ca``.
@@ -223,7 +222,7 @@ attend queries.
 .. _user_role:
 
 User Role Quickstart
-====================
+--------------------
 
 After a developer registered the expressolog service as in
 :ref:`developer_role`, a user can query the service by posting to

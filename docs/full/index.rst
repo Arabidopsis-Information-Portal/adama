@@ -30,6 +30,7 @@ Contents:
    parameters
    metadata
    adapters
+   history
 
 
 Indices and tables

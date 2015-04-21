@@ -1,10 +1,9 @@
-============
 Architecture
 ============
 
 
 Overview
-========
+--------
 
 The following picture illustrates the architecture of |Adama|:
 
@@ -52,7 +51,7 @@ The main components are:
 .. _api:
 
 API
-===
+---
 
 .. warning:: This section is in flux. The API will change before a
              stable release.
@@ -145,7 +144,7 @@ queries.
 
 
 Adapter API
-===========
+-----------
 
 .. warning:: This section is in flux. The API will change before a
              stable release.
@@ -215,7 +214,7 @@ See :ref:`developer_role` for an example of this API.
 .. _araport_language:
 
 Araport Language
-================
+----------------
 
 .. todo:: To be defined and to be written.
 

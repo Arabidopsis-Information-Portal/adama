@@ -1,4 +1,3 @@
-============
 Introduction
 ============
 
@@ -9,7 +8,7 @@ set of services that provide data for Arabidopsis research.
 .. _problem:
 
 Problem
-=======
+-------
 
 There is a huge amount of data related to Arabidopsis being produced
 and being served to the internet.  However, the way the data is
@@ -33,7 +32,7 @@ architecture.
 
 
 Strategy
-========
+--------
 
 |Adama| is a RESTful service that provides two main endpoints:
 
