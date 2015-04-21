@@ -1,4 +1,4 @@
-{% raw %}
+# {% raw %}
 # Adapter: {{ cookiecutter.adapter_name }}
 # Author: {{ cookiecutter.full_name }} <{{ cookiecutter.email }}>
 #
@@ -43,4 +43,4 @@ def list(args):
     for i in range(5):
         print json.dumps({'item': i})
         print '---'
-{% endraw %}
+# {% endraw %}
