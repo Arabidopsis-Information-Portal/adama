@@ -1,0 +1,4 @@
+---
+name: adapter_multiple_yaml
+type: query
+main_module: tests/adapter_multiple_yaml/main.py

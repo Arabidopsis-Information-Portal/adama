@@ -1008,19 +1008,28 @@ def get_metadata_from(directory):
     Try to read the file ``metadata.yml`` or ``metadata.json`` at the root
     of the directory.
 
+    Concatenate files ``foo.yml`` into a field ``foo:``.
+
     Return an empty dict if no file is found.
 
+    :type directory: str
+    :rtype: dict[str, object]
+
     """
-    for filename in ['metadata.yml', 'metadata.yaml', 'metadata.json']:
+    md = {}
+    exts = ['yml', 'yaml', 'json']
+    for filename in ['metadata.{}'.format(ext) for ext in exts]:
         try:
             f = open(os.path.join(directory, filename))
-            break
         except IOError:
-            pass
-    else:
-        # tried all files, give up and return empty
-        return {}
-    return yaml.load(f.read())
+            continue
+        md.update(yaml.load(f))
+    for extra in os.listdir(directory):
+        if any(extra.endswith(ext) for ext in exts):
+            f = open(os.path.join(directory, extra))
+            key, _ = os.path.splitext(extra)
+            md[key] = yaml.load(f)
+    return md
 
 
 def valid_image_name(name):

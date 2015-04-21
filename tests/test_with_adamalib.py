@@ -29,3 +29,13 @@ def test_query_with_adama_obj(namespace):
         assert srv.search()[0]['x'] == 'token'
     finally:
         srv.delete()
+
+
+def test_multiple_yaml(namespace):
+    import adapter_multiple_yaml.main
+    try:
+        srv = namespace.services.add(adapter_multiple_yaml.main)
+        assert srv.endpoints['goo'] == 'hi'
+        assert '127.0.0.1' in srv.whitelist
+    finally:
+        srv.delete()
