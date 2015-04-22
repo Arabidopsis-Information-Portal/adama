@@ -39,7 +39,7 @@ Documentation
 =============
 
 Documentation is now being consolidated in one `document at Read The Docs`_. 
-The sources for the documentation are in ``docs/full``.
+The sources for the documentation live in `docs/full`_.
 
 You can also read the `live docs of the API`_.
 
@@ -59,3 +59,4 @@ Free software: MIT license
 .. _tutorial: http://adama.readthedocs.org/en/latest/tutorial.html
 .. _live docs of the API: https://adama-dev.tacc.utexas.edu/api/adama.html
 .. _document at Read The Docs: http://adama.readthedocs.org/en/latest/
+.. _docs/full: https://github.com/Arabidopsis-Information-Portal/adama/tree/master/docs/full
