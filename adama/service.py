@@ -100,6 +100,7 @@ class AbstractService(object):
         ('validate_request', False, False),
         ('validate_response', False, False),
         ('endpoints', False, {}),
+        ('sources', False, []),
         ('metadata', False, METADATA_DEFAULT)
     ]
 

@@ -31,6 +31,7 @@ Contents:
    metadata
    adapters
    history
+   provenance
 
 
 Indices and tables
