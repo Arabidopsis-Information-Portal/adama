@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture(scope='module')
 def adama():
-    return adamalib.Adama('token', 'http://localhost/community/v0.3')
+    return adamalib.Adama('http://localhost/community/v0.3', token='token')
 
 
 @pytest.fixture(scope='module')
