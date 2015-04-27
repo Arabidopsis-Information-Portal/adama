@@ -1,3 +1,5 @@
+import json
+
 from flask import request, Response
 from flask.ext import restful
 
@@ -15,8 +17,8 @@ class ProvResource(restful.Resource):
         prov_obj = to_prov(obj)
         fmt = request.args.get('format', 'json')
         if fmt == 'json':
-            return prov_obj.serialize()
-        elif fmt == 'prov':
+            return json.loads(prov_obj.serialize())
+        elif fmt == 'prov-n':
             return Response(prov_obj.get_provn(),
                             content_type='text/provenance-notation')
         elif fmt == 'png':
