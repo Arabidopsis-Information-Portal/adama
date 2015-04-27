@@ -1,4 +1,5 @@
 Babel==1.3
+Delorean==0.4.5
 Flask==0.10.1
 Flask-RESTful==0.2.12
 Jinja2==2.7.3
@@ -20,6 +21,7 @@ blessings==1.6
 celery==3.1.11
 click==3.3
 cookiecutter==0.7.2
+decorator==3.4.2
 docker-py==0.5.3
 dockerpty==0.3.2
 docopt==0.6.2
@@ -38,14 +40,18 @@ ipdb==0.8
 ipython==2.1.0
 itsdangerous==0.24
 kombu==3.0.16
+lxml==3.4.3
 mccabe==0.2.1
+networkx==1.9.1
 nose==1.3.3
 numpy==1.8.1
 pep8==1.5.6
 pika==0.9.13
+prov==1.3.1
 py==1.4.20
 pyaml==14.05.7
 pycrypto==2.6.1
+pydot2==1.0.33
 pyflakes==0.8.1
 pyparsing==2.0.2
 pyswagger==0.8.4
