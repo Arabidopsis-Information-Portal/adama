@@ -368,7 +368,9 @@ class Service(AbstractService):
         gen = itertools.imap(json.dumps, client.receive())
         header = next(gen)
         key = uuid.uuid4().hex
-        prov_store[key] = json.loads(header)
+        header_json = json.loads(header)
+        header_json['sources'] = self.sources
+        prov_store[key] = header_json
         response = Response(result_generator(gen, lambda: client.metadata),
                             mimetype='application/json')
         # store and add header for: client.metadata['prov']

@@ -25,7 +25,7 @@ from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
 from .status import StatusResource
 from .stores import token_store
 from .tools import location_of, get_token
-from .prov import ProvResource
+from .provenance import ProvResource
 
 
 PREFIX = Config.get('server', 'prefix')
