@@ -1,4 +1,5 @@
 import base64
+import datetime
 import glob
 import itertools
 import json
@@ -101,6 +102,8 @@ class AbstractService(object):
         ('validate_response', False, False),
         ('endpoints', False, {}),
         ('sources', False, []),
+        ('git_repository', False, ''),
+        ('registration_timestamp', False, None),
         ('metadata', False, METADATA_DEFAULT)
     ]
 
@@ -1125,6 +1128,7 @@ def register(service_class, args, namespace, user_code, notifier=None):
         'service': None
     }
 
+    service.registration_timestamp = datetime.datetime.now().isoformat(' ')
     _async_register(service, notifier)
     return service
 
