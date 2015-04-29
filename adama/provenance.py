@@ -3,12 +3,13 @@ import datetime
 
 from flask import request, Response
 from flask.ext import restful
-
 from prov.model import (ProvDocument, Namespace, Literal, PROV,
                         Identifier, ProvAgent)
 import prov.dot
 
-from .stores import prov_store
+from .stores import prov_store, service_store
+from .tools import service_iden
+from .api import api_url_for
 
 
 class ProvResource(restful.Resource):
@@ -60,23 +61,24 @@ def to_prov(obj, namespace, service):
     adama_platform = g.agent(
         ap['adama_platform'],
         {'dcterms:title': "ADAMA",
-         'dcterms:description': "Araport Data and Microservices API",
+         'dcterms:description': "Araport Data And Microservices API",
          'dcterms:language':"en-US",
          'dcterms:identifier':"https://api.araport.org/community/v0.3/",
          'dcterms:updated': "2015-04-17T09:44:56"})
     g.wasGeneratedBy(adama_platform, walter)
     g.wasGeneratedBy(adama_platform, vaughn)
 
-    microservice_name = 'mwvaughn/bar_annotation_v1.0.0'
+    iden = service_iden(namespace, service)
+    srv = service_store[iden]['service']
     adama_microservice = g.agent(
-        ap[microservice_name],
-        {'dcterms:title': "BAR Annotation Service",
-         'dcterms:description': "Returns annotation from locus ID",
+        ap[iden],
+        {'dcterms:title': srv.name.title(),
+         'dcterms:description': srv.description,
          'dcterms:language': "en-US",
-         'dcterms:identifier': ("https://api.araport.org/community/v0.3/"
-                                "mwvaughn/bar_annotation_v1.0.0"),
-         'dcterms:source': ("https://github.com/Arabidopsis-Information-"
-                            "Portal/prov-enabled-api-sample")
+         'dcterms:identifier': api_url_for('service',
+                                           namespace=namespace,
+                                           service=service),
+         'dcterms:source': srv.git_repository
          })
 
     g.wasGeneratedBy(adama_microservice, vaughn, datetime.datetime.now())
