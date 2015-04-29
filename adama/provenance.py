@@ -108,7 +108,21 @@ def to_prov(obj, namespace, service):
                          author_agent,
                          datetime.datetime.now())
 
+    process_sources(srv.sources, g, ap, adama_microservice)
+
+    response = g.entity(ap['adama_response'])
+    g.wasGeneratedBy(response, ap[srv.type], datetime.datetime.now())
+    g.used(ap[srv.type], adama_microservice, datetime.datetime.now())
+
     return g
+
+
+def process_sources(sources, g, ap, srv_agent):
+    if not sources:
+        return
+    sources_entity = g.entity()
+    g.used(srv_agent, sources_entity, datetime.datetime.now())
+    # TODO: Proceed recursively
 
 
 def slugify(text):
