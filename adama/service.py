@@ -104,6 +104,7 @@ class AbstractService(object):
         ('sources', False, []),
         ('git_repository', False, ''),
         ('registration_timestamp', False, None),
+        ('authors', False, []),
         ('metadata', False, METADATA_DEFAULT)
     ]
 
