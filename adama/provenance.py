@@ -1,5 +1,6 @@
 import json
 import datetime
+import string
 
 from flask import request, Response
 from flask.ext import restful
@@ -9,7 +10,7 @@ import prov.dot
 
 from .stores import prov_store, service_store
 from .tools import service_iden
-from .api import api_url_for
+from .api import api_url_for, APIException
 
 
 class ProvResource(restful.Resource):
@@ -42,6 +43,7 @@ def to_prov(obj, namespace, service):
 
     g.add_namespace("dcterms", "http://purl.org/dc/terms/")
     g.add_namespace("foaf", "http://xmlns.com/foaf/0.1/")
+
     vaughn = g.agent(ap['matthew_vaughn'], {
         'prov:type': PROV["Person"], 'foaf:givenName': "Matthew Vaughn",
         'foaf:mbox': "<mailto:vaughn@tacc.utexas.edu>"
@@ -61,8 +63,8 @@ def to_prov(obj, namespace, service):
         ap['adama_platform'],
         {'dcterms:title': "ADAMA",
          'dcterms:description': "Araport Data And Microservices API",
-         'dcterms:language':"en-US",
-         'dcterms:identifier':"https://api.araport.org/community/v0.3/",
+         'dcterms:language': "en-US",
+         'dcterms:identifier': "https://api.araport.org/community/v0.3/",
          'dcterms:updated': "2015-04-17T09:44:56"})
     g.wasGeneratedBy(adama_platform, walter)
     g.wasGeneratedBy(adama_platform, vaughn)
@@ -80,10 +82,40 @@ def to_prov(obj, namespace, service):
          'dcterms:source': srv.git_repository
          })
 
-    g.wasGeneratedBy(adama_microservice, vaughn, datetime.datetime.now())
-    # The microservice used the platform now
     g.used(adama_microservice, adama_platform, datetime.datetime.now())
+
+    for author in getattr(srv, 'authors', []):
+        try:
+            author_name = author['name']
+            author_email = author['email']
+        except KeyError:
+            raise APIException(
+                'name and email are required in author field')
+        author_agent = g.agent(
+            ap[slugify(author_name)],
+            {'prov:type': PROV['Person'],
+             'foaf:givenName': author_name,
+             'foaf:mbox': '<mailto:{}>'.format(author_email)})
+        sponsor_name = author.get('sponsor_organization_name', None)
+        if sponsor_name:
+            sponsor_agent = g.agent(
+                ap[slugify(sponsor_name)],
+                {'prov:type': PROV['Organization'],
+                 'foaf:givenName': sponsor_name,
+                 'dcterms:identifier': author.get('sponsor_uri', '')})
+            g.actedOnBehalfOf(author_agent, sponsor_agent)
+        g.wasGeneratedBy(adama_microservice,
+                         author_agent,
+                         datetime.datetime.now())
 
     return g
 
 
+def slugify(text):
+    """
+    :type text: str
+    :rtype: str
+    """
+    words = filter(
+        lambda c: c not in string.punctuation, text.lower()).split()
+    return '_'.join(words)
