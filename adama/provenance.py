@@ -15,7 +15,6 @@ from .api import api_url_for
 class ProvResource(restful.Resource):
 
     def get(self, namespace, service, uuid):
-        del namespace, service
         obj = prov_store[uuid]
         prov_obj = to_prov(obj, namespace, service)
         fmt = request.args.get('format', 'json')
