@@ -378,11 +378,12 @@ class Service(AbstractService):
         response = Response(result_generator(gen, lambda: client.metadata),
                             mimetype='application/json')
         # store and add header for: client.metadata['prov']
-        response.headers['Araport-Prov'] = api_url_for(
-            'prov',
-            namespace=self.namespace,
-            service=self.adapter_name,
-            uuid=key)
+        response.headers['Link'] = ('{}; rel="http://www.w3.org/ns/prov'
+                                    '#has_provenance"').format(
+            api_url_for('prov',
+                        namespace=self.namespace,
+                        service=self.adapter_name,
+                        uuid=key))
         return response
 
     def exec_worker_map_filter(self, endpoint, args, req):
