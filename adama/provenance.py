@@ -19,7 +19,7 @@ class ProvResource(restful.Resource):
         obj = prov_store[uuid]
         prov_obj = to_prov(obj, namespace, service)
         fmt = request.args.get('format', 'json')
-        if fmt == 'json':
+        if fmt in ('prov', 'json'):
             return json.loads(prov_obj.serialize())
         elif fmt == 'prov-n':
             return Response(prov_obj.get_provn(),
