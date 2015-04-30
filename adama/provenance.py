@@ -108,7 +108,9 @@ def to_prov(obj, namespace, service):
                          author_agent,
                          datetime.datetime.now())
 
-    process_sources(srv.sources, g, ap, adama_microservice)
+    sources_entities = process_sources(srv.sources, g, ap)
+    for src in sources_entities:
+        g.used(adama_microservice, src, datetime.datetime.now())
 
     response = g.entity(ap['adama_response'])
     g.wasGeneratedBy(response, ap[srv.type], datetime.datetime.now())
@@ -117,12 +119,41 @@ def to_prov(obj, namespace, service):
     return g
 
 
-def process_sources(sources, g, ap, srv_agent):
+def process_sources(sources, g, ap, prefix=''):
     if not sources:
         return
-    sources_entity = g.entity()
-    g.used(srv_agent, sources_entity, datetime.datetime.now())
-    # TODO: Proceed recursively
+    for i, src in enumerate(sources):
+        new_prefix = '{}{}'.format(prefix, i)
+        src_entity = g.entity(
+            ap['datasource_{}'.format(new_prefix)],
+            {
+                'dcterms:title': src.get('title', ''),
+                'dcterms:description': src.get('description', ''),
+                'dcterms:language': src.get('language', 'en-us'),
+                'dcterms:identifier': src.get('uri', ''),
+                'dcterms:updated': src.get('last_modified', ''),
+                'dcterms:license': src.get('license', '')
+            })
+        provider = g.agent(
+            ap[slugify(src['provider_name'])],
+            {
+                'prov:type': PROV['Person'],
+                'foaf:givenName': src['provider_name'],
+                'foaf:mbox': src.get('provider_email', '')
+            })
+        organization = g.agent(
+            ap[slugify(src['sponsor_organization_name'])],
+            {
+                'prov:type': PROV['Organization'],
+                'foaf:givenName': src['sponsor_organization_name'],
+                'dcterms:identifier': src.get('sponsor_uri')
+            })
+        g.actedOnBehalfOf(provider, organization)
+        g.wasAttributedTo(src_entity, provider)
+        for nested_src in process_sources(src.get('sources', []), g, ap,
+                                          prefix=new_prefix):
+            g.wasDerivedFrom(src_entity, nested_src)
+        yield src_entity
 
 
 def slugify(text):
