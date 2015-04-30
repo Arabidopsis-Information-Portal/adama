@@ -39,7 +39,10 @@ Documentation
 =============
 
 Documentation is now being consolidated in one `document at Read The Docs`_. 
-The sources for the documentation live in `docs/full`_.
+The sources for the documentation live in `docs/full`_.  
+
+Before graduating to a nice place like "Read The Docs", the preliminary and rough
+docs live in the wiki_.
 
 You can also read the `live docs of the API`_.
 
@@ -49,6 +52,7 @@ License
 
 Free software: MIT license
 
+.. _wiki: https://github.com/Arabidopsis-Information-Portal/adama/wiki
 .. _docs: https://github.com/Arabidopsis-Information-Portal/adama/tree/master/docs
 .. _architecture: http://rawgit.com/waltermoreira/adama/master/docs/index.html
 .. _Arabidopsis Information Portal: https://www.araport.org/
