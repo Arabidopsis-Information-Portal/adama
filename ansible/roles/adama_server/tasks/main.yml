@@ -16,6 +16,15 @@
     pip_executable="/usr/local/bin/pip"
   when: ansible_os_family == "RedHat"
 
+- name: Install support libraries for provenance
+  apt: name={{ item }} state=latest
+  sudo: yes
+  with_items:
+    - libxml2-dev
+    - libxslt1-dev
+    - graphviz
+    - zlib1g-dev
+
 - name: Get adama code
   git:
     repo: https://github.com/Arabidopsis-Information-Portal/adama.git
