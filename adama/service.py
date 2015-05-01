@@ -414,8 +414,9 @@ class Service(AbstractService):
             path = '.'.join(filter(None, [self.json_path, 'item']))
             results = ijson.items(FileLikeWrapper(response), path)
 
+            headers = req.headers
             return Response(
-                result_generator(process_by_client(self, results),
+                result_generator(process_by_client(self, results, headers),
                                  lambda: {}),
                 mimetype='application/json')
         else:
@@ -888,7 +889,7 @@ class FileLikeWrapper(object):
         return ''.join(itertools.islice(self.src, 0, n))
 
 
-def process_by_client(service, results):
+def process_by_client(service, results, headers):
     """Process results through a ProcessWorker.
 
     Return a generator which produces JSON objects (as strings).
@@ -900,6 +901,14 @@ def process_by_client(service, results):
         queue_port=Config.getint('queue', 'port'),
         queue_name=service.iden)
     for result in results:
+        result['_headers'] = dict(headers)
+        result['_token'] = get_token(headers)
+        result['_url'] = (Config.get('server', 'api_url') +
+                          Config.get('server', 'api_prefix'))
+        result['_queue_host'] = Config.get('queue', 'host')
+        result['_queue_port'] = Config.getint('queue', 'port')
+        result['_store_host'] = Config.get('store', 'host')
+        result['_store_port'] = Config.getint('store', 'port')
         client.send(result)
         response = client.receive()
         header = next(response)

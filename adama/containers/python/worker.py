@@ -103,7 +103,18 @@ class ProcessWorker(QueueConnection):
 
     def callback(self, message, responder):
         try:
-            out = self.module.map_filter(json.loads(message))
+            d = json.loads(message)
+            adama = Adama(d.get('_token'), d.get('_url'),
+                          d.get('_queue_host'), d.get('_queue_port'),
+                          d.get('_store_host'), d.get('_store_port'),
+                          d.get('_headers'),
+                          responder=responder)
+            fun = self.module.map_filter
+            if len(inspect.getargspec(fun).args) == 1:
+                # old style function: don't use Adama object
+                out = fun(d)
+            else:
+                out = fun(d, adama)
             if out is not None:
                 responder(json.dumps(out))
         except Exception as exc:
