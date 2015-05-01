@@ -415,10 +415,21 @@ class Service(AbstractService):
             results = ijson.items(FileLikeWrapper(response), path)
 
             headers = req.headers
-            return Response(
+            response = Response(
                 result_generator(process_by_client(self, results, headers),
                                  lambda: {}),
                 mimetype='application/json')
+
+            key = uuid.uuid4().hex
+            prov_store[key] = {'sources': self.sources}
+
+            response.headers['Link'] = ('{}; rel="http://www.w3.org/ns/prov'
+                                        '#has_provenance"').format(
+                api_url_for('prov',
+                            namespace=self.namespace,
+                            service=self.adapter_name,
+                            uuid=key))
+            return response
         else:
             raise APIException('response from external service: {}'
                                .format(response))

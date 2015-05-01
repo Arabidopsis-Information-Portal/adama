@@ -72,3 +72,8 @@ def test_map(map_service, json_server):
     result = map_service.search()
     assert len(result) == 2
     assert result[0]['x'] == 'token'
+
+
+def test_map_with_prov(map_service, json_server):
+    result = map_service.search()
+    assert result.prov()
