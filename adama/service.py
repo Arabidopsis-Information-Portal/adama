@@ -452,11 +452,23 @@ class Service(AbstractService):
                 .format(len(response)))
         response = response[0]
         if 'error' not in response:
-            return Response(base64.b64decode(response['body']),
+            resp = Response(base64.b64decode(response['body']),
                             content_type=response['content_type'])
         else:
-            return Response(json.dumps(response),
+            resp = Response(json.dumps(response),
                             content_type='application/json')
+
+        key = uuid.uuid4().hex
+        prov_store[key] = {'sources': self.sources}
+
+        resp.headers['Link'] = ('{}; rel="http://www.w3.org/ns/prov'
+                                '#has_provenance"').format(
+            api_url_for('prov',
+                        namespace=self.namespace,
+                        service=self.adapter_name,
+                        uuid=key))
+
+        return resp
 
     def exec_worker_passthrough(self, endpoint, args, req):
         """Pass a request straight to a pre-defined url.

@@ -45,6 +45,18 @@ def map_service(namespace, request):
     return srv
 
 
+@pytest.fixture(scope='module')
+def generic_service(namespace, request):
+    import generic_with_prov.main
+    srv = namespace.services.add(generic_with_prov.main)
+
+    def fin():
+        srv.delete()
+
+    request.addfinalizer(fin)
+    return srv
+
+
 def test_namespace(namespace):
     assert namespace.name == 'foox'
 
@@ -77,3 +89,9 @@ def test_map(map_service, json_server):
 def test_map_with_prov(map_service, json_server):
     result = map_service.search()
     assert result.prov()
+
+
+def test_generic_with_prov(generic_service):
+    result = generic_service.search()
+    assert result.ok
+    assert result.links['http://www.w3.org/ns/prov#has_provenance']['url']
