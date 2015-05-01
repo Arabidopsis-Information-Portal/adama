@@ -3,6 +3,7 @@ import time
 
 import adamalib
 import pytest
+import requests
 
 
 @pytest.fixture(scope='module')
@@ -57,6 +58,23 @@ def generic_service(namespace, request):
     return srv
 
 
+@pytest.fixture(scope='module')
+def passthrough_service(namespace, request):
+    resp = requests.post(
+        namespace.adama.url + '/' + namespace.name + '/services',
+        data={'name': 'passthrough',
+              'type': 'passthrough',
+              'url': 'http://httpbin.org/get'})
+
+    def fin():
+        requests.delete(
+            namespace.adama.url +
+            '/{}/passthrough_v0.1'.format(namespace.name))
+
+    request.addfinalizer(fin)
+    return resp
+
+
 def test_namespace(namespace):
     assert namespace.name == 'foox'
 
@@ -95,3 +113,9 @@ def test_generic_with_prov(generic_service):
     result = generic_service.search()
     assert result.ok
     assert result.links['http://www.w3.org/ns/prov#has_provenance']['url']
+
+
+def test_passthrough_with_prov(namespace, passthrough_service):
+    resp = namespace.passthrough.access()
+    assert resp.ok
+    assert resp.json()['args'] == {}

@@ -482,10 +482,22 @@ class Service(AbstractService):
         data = req.data if req.data else req.form
         url = _join(self.url, endpoint)
         response = method(url, params=req.args, data=data)
-        return Response(
+        resp = Response(
             response=response.content,
             status=response.status_code,
             headers=response.headers.items())
+
+        key = uuid.uuid4().hex
+        prov_store[key] = {'sources': self.sources}
+
+        resp.headers['Link'] = ('{}; rel="http://www.w3.org/ns/prov'
+                                '#has_provenance"').format(
+            api_url_for('prov',
+                        namespace=self.namespace,
+                        service=self.adapter_name,
+                        uuid=key))
+
+        return resp
 
 
 class ServiceQueryResource(restful.Resource):
