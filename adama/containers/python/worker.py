@@ -71,16 +71,27 @@ class GenericWorker(QueueConnection):
         self.module = find_main_module()
         self.consume_forever(self.callback)
 
-    def operation(self, body):
+    def operation(self, body, responder):
         d = json.loads(body)
         d['_worker'] = os.uname()[1]
         endpoint = d['_endpoint']
 
-        return getattr(self.module, endpoint)(d)
+        adama = Adama(d.get('_token'), d.get('_url'),
+                      d.get('_queue_host'), d.get('_queue_port'),
+                      d.get('_store_host'), d.get('_store_port'),
+                      d.get('_headers'),
+                      responder=responder)
+
+        fun = getattr(self.module, endpoint)
+        if len(inspect.getargspec(fun).args) == 1:
+            # old style function: don't use Adama object
+            return fun(d)
+        else:
+            return fun(d, adama)
 
     def callback(self, message, responder):
         try:
-            content_type, body = self.operation(message)
+            content_type, body = self.operation(message, responder)
             responder(json.dumps({
                 'content_type': content_type,
                 'body': base64.b64encode(body)
