@@ -370,11 +370,13 @@ class Service(AbstractService):
         client = Producer(queue_host=qh, queue_port=qp, queue_name=queue)
         client.send(args)
         gen = itertools.imap(json.dumps, client.receive())
+
         header = next(gen)
         key = uuid.uuid4().hex
         header_json = json.loads(header)
         header_json['sources'] = self.sources
         prov_store[key] = header_json
+
         response = Response(result_generator(gen, lambda: client.metadata),
                             mimetype='application/json')
         # store and add header for: client.metadata['prov']
@@ -1123,9 +1125,8 @@ def _join(url, endpoint):
 def register_code(args, namespace, notifier=None):
     """Register code that comes in the POST request."""
 
-    if args.type == 'passthrough':
-        user_code = None
-    else:
+    user_code = None
+    if getattr(args, 'code', None):
         filename = args.code.filename
         args.code = args.code.stream.read()
         tempdir = tempfile.mkdtemp()
