@@ -1,0 +1,4 @@
+---
+name: generic_with_prov
+type: generic
+main_module: tests/generic_with_prov/main.py

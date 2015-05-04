@@ -1,0 +1,6 @@
+---
+name: map_with_adama_obj
+type: map_filter
+main_module: tests/map_with_adama_obj/main.py
+url: http://localhost:1234/json.json
+json_path: results
