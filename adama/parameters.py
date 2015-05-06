@@ -11,23 +11,23 @@ DOCS = {
     '/search': {
         'get': {
             'summary': 'Search',
-            'description': 'do a search'
+            'description': 'Do a search'
         }
     },
     '/list': {
         'get': {
             'summary': 'List',
-            'description': 'list all'
+            'description': 'List all objects'
         }
     },
     '/access': {
         'get': {
             'summary': 'Access get',
-            'description': 'do a get to a passthrough'
+            'description': 'Perform a GET to a passthrough service'
         },
         'post': {
             'summary': 'Access post',
-            'description': 'do a post to a passthrough'
+            'description': 'Perform a POST to a passthrough service'
         }
     }
 }
