@@ -99,7 +99,12 @@ class AbstractService(object):
         ('validate_request', False, False),
         ('validate_response', False, False),
         ('endpoints', False, {}),
-        ('metadata', False, METADATA_DEFAULT)
+        ('git_repository', False, ''),
+        ('git_branch', False, ''),
+        ('icon', False, ''),
+        ('metadata', False, METADATA_DEFAULT),
+        # private fields (not to be displayed)
+        ('_icon', False, '')
     ]
 
     def __init__(self, **kwargs):
