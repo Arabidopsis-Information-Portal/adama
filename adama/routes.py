@@ -20,7 +20,8 @@ from .namespaces import NamespacesResource
 from .namespace import NamespaceResource
 from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
-                      ServiceListResource, ServiceHealthResource)
+                      ServiceListResource, ServiceHealthResource,
+                      IconResource)
 from .passthrough import PassthroughServiceResource
 from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
 from .status import StatusResource
@@ -67,6 +68,9 @@ api.add_resource(ServiceDocsResource,
 api.add_resource(ServiceDocsUIResource,
                  url('/<string:namespace>/<string:service>/docs/swagger'),
                  endpoint='service_swagger')
+api.add_resource(IconResource,
+                 url('/<string:namespace>/<string:service>/icon'),
+                 endpoint='service_icon')
 
 
 @app.route('/home')

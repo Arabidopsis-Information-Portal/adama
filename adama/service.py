@@ -855,6 +855,18 @@ class ServiceHealthResource(restful.Resource):
         return workers_alive >= should_have
 
 
+class IconResource(restful.Resource):
+
+    def get(self, namespace, service):
+        name = service_iden(namespace, service)
+        try:
+            slot = service_store[name]
+        except KeyError:
+            raise APIException('service not found: {}'.format(name), 404)
+        srv = slot['service']
+        return Response('', content_type='image/png')
+
+
 class FileLikeWrapper(object):
 
     def __init__(self, response):
