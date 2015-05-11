@@ -882,7 +882,10 @@ class IconResource(restful.Resource):
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
         srv = slot['service']
-        return Response('', content_type='image/png')
+        if srv._icon:
+            return Response(srv._icon, content_type='image/png')
+        else:
+            raise APIException("no icon", code=404)
 
 
 class FileLikeWrapper(object):
