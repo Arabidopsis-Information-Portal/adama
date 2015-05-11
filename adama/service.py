@@ -136,7 +136,7 @@ class AbstractService(object):
 
     def to_json(self):
         return {key[0]: getattr(self, key[0], key[-1])
-                for key in self.PARAMS if not key.startswith('_')}
+                for key in self.PARAMS if not key[0].startswith('_')}
 
     def make_image(self):
         raise NotImplementedError
