@@ -15,6 +15,7 @@ import threading
 import traceback
 import urlparse
 import zipfile
+import cStringIO
 
 from enum import Enum
 from flask import request, Response, g
@@ -26,6 +27,7 @@ import yaml
 from werkzeug.datastructures import FileStorage
 import pyswagger
 import pyswagger.getter
+from PIL import Image
 
 from . import app
 from .requestparser import RequestParser
@@ -104,7 +106,7 @@ class AbstractService(object):
         ('icon', False, ''),
         ('metadata', False, METADATA_DEFAULT),
         # private fields (not to be displayed)
-        ('_icon', False, '')
+        ('_icon', False, None)
     ]
 
     def __init__(self, **kwargs):
@@ -203,6 +205,22 @@ class Service(AbstractService):
             return ['access']
         else:
             return ['search', 'list']
+
+    def process_icon(self):
+        """Process and save icon to database."""
+
+        if self.code_dir is None:
+            return
+        metadata_dir = os.path.dirname(self.metadata)
+        try:
+            icon = Image.open(
+                os.path.join(self.code_dir, metadata_dir, self.icon))
+        except IOError:
+            return
+        resized = icon.resize((64, 64), resample=Image.LANCZOS)
+        buffer = cStringIO.StringIO()
+        resized.save(buffer, 'PNG')
+        self._icon = buffer.getvalue()
 
     def make_image(self):
         """Make a docker image for this service."""
@@ -1102,7 +1120,7 @@ def register(service_class, args, namespace, user_code, notifier=None):
         'slot': 'busy',
         'msg': 'Empty service created',
         'stage': 1,
-        'total_stages': 5,
+        'total_stages': 6,
         'service': None
     }
 
@@ -1141,10 +1159,16 @@ def _register(service, notifier=None):
         slot['stage'] = 4
         service_store[full_name] = slot
 
+        service.process_icon()
+
+        slot['msg'] = 'Icon processed'
+        slot['stage'] = 5
+        service_store[full_name] = slot
+
         service.check_health()
 
         slot['msg'] = 'Service ready'
-        slot['stage'] = 5
+        slot['stage'] = 6
         slot['slot'] = 'ready'
         slot['service'] = service
         service_store[full_name] = slot
