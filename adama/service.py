@@ -886,7 +886,7 @@ class IconResource(restful.Resource):
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
         srv = slot['service']
-        if srv._icon:
+        if getattr(srv, '_icon', None):
             return Response(srv._icon, content_type='image/png')
         else:
             raise APIException("no icon", code=404)
