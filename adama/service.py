@@ -44,6 +44,8 @@ from .namespace import DeleteResponseModel
 from .tools import chdir
 from .entity import get_permissions
 from .parameters import fix_metadata, metadata_to_swagger
+from .stats import tick, get_total_access, get_unique_access, get_users
+from .stats_store import stats_store
 
 
 LANGUAGES = {
@@ -367,6 +369,8 @@ class Service(AbstractService):
             params = validate_swagger_request(self, endpoint, req)
             if args is not None:
                 args.update(params)
+
+        tick(self, req, endpoint=endpoint, args=args)
 
         meth = getattr(self, 'exec_worker_{}'.format(self.type))
         return meth(endpoint, args, req)
@@ -886,6 +890,26 @@ class IconResource(restful.Resource):
             return Response(srv._icon, content_type='image/png')
         else:
             raise APIException("no icon", code=404)
+
+
+class StatsResource(restful.Resource):
+
+    @swagger.operation(
+        notes="Return statistics of usage of the service.",
+        nickname='getStats',
+        parameters=[]
+    )
+    def get(self, namespace, service):
+        srv = get_service(namespace, service)
+        stats = stats_store.get(srv.iden, [])
+        total_access = get_total_access(stats)
+        unique_access = get_unique_access(stats)
+        users = get_users(stats)
+        return ok({
+            'total_access': total_access,
+            'unique_access': unique_access,
+            'users': users
+        })
 
 
 class FileLikeWrapper(object):
