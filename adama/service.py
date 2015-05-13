@@ -219,7 +219,7 @@ class Service(AbstractService):
                 os.path.join(self.code_dir, metadata_dir, self.icon))
         except IOError:
             return
-        resized = icon.resize((64, 64), resample=Image.LANCZOS)
+        resized = icon
         buffer = cStringIO.StringIO()
         resized.save(buffer, 'PNG')
         self._icon = buffer.getvalue()
