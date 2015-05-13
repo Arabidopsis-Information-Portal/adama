@@ -40,14 +40,13 @@ from .firewall import Firewall
 from .tools import (location_of, identifier, service_iden,
                     adapter_iden, interleave)
 from .tasks import Producer
-from .stores import service_store, prov_store
+from .stores import service_store, prov_store, stats_store
 from .swagger import swagger
 from .namespace import DeleteResponseModel
 from .tools import chdir, get_token
 from .entity import get_permissions
 from .parameters import fix_metadata, metadata_to_swagger
 from .stats import tick, get_total_access, get_unique_access, get_users
-from .stats_store import stats_store
 
 
 LANGUAGES = {

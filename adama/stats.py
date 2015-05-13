@@ -1,6 +1,6 @@
 from flask import g
 
-from .stats_store import stats_store
+from .stores import stats_store
 
 
 def tick(service, req, **kwargs):
