@@ -19,7 +19,8 @@ from .namespaces import NamespacesResource
 from .namespace import NamespaceResource
 from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
-                      ServiceListResource, ServiceHealthResource)
+                      ServiceListResource, ServiceHealthResource,
+                      IconResource, StatsResource)
 from .passthrough import PassthroughServiceResource
 from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
 from .status import StatusResource
@@ -72,6 +73,12 @@ api.add_resource(ProvResource,
                  url('/<string:namespace>/<string:service>/'
                      'prov/<string:uuid>'),
                  endpoint='prov')
+api.add_resource(IconResource,
+                 url('/<string:namespace>/<string:service>/icon'),
+                 endpoint='service_icon')
+api.add_resource(StatsResource,
+                 url('/<string:namespace>/<string:service>/stats'),
+                 endpoint='stats')
 
 
 @app.route('/home')

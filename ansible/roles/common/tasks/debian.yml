@@ -4,6 +4,10 @@
   apt: update_cache=yes cache_valid_time=84600
   sudo: yes
 
+- name: Install zlib
+  apt: name=zlib1g-dev state=present
+  sudo: yes
+
 - name: Install git in Debian
   apt: name=git state=present
   sudo: yes

@@ -17,6 +17,7 @@ import traceback
 import uuid
 import urlparse
 import zipfile
+import cStringIO
 
 from enum import Enum
 from flask import request, Response, g
@@ -28,6 +29,7 @@ import yaml
 from werkzeug.datastructures import FileStorage
 import pyswagger
 import pyswagger.getter
+from PIL import Image
 
 from . import app
 from .requestparser import RequestParser
@@ -44,6 +46,8 @@ from .namespace import DeleteResponseModel
 from .tools import chdir, get_token
 from .entity import get_permissions
 from .parameters import fix_metadata, metadata_to_swagger
+from .stats import tick, get_total_access, get_unique_access, get_users
+from .stats_store import stats_store
 
 
 LANGUAGES = {
@@ -103,9 +107,13 @@ class AbstractService(object):
         ('endpoints', False, {}),
         ('sources', False, []),
         ('git_repository', False, ''),
+        ('git_branch', False, ''),
         ('registration_timestamp', False, None),
         ('authors', False, []),
+        ('icon', False, ''),
         ('metadata', False, METADATA_DEFAULT)
+        # private fields (not to be displayed)
+        ('_icon', False, None)
     ]
 
     def __init__(self, **kwargs):
@@ -136,7 +144,8 @@ class AbstractService(object):
                                .format(self.name))
 
     def to_json(self):
-        return {key[0]: getattr(self, key[0]) for key in self.PARAMS}
+        return {key[0]: getattr(self, key[0], key[-1])
+                for key in self.PARAMS if not key[0].startswith('_')}
 
     def make_image(self):
         raise NotImplementedError
@@ -203,6 +212,21 @@ class Service(AbstractService):
             return ['access']
         else:
             return ['search', 'list']
+
+    def process_icon(self):
+        """Process and save icon to database."""
+
+        if self.code_dir is None:
+            return
+        try:
+            icon = Image.open(
+                os.path.join(self.code_dir, self.metadata, self.icon))
+        except IOError:
+            return
+        resized = icon
+        buffer = cStringIO.StringIO()
+        resized.save(buffer, 'PNG')
+        self._icon = buffer.getvalue()
 
     def make_image(self):
         """Make a docker image for this service."""
@@ -349,6 +373,8 @@ class Service(AbstractService):
             params = validate_swagger_request(self, endpoint, req)
             if args is not None:
                 args.update(params)
+
+        tick(self, req, endpoint=endpoint, args=args)
 
         meth = getattr(self, 'exec_worker_{}'.format(self.type))
         return meth(endpoint, args, req)
@@ -924,6 +950,41 @@ class ServiceHealthResource(restful.Resource):
         return workers_alive >= should_have
 
 
+class IconResource(restful.Resource):
+
+    def get(self, namespace, service):
+        name = service_iden(namespace, service)
+        try:
+            slot = service_store[name]
+        except KeyError:
+            raise APIException('service not found: {}'.format(name), 404)
+        srv = slot['service']
+        if getattr(srv, '_icon', None):
+            return Response(srv._icon, content_type='image/png')
+        else:
+            raise APIException("no icon", code=404)
+
+
+class StatsResource(restful.Resource):
+
+    @swagger.operation(
+        notes="Return statistics of usage of the service.",
+        nickname='getStats',
+        parameters=[]
+    )
+    def get(self, namespace, service):
+        srv = get_service(namespace, service)
+        stats = stats_store.get(srv.iden, [])
+        total_access = get_total_access(stats)
+        unique_access = get_unique_access(stats)
+        users = get_users(stats)
+        return ok({
+            'total_access': total_access,
+            'unique_access': unique_access,
+            'users': users
+        })
+
+
 class FileLikeWrapper(object):
 
     def __init__(self, response):
@@ -1138,11 +1199,12 @@ def register_git_repository(args, namespace, notifier=None):
     """Register code from git repo at ``args.git_repository``."""
 
     tempdir = tempfile.mkdtemp()
-    subprocess.check_call(
-        """
-        cd {} &&
-        git clone {} user_code
-        """.format(tempdir, args.git_repository), shell=True)
+    with chdir(tempdir):
+        cmd = ['git', 'clone']
+        if getattr(args, 'git_branch', None):
+            cmd.extend(['-b', args.git_branch])
+        cmd.extend([args.git_repository, 'user_code'])
+        subprocess.check_call(cmd)
     return register(Service, args, namespace,
                     os.path.join(tempdir, 'user_code'), notifier)
 
@@ -1180,7 +1242,7 @@ def register(service_class, args, namespace, user_code, notifier=None):
         'slot': 'busy',
         'msg': 'Empty service created',
         'stage': 1,
-        'total_stages': 5,
+        'total_stages': 6,
         'service': None
     }
 
@@ -1220,10 +1282,16 @@ def _register(service, notifier=None):
         slot['stage'] = 4
         service_store[full_name] = slot
 
+        service.process_icon()
+
+        slot['msg'] = 'Icon processed'
+        slot['stage'] = 5
+        service_store[full_name] = slot
+
         service.check_health()
 
         slot['msg'] = 'Service ready'
-        slot['stage'] = 5
+        slot['stage'] = 6
         slot['slot'] = 'ready'
         slot['service'] = service
         service_store[full_name] = slot

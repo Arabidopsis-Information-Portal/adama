@@ -1,3 +1,5 @@
+import re
+
 from flask import g
 from flask.ext import restful
 
@@ -57,6 +59,11 @@ class Namespace(object):
         if not self.name:
             raise APIException(
                 'Namespace cannot be an empty string')
+        if not valid_namespace_name(self.name):
+            raise APIException(
+                "'{}' is not a valid namespace name.\n"
+                "Allowed characters: [a-z0-9_-]"
+                .format(self.name))
 
     def to_json(self):
         obj = {
@@ -130,3 +137,12 @@ class NamespaceResource(restful.Resource):
         except KeyError:
             pass
         return ok({})
+
+
+def valid_namespace_name(name):
+    """Decide whether ``name`` is a valid namespace name.
+
+    :type name: str
+    :rtype: bool
+    """
+    return re.search(r'[^a-z0-9-_]', name) is None

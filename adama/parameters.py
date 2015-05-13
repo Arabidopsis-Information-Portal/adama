@@ -11,23 +11,23 @@ DOCS = {
     '/search': {
         'get': {
             'summary': 'Search',
-            'description': 'do a search'
+            'description': 'Do a search'
         }
     },
     '/list': {
         'get': {
             'summary': 'List',
-            'description': 'list all'
+            'description': 'List all objects'
         }
     },
     '/access': {
         'get': {
             'summary': 'Access get',
-            'description': 'do a get to a passthrough'
+            'description': 'Perform a GET to a passthrough service'
         },
         'post': {
             'summary': 'Access post',
-            'description': 'do a post to a passthrough'
+            'description': 'Perform a POST to a passthrough service'
         }
     }
 }
@@ -63,6 +63,10 @@ def fix_metadata(metadata):
 
     md = copy.deepcopy(metadata)
     endpoints = md['endpoints']
+    if not endpoints:
+        endpoints = default_endpoints(metadata)
+        md['endpoints'] = endpoints
+    print "Endpoints", endpoints
     for endpoint in endpoints:
         descr = endpoints[endpoint]
         keys = set(descr.keys())
@@ -77,6 +81,20 @@ def fix_metadata(metadata):
             raise APIException(
                 'unrecognized keys: {}'.format(list(keys)))
     return md
+
+
+def default_endpoints(metadata):
+    """
+    :type metadata: dict[str, object|dict]
+    :rtype: dict[str, object|dict]
+    """
+    defaults = dict(DOCS)
+    if metadata['type'] in ('query', 'map_filter', 'generic'):
+        del defaults['/access']
+    else:
+        del defaults['/search']
+        del defaults['/list']
+    return defaults
 
 
 def metadata_to_swagger(metadata):

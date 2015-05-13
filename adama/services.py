@@ -95,6 +95,14 @@ class ServicesResource(restful.Resource):
                 'paramType': 'form'
             },
             {
+                'name': 'git_branch',
+                'description': 'branch or tag to clone (default to "master")',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
                 'name': 'metadata',
                 'description': 'path of metadata file relative to '
                                'git_repository root',
@@ -185,6 +193,15 @@ class ServicesResource(restful.Resource):
                 'paramType': 'form'
             },
             {
+                'name': 'icon',
+                'description': 'path to an icon picture, relative to '
+                               'the metadata.yml file (format: png)',
+                'required': False,
+                'allowMultiple': False,
+                'dataType': 'string',
+                'paramType': 'form'
+            },
+            {
                 'name': 'code',
                 'description': 'type of the adapter',
                 'required': False,
@@ -254,6 +271,8 @@ class ServicesResource(restful.Resource):
         # The following two options are exclusive
         parser.add_argument('code', type=FileStorage, location='files')
         parser.add_argument('git_repository', type=str),
+        parser.add_argument('git_branch', type=str),
+        parser.add_argument('icon', type=str),
         parser.add_argument('validate_request', type=bool),
         parser.add_argument('metadata', type=str)
 

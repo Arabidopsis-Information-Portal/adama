@@ -26,6 +26,11 @@ def test_register_namespace():
         URL+'/namespaces', data={'name': NAMESPACE}).json()
     assert resp['status'] == 'error'
 
+def test_register_wrong_namespace_name():
+    resp = requests.post(
+        URL+'/namespaces', data={'name': 'NotValid'}).json()
+    assert resp['status'] == 'error'
+
 def test_register_namespace_empty_name():
     resp = requests.post(
         URL+'/namespaces', data={'name': ''}).json()
@@ -99,6 +104,17 @@ def test_test_register_git_repo():
         data={'metadata': 'src',
               'git_repository':
                   os.path.join(HERE, 'python_map_filter_test_adapter')})
+    response = resp.json()
+    assert response['status'] == 'success'
+
+def test_register_git_branch():
+    subprocess.check_call(
+        'tar zxf branch_adapter.tgz'.split())
+    resp = requests.post(
+        URL+'/'+NAMESPACE+'/services',
+        data={'git_branch': 'FOO',
+              'git_repository':
+                  os.path.join(HERE, 'branch_adapter')})
     response = resp.json()
     assert response['status'] == 'success'
 
@@ -349,8 +365,14 @@ def test_register_with_docs():
     assert response['paths']['/search']['get']['description']
     assert response['paths']['/search']['get']['responses']['200']
 
+def test_git_branch_query():
+    response = requests.get(
+        URL+'/{}/{}_v13/search'.format(NAMESPACE, SERVICE)).json()
+    assert response['status'] == 'success'
+    assert response['result'][0] == {'foo': 1}
+
 def test_delete_service():
-    for i in range(1, 13):
+    for i in range(1, 14):
         resp = requests.delete(
             URL+'/{}/{}_v{}'.format(NAMESPACE, SERVICE, i)).json()
         assert resp['status'] == 'success'
