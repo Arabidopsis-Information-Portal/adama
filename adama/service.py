@@ -213,10 +213,9 @@ class Service(AbstractService):
 
         if self.code_dir is None:
             return
-        metadata_dir = os.path.dirname(self.metadata)
         try:
             icon = Image.open(
-                os.path.join(self.code_dir, metadata_dir, self.icon))
+                os.path.join(self.code_dir, self.metadata, self.icon))
         except IOError:
             return
         resized = icon
