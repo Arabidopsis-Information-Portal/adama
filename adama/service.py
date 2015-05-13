@@ -1148,6 +1148,8 @@ def get_metadata_from(directory):
             continue
         md.update(yaml.load(f))
     for extra in os.listdir(directory):
+        if extra.startswith('metadata'):
+            continue
         if any(extra.endswith(ext) for ext in exts):
             f = open(os.path.join(directory, extra))
             key, _ = os.path.splitext(extra)
