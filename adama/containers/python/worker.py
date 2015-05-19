@@ -226,10 +226,20 @@ def run_worker(worker_type, args):
         print('*** WORKER ERROR', file=sys.stderr)
 
 
+def wait_for_ready():
+    """Wait for the file /ready before running user's code."""
+
+    while True:
+        if os.path.exists('/ready'):
+            return
+        time.sleep(0.1)
+
+
 def main():
     args = parse_args()
     if args.interactive:
         os.execlp('ipython', 'ipython')
+    wait_for_ready()
     run_worker(args.adapter_type, args)
 
 

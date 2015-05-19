@@ -6,7 +6,6 @@ from __future__ import print_function
 import os
 
 from .tools import location_of
-from .ip_pool import IPPoolServer
 
 HERE = location_of(__file__)
 
@@ -21,5 +20,3 @@ app.debug = True
 app.debug_log_format = ('---\n'
                         '%(asctime)s %(module)s [%(pathname)s:%(lineno)d]:\n'
                         '%(message)s')
-
-IPPoolServer()
