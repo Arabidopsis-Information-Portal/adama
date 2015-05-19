@@ -60,19 +60,14 @@ def generic_service(namespace, request):
 
 @pytest.fixture(scope='module')
 def passthrough_service(namespace, request):
-    resp = requests.post(
-        namespace.adama.url + '/' + namespace.name + '/services',
-        data={'name': 'passthrough',
-              'type': 'passthrough',
-              'url': 'http://httpbin.org/get'})
+    import passthrough
+    srv = namespace.services.add(passthrough)
 
     def fin():
-        requests.delete(
-            namespace.adama.url +
-            '/{}/passthrough_v0.1'.format(namespace.name))
+        srv.delete()
 
     request.addfinalizer(fin)
-    return resp
+    return srv
 
 
 def test_namespace(namespace):

@@ -1,0 +1,4 @@
+---
+name: passthrough
+type: passthrough
+url: http://httpbin.org/get
