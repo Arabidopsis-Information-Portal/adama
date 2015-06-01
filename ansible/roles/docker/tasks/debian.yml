@@ -28,5 +28,6 @@
 - name: Ensure docker-py is installed
   pip:
     name: docker-py
+    version: 1.1.0
     state: present
   sudo: yes
