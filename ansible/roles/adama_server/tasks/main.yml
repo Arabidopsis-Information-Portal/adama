@@ -38,6 +38,12 @@
     - Rebuild containers
     - Reload adama server
 
+- name: Ensure netns directory
+  file:
+    path: /var/run/netns
+    state: directory
+  sudo: yes
+
 - name: Install all Python requirements
   pip:
     requirements: /home/adama/adama/requirements.txt
