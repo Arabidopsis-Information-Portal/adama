@@ -167,23 +167,30 @@ class QueueConnection(AbstractQueueConnection):
         callback(body, responder)
 
 
+class EmptyQueue(Exception): pass
+
+
 class SimpleProducer(QueueConnection):
+
+    POLL_INTERVAL = 0.1  # seconds
 
     def send(self, message):
         """Send a dictionary as message."""
 
         super(SimpleProducer, self).send(json.dumps(message))
 
-    def receive(self):
+    def receive(self, timeout=None):
         """Receive only one message."""
 
-        g = super(SimpleProducer, self).receive()
-        result = next(g)
-        try:
-            g.send(True)
-        except StopIteration:
-            pass
-        return json.loads(result)
+        start = time.time()
+        while True:
+            (ok, props, message) = self.channel.basic_get(
+                queue=self.result_queue, no_ack=True)
+            if ok is not None:
+                return json.loads(message)
+            if timeout is not None and time.time() - start > timeout:
+                raise EmptyQueue
+            time.sleep(self.POLL_INTERVAL)
 
 
 class Producer(QueueConnection):
