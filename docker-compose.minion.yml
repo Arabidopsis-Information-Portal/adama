@@ -1,0 +1,6 @@
+---
+
+minion:
+  image: adama-minion
+  volumes:
+    - adama:/adama
