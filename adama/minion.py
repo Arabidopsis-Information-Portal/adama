@@ -10,6 +10,15 @@ from tasks import QueueConnection, SimpleProducer
 
 
 class Minion(QueueConnection):
+    """A server to create workers.
+
+    Format of the message::
+
+        "image": str
+        "numprocs": int,
+        "args": List[str]  (extra args for "docker run -d image ...")
+
+    """
 
     def callback(self, message, responder):
         print('Got {}'.format(message))
