@@ -171,6 +171,15 @@ class EmptyQueue(Exception): pass
 
 
 class SimpleProducer(QueueConnection):
+    """A client that sends a message to a channel and can receive a response.
+
+    Use as::
+
+     client = SimpleProducer(host, port, channel)
+     client.send(...)  # async
+     client.receive()
+
+    """
 
     POLL_INTERVAL = 0.1  # seconds
 
