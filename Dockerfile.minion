@@ -9,4 +9,4 @@ ADD adama /adama
 
 ENV RABBITMQ_SERVER localhost:6379
 
-WORKDIR /
+WORKDIR /adama

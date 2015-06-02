@@ -4,3 +4,6 @@ minion:
   image: adama-minion
   volumes:
     - adama:/adama
+  environment:
+    RABBITMQ_SERVER: 192.168.35.10:5672
+  command: /adama/minion.py
