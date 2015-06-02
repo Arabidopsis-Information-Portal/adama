@@ -167,6 +167,25 @@ class QueueConnection(AbstractQueueConnection):
         callback(body, responder)
 
 
+class SimpleProducer(QueueConnection):
+
+    def send(self, message):
+        """Send a dictionary as message."""
+
+        super(SimpleProducer, self).send(json.dumps(message))
+
+    def receive(self):
+        """Receive only one message."""
+
+        g = super(SimpleProducer, self).receive()
+        result = next(g)
+        try:
+            g.send(True)
+        except StopIteration:
+            pass
+        return json.loads(result)
+
+
 class Producer(QueueConnection):
     """Send messages to the queue exchange and receive answers.
 
