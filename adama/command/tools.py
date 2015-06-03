@@ -116,7 +116,7 @@ def backup_adapters(destination):
 def _adjust_code_dir(name, filepath):
     """Fix `code_dir` attribute of `name` to match contents of tarfile.
 
-    :type srv: str
+    :type name: str
     :type filepath: str
     :rtype: None
     """
