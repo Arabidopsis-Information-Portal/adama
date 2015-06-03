@@ -24,14 +24,14 @@ class Firewall(object):
 
     def _insert(self, line_no, dest, iface, target):
         subprocess.check_output(
-            'sudo iptables -I FORWARD {line_no} '
+            'sudo iptables -w -I FORWARD {line_no} '
             '-m physdev --physdev-in {iface} '
             '-s 0/0 -d {dest} -j {target}'
             .format(**locals()).split())
 
     def _delete(self, dest, iface, target):
         subprocess.check_output(
-            'sudo iptables -D FORWARD -s 0/0 -d {dest} '
+            'sudo iptables -w -D FORWARD -s 0/0 -d {dest} '
             '-m physdev --physdev-in {iface} '
             '-j {target}'.format(**locals()).split())
 
