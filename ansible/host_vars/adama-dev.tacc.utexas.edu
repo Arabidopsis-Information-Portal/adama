@@ -10,6 +10,15 @@ config:
   - section: server
     option: prefix
     value: 
+  - section: server
+    option: api_prefix
+    value: /community/v{{ lookup('file', '../adama/VERSION') }} 
+  - section: server
+    option: api_docs
+    value: https://api.araport.org/community/v0.3
+  - section: server
+    option: api_url
+    value: https://api.araport.org
   - section: store
     option: host
     value: localhost
