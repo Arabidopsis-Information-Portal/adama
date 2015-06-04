@@ -70,27 +70,41 @@ def passthrough_service(namespace, request):
     return srv
 
 
+@pytest.fixture(scope='module')
+def query_service(namespace, request):
+    import adapter_with_adama_obj.main
+    srv = namespace.services.add(adapter_with_adama_obj.main)
+
+    def fin():
+        srv.delete()
+
+    request.addfinalizer(fin)
+    return srv
+
+
+@pytest.fixture(scope='module')
+def multiple_yaml(namespace, request):
+    import adapter_multiple_yaml.main
+    srv = namespace.services.add(adapter_multiple_yaml.main)
+
+    def fin():
+        srv.delete()
+
+    request.addfinalizer(fin)
+    return srv
+
+
 def test_namespace(namespace):
     assert namespace.name == 'foox'
 
 
-def test_query_with_adama_obj(namespace):
-    import adapter_with_adama_obj.main
-    try:
-        srv = namespace.services.add(adapter_with_adama_obj.main)
-        assert srv.search()[0]['x'] == 'token'
-    finally:
-        srv.delete()
+def test_query_with_adama_obj(query_service):
+    assert query_service.search()[0]['x'] == 'token'
 
 
-def test_multiple_yaml(namespace):
-    import adapter_multiple_yaml.main
-    try:
-        srv = namespace.services.add(adapter_multiple_yaml.main)
-        assert srv.endpoints['goo'] == 'hi'
-        assert '127.0.0.1' in srv.whitelist
-    finally:
-        srv.delete()
+def test_multiple_yaml(multiple_yaml):
+    multiple_yaml.endpoints['goo'] == 'hi'
+    assert '127.0.0.1' in multiple_yaml.whitelist
 
 
 def test_map(map_service, json_server):
