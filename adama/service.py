@@ -36,7 +36,7 @@ from .requestparser import RequestParser
 from .api import APIException, RegisterException, ok, api_url_for, error
 from .config import Config
 from .docker import docker_output, start_container, tail_logs, safe_docker
-from .firewall import allow
+from .firewall import allow, get_nameservers
 from .tools import (location_of, identifier, service_iden,
                     adapter_iden, interleave)
 from .tasks import Producer
@@ -393,7 +393,6 @@ class Service(AbstractService):
         client = Producer(queue_host=qh, queue_port=qp, queue_name=queue)
         client.send(args)
         gen = itertools.imap(json.dumps, client.receive())
-
         header = next(gen)
         key = uuid.uuid4().hex
         header_json = json.loads(header)
@@ -1157,13 +1156,6 @@ def get_metadata_from(directory):
 
 def valid_image_name(name):
     return re.search(r'[^a-z0-9-_.]', name) is None
-
-
-def get_nameservers():
-    nameservers = open('/etc/resolv.conf')
-    for line in nameservers:
-        if line.startswith('nameserver'):
-            yield line.split()[1]
 
 
 def _join(url, endpoint):
