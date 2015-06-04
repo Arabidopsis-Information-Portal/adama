@@ -1,5 +1,6 @@
 FROM common
 
+RUN apt-get update
 RUN apt-get install -y python python-dev python-pip ipython
 RUN pip install pika redis
 
