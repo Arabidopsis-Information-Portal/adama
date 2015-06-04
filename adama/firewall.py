@@ -9,6 +9,7 @@ def allow(worker, whitelist):
     """Allow access of worker to ip's in whitelist."""
 
     whitelist = list(resolve(whitelist if whitelist is not None else []))
+    whitelist.append(Config.get('queue', 'host'))
     pid = get_pid(worker)
     host_dir = Config.get('server', 'host_dir')
     ensure_namespace_link(host_dir, pid)
