@@ -6,7 +6,6 @@ import time
 import tempfile
 
 from ..stores import service_store
-from ..firewall import Firewall
 from ..docker import safe_docker
 
 
