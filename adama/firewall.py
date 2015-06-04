@@ -50,4 +50,3 @@ def get_nameservers():
         if line.startswith('nameserver'):
             yield line.split()[1]
 
-

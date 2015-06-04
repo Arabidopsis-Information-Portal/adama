@@ -112,6 +112,19 @@ def backup_adapters(destination):
     backup_redis(destination)
 
 
+def _adjust_code_dir(name, filepath):
+    """Fix `code_dir` attribute of `name` to match contents of tarfile.
+
+    :type name: str
+    :type filepath: str
+    :rtype: None
+    """
+    tar = tarfile.open(filepath)
+    srv = service(name)
+    srv.code_dir = os.path.join('/', tar.members[0].name, 'user_code')
+    save_service(srv)
+
+
 def restore_code(directory):
     adapters_path = os.path.join(directory, 'adapters')
     for filepath in glob.glob(os.path.join(adapters_path, '*.tar.bz2')):
@@ -121,6 +134,7 @@ def restore_code(directory):
         if slot['slot'] == 'ready':
             subprocess.check_call(
                 'sudo tar jxf {0} -C /'.format(filepath).split())
+            _adjust_code_dir(name, filepath)
             print('Rebuilding {}'.format(name))
             rebuild_service(name)
             print('  Restarting {}'.format(name))

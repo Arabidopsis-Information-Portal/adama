@@ -1441,7 +1441,8 @@ def validate_swagger_request(srv, endpoint, req):
     sw_app = pyswagger.SwaggerApp.load('', getter=getter)
     sw_app.prepare(strict=True)
     operation = '{}_{}'.format(endpoint, req.method.lower())
-    args = req.args.to_dict(flat=False)
+    args = {k: v for (k, v) in req.args.to_dict(flat=False).items()
+            if not k.startswith('_')}
     op = sw_app.op[operation]
     for param in op.parameters:
         if param.type != 'array':
