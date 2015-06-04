@@ -23,10 +23,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 class QueryWorker(QueueConnection):
 
     def callback(self, message, responder):
-        adama = None
+        _time = None
+        _prov = None
         with Results(responder):
             try:
                 adama = self.operation(message, responder=responder)
+                _time = adama._time
+                _prov = adama._prov
             except Exception as exc:
                 print('ERROR')
                 print(json.dumps({
@@ -35,8 +38,8 @@ class QueryWorker(QueueConnection):
                 }))
             finally:
                 print('END')
-                responder(json.dumps({'time_in_main': adama._time,
-                                      'prov': adama._prov}))
+                responder(json.dumps({'time_in_main': _time,
+                                      'prov': _prov}))
 
     def operation(self, body, responder=None):
         d = json.loads(body)
