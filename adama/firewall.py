@@ -10,6 +10,7 @@ def allow(worker, whitelist):
 
     whitelist = list(resolve(whitelist if whitelist is not None else []))
     whitelist.append(Config.get('queue', 'host'))
+    whitelist.extend(get_nameservers())
     pid = get_pid(worker)
     host_dir = Config.get('server', 'host_dir')
     ensure_namespace_link(host_dir, pid)
