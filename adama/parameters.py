@@ -129,11 +129,9 @@ def fix_metadata(metadata):
     """
 
     md = copy.deepcopy(metadata)
-    endpoints = md['endpoints']
-    if not endpoints:
-        endpoints = default_endpoints(metadata)
-        md['endpoints'] = endpoints
-    print "Endpoints", endpoints
+    endpoints = default_endpoints(metadata)
+    endpoints.update(md['endpoints'])
+    md['endpoints'] = endpoints
     for endpoint in endpoints:
         descr = endpoints[endpoint]
         keys = set(descr.keys())
