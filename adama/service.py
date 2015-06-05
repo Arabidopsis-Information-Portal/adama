@@ -110,6 +110,7 @@ class AbstractService(object):
         ('registration_timestamp', False, None),
         ('authors', False, []),
         ('icon', False, ''),
+        ('tags', False, []),
         ('metadata', False, METADATA_DEFAULT),
         # private fields (not to be displayed)
         ('_icon', False, None)

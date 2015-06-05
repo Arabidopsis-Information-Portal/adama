@@ -128,3 +128,6 @@ def test_passthrough_with_prov(namespace, passthrough_service):
     resp = namespace.passthrough.access()
     assert resp.ok
     assert resp.json()['args'] == {}
+
+def test_tags(multiple_yaml):
+    assert multiple_yaml.tags == ['foo', 'bar']
