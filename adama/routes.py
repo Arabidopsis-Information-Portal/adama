@@ -70,6 +70,7 @@ api.add_resource(ServiceDocsUIResource,
                  url('/<string:namespace>/<string:service>/docs/swagger'),
                  endpoint='service_swagger')
 api.add_resource(ProvResource,
+                 url('/<string:namespace>/<string:service>/prov'),
                  url('/<string:namespace>/<string:service>/'
                      'prov/<string:uuid>'),
                  endpoint='prov')

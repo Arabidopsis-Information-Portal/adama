@@ -15,8 +15,8 @@ from .api import api_url_for, APIException
 
 class ProvResource(restful.Resource):
 
-    def get(self, namespace, service, uuid):
-        obj = prov_store[uuid]
+    def get(self, namespace, service, uuid=None):
+        obj = prov_store.get(uuid)
         prov_obj = to_prov(obj, namespace, service)
         fmt = request.args.get('format', 'json')
         if fmt in ('prov', 'json'):
