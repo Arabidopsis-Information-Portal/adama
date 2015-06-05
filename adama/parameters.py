@@ -39,6 +39,20 @@ DOCS = {
                 'image/png',
                 'text/provenance-notation'
             ],
+            'parameters': [
+                {
+                    'name': 'format',
+                    'in': 'query',
+                    'type': 'string',
+                    'required': False,
+                    'enum': [
+                        'json',
+                        'prov',
+                        'prov-n',
+                        'png'
+                    ]
+                }
+            ],
             'responses': {
                 '200': {
                     'description': 'successful response',
