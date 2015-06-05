@@ -29,11 +29,78 @@ DOCS = {
             'summary': 'Access post',
             'description': 'Perform a POST to a passthrough service'
         }
+    },
+    '/prov': {
+        'get': {
+            'summary': 'Get provenance',
+            'description': 'Get static provenance for the service',
+            'produces': [
+                'application/json',
+                'image/png',
+                'text/provenance-notation'
+            ],
+            'responses': {
+                '200': {
+                    'description': 'successful response',
+                    'schema': {}
+                }
+            }
+        }
+    },
+    '/stats': {
+        'get': {
+            'summary': 'Get statistics',
+            'description': 'Get access statistics for the service',
+            'responses': {
+                '200': {
+                    'description': 'successful response',
+                    'schema': {
+                        '$ref': '#/definitions/Stats'
+                    }
+                }
+            }
+        }
+    },
+    '/icon': {
+        'get': {
+            'summary': 'Get service icon',
+            'description': 'Retrieve a PNG with an icon for the service',
+            'produces': ['image/png'],
+            'responses': {
+                "200": {
+                    "description": "successful response",
+                    "schema": {
+                        "type": "file"
+                    }
+                }
+            }
+        }
     }
 }
 
 
 DEFS = {
+    'Stats': {
+        'properties': {
+            'status': {
+                'type': 'string',
+                'enum': ['success', 'error'],
+                'description': 'Status of response'
+            },
+            'total_access': {
+                'type': 'integer',
+                'description': 'Total number of access to the service'
+            },
+            'unique_access': {
+                'type': 'integer',
+                'description': "Number of unique ip's accessing the service"
+            },
+            'users': {
+                'type': 'integer',
+                'description': 'Number of unique users accessing the service'
+            }
+        }
+    },
     'Generic': {
         'properties': {
             'status': {
@@ -223,7 +290,8 @@ def get_definitions(metadata):
     :type metadata: dict[str, dict]
     :rtype: collections.Iterable[(str, object)]
     """
-    yield 'Generic', copy.deepcopy(DEFS['Generic'])
+    for definition in DEFS:
+        yield definition, copy.deepcopy(DEFS[definition])
     endpoints = metadata.get('endpoints', {})
     for endpoint_name, endpoint in endpoints.items():
         for descr in endpoint.values():
