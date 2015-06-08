@@ -1,4 +1,5 @@
-.. image:: docs/images/svg/adama-color.svg
+.. image:: https://raw.githubusercontent.com/Arabidopsis-Information-Portal/adama/master/docs/images/png-transparent/adama-color.png
+   :width: 500px
    :alt: Logo
 
 ==================================
