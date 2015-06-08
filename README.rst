@@ -1,3 +1,6 @@
+.. image:: https://github.com/Arabidopsis-Information-Portal/adama/blob/master/docs/images/svg/adama-color.svg
+   :alt: Logo
+
 ==================================
 Araport Data And Microservices API
 ==================================
