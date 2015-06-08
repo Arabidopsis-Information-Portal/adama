@@ -89,3 +89,11 @@
 - name: Make sure the adama server is started
   supervisorctl: name=adama state=started
   sudo: yes
+
+- name: Install crontab for backup job
+  cron:
+    name: backup
+    job: /home/adama/adama/bin/backup.py
+    user: root
+    special_time: hourly
+  sudo: yes
