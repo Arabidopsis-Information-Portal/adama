@@ -5,7 +5,7 @@
     supervisord_conf_dir="/etc/supervisor/conf.d"
     supervisord_conf_ext="conf"
     supervisord_service="supervisor"
-    pip_executable="/usr/bin/pip"
+    pip_executable="/usr/local/bin/pip"
   when: ansible_os_family == "Debian"
 
 - set_fact:
