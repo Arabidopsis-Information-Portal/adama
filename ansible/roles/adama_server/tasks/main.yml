@@ -95,5 +95,5 @@
     name: backup
     job: /home/adama/adama/bin/backup.py
     user: root
-    special_time: hourly
+    special_time: daily
   sudo: yes
