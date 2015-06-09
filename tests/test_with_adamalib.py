@@ -94,6 +94,18 @@ def multiple_yaml(namespace, request):
     return srv
 
 
+@pytest.fixture(scope='module')
+def with_exception(namespace, request):
+    import adapter_with_exception.main
+    srv = namespace.services.add(adapter_with_exception.main)
+
+    def fin():
+        srv.delete()
+
+    request.addfinalizer(fin)
+    return srv
+
+
 def test_namespace(namespace):
     assert namespace.name == 'foox'
 
@@ -131,3 +143,13 @@ def test_passthrough_with_prov(namespace, passthrough_service):
 
 def test_tags(multiple_yaml):
     assert multiple_yaml.tags == ['foo', 'bar']
+
+
+def test_with_exception(with_exception):
+    with pytest.raises(Exception):
+        with_exception.search(first=True)
+    result = with_exception.search()
+    assert result[0]['x'] == 5
+    assert 'error' in result[1]
+    empty_result = with_exception.search(empty=True)
+    assert empty_result == []

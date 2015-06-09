@@ -400,8 +400,16 @@ class Service(AbstractService):
         header_json['sources'] = self.sources
         prov_store[key] = header_json
 
-        response = Response(result_generator(gen, lambda: client.metadata),
-                            mimetype='application/json')
+        probe, real_gen = itertools.tee(gen)
+        try:
+            first_record = json.loads(next(probe))
+            if 'error' in first_record and 'traceback' in first_record:
+                raise APIException(first_record['error'])
+        except StopIteration:
+            pass
+
+        result = result_generator(real_gen, lambda: client.metadata)
+        response = Response(result, mimetype='application/json')
         # store and add header for: client.metadata['prov']
         response.headers['Link'] = ('{}; rel="http://www.w3.org/ns/prov'
                                     '#has_provenance"').format(
