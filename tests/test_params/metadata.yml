@@ -1,0 +1,35 @@
+---
+
+name: adapter_with_params
+type: query
+main_module: tests/test_params/main.py
+validate_request: yes
+
+endpoints:
+  /search:
+    parameters:
+      - name: x
+        description: Parameter X
+        type: string
+        required: true
+      - name: y
+        description: Parameter Y
+        type: integer
+        format: int64
+        required: false
+      - name: z
+        description: Parameter Z
+        type: array
+        required: true
+        collectionFormat: multi
+        items:
+          type: number
+          format: double
+      - name: w
+        description: Parameter W
+        type: string
+        required: true
+        enum:
+          - Spam
+          - Eggs
+

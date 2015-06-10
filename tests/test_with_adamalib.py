@@ -106,8 +106,43 @@ def with_exception(namespace, request):
     return srv
 
 
+@pytest.fixture(scope='module')
+def with_parameter_validation(namespace, request):
+    import test_params.main
+    srv = namespace.services.add(test_params.main)
+
+    def fin():
+        srv.delete()
+
+    request.addfinalizer(fin)
+    return srv
+
+
 def test_namespace(namespace):
     assert namespace.name == 'foox'
+
+
+def test_with_parameter_validation(with_parameter_validation):
+    res1 = with_parameter_validation.search(x='foo', z=[3,4], w='Spam')
+    assert res1[0] == 'x = foo'
+    assert res1[1] == 'y = None'
+    assert res1[2] == 'z = [3.0, 4.0]'
+    assert res1[3] == 'w = Spam'
+
+    res2 = with_parameter_validation.search(x='foo', z=[3,4], w='Spam', y=1)
+    assert res2[1] == 'y = 1'
+
+    with pytest.raises(Exception):
+        with_parameter_validation.search(
+            x='foo', z=[3,4], w='Spam', y='foo')
+
+    with pytest.raises(Exception):
+        with_parameter_validation.search(
+            x='foo', z=[3,4], w='Spammy')
+
+    with pytest.raises(Exception):
+        with_parameter_validation.search(
+            x='foo', w='Spam')
 
 
 def test_query_with_adama_obj(query_service):
