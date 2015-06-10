@@ -2,7 +2,7 @@
  Provenance
 ============
 
-Starting in version 0.4, Adama allows declaring the provenance for
+Starting in version 0.3, Adama allows declaring the provenance for
 each microservice response.
 
 Provenance for a microservice can be specified in the field

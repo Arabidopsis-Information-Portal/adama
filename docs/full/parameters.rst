@@ -3,7 +3,7 @@
  Documenting Parameters
 ========================
 
-Starting in version 0.4, Adama allows to document the parameters for
+Starting in version 0.3, Adama allows to document the parameters for
 all the types of `adapters`_.
 
 .. _adapters: https://adama-dev.tacc.utexas.edu/docs/adapters/index.html

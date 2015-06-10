@@ -8,14 +8,14 @@ Follow this tutorial with any HTTP client.  Here we'll use curl_.
 
 The languages supported by Adama are currently: Python, Javascript.
 
-The base url of the Adama is https://api.araport.org/community/v0.4.  For brevity, in what
+The base url of the Adama is https://api.araport.org/community/v0.3.  For brevity, in what
 follows we use the environment variable ``API`` to refer to this base.
 Declare the variable in your shell to be able to copy and paste the
 examples:
 
 .. code-block:: bash
 
-   $ export API=https://api.araport.org/community/v0.4
+   $ export API=https://api.araport.org/community/v0.3
 
 
 You need to obtain a token through your method of choice.  In what
@@ -36,7 +36,7 @@ A ``GET`` request to ``$API/status`` should return:
 
    $ curl -L -X GET $API/status -H "Authorization: Bearer $TOKEN"
    {
-       "api": "Adama v0.4",
+       "api": "Adama v0.3",
        "hash": "6869fde8e2617ab8f8a58c5c09b1512a80185500",
        "status": "success"
    }
@@ -55,7 +55,7 @@ Namespaces allow Adama to group adapters. Create a new namespace with:
    $ curl -X POST $API/namespaces -Fname=tacc -Fdescription="TACC namespace" \
       -H "Authorization: Bearer $TOKEN"
    {
-       "result": "https://api.araport.org/community/v0.4/tacc",
+       "result": "https://api.araport.org/community/v0.3/tacc",
        "status": "success"
    }
 
@@ -173,9 +173,9 @@ Using curl_:
        "message": "registration started",
        "result": {
            "notification": "https://my.url",
-           "search": "https://api.araport.org/community/v0.4/search",
-           "list": "https://api.araport.org/community/v0.4/list",
-           "state": "https://api.araport.org/community/v0.4/example_v0.1"
+           "search": "https://api.araport.org/community/v0.3/search",
+           "list": "https://api.araport.org/community/v0.3/list",
+           "state": "https://api.araport.org/community/v0.3/example_v0.1"
        },
        "status": "success"
    }
@@ -274,18 +274,18 @@ Add also the file ``metadata.yml`` with the metadata information:
    version: 0.1
    type: map_filter
    main_module: main.py
-   url: https://api.araport.org/community/v0.4/json
+   url: https://api.araport.org/community/v0.3/json
    whitelist: ['127.0.0.1']
    description: ''
    requirements: []
    notify: ''
    json_path: result
 
-The url ``https://api.araport.org/community/v0.4/json`` returns a sample JSON response:
+The url ``https://api.araport.org/community/v0.3/json`` returns a sample JSON response:
 
 .. code-block:: bash
 
-   $ curl https://api.araport.org/community/v0.4/json
+   $ curl https://api.araport.org/community/v0.3/json
    {
        "result": [
            {
