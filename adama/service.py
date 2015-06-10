@@ -1464,5 +1464,15 @@ def validate_swagger_request(srv, endpoint, req):
     except ValueError as exc:
         raise APIException(exc.message)
     d = multi_to_dict(sw_req.query, op.parameters)
-    params = {o.name: o._prim_(d[o.name]) for o in op.parameters}
+
+    def _optional_defaultless_not_given(spec_arg):
+        # True if an argument is optional with no default and it was not
+        # given in the request.
+        return (not spec_arg.required and
+                spec_arg.default is None and
+                spec_arg.name not in args)
+
+    params = {o.name: o._prim_(d[o.name])
+              for o in op.parameters
+              if not _optional_defaultless_not_given(o)}
     return params
