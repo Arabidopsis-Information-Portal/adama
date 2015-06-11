@@ -135,7 +135,8 @@ class QueueConnection(AbstractQueueConnection):
                 is_done = yield message
                 if is_done:
                     return
-            time.sleep(0.1)
+            else:
+                time.sleep(0.1)
 
     def consume_forever(self, callback, **kwargs):
         while True:
