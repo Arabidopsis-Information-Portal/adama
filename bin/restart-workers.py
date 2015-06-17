@@ -3,7 +3,7 @@
 import time
 
 import adama.command.tools as t
-import adama.service_store as s
+import adama.services as s
 
 
 def main():
