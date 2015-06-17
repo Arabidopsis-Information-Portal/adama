@@ -1,5 +1,5 @@
 [program:adama]
-command=uwsgi --socket 127.0.0.1:8080 -w adama.routes:app -p {{ wsgi_processes }} --buffer-size=32768
+command=uwsgi --socket 127.0.0.1:8080 -w adama.routes:app -p {{ wsgi_processes }} --buffer-size=32768 --stats /tmp/stats.socket
 autostart=true
 autorestart=true
 stopasgroup=true
