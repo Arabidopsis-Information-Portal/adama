@@ -118,7 +118,7 @@ class QueueConnection(AbstractQueueConnection):
                                        delivery_mode=2,
                                        reply_to=self.result_queue))
 
-    def receive(self):
+    def receive(self, max_wait=30):
         """Receive results from the queue.
 
         A generator returning objects from the queue. It will block if
@@ -127,15 +127,25 @@ class QueueConnection(AbstractQueueConnection):
         The end of the stream is marked by sending `True` back to the
         generator.
 
+        `max_wait` is the timeout to wait in between messages.
+
+        :type max_wait: int
         """
+        start = time.time()
         while True:
             (ok, props, message) = self.channel.basic_get(
                 self.result_queue, no_ack=True)
             if ok is not None:
+                start = time.time()
                 is_done = yield message
                 if is_done:
                     return
             else:
+                if time.time() - start > max_wait:
+                    raise TimeoutException(
+                        'result channel {} has been idle for more than '
+                        '{} seconds'.format(self.result_queue, max_wait))
+
                 time.sleep(0.1)
 
     def consume_forever(self, callback, **kwargs):
@@ -169,7 +179,12 @@ class QueueConnection(AbstractQueueConnection):
         callback(body, responder)
 
 
-class EmptyQueue(Exception): pass
+class TimeoutException(Exception):
+    pass
+
+
+class EmptyQueue(Exception):
+    pass
 
 
 class SimpleProducer(QueueConnection):
@@ -217,10 +232,10 @@ class Producer(QueueConnection):
 
         super(Producer, self).send(json.dumps(message))
 
-    def receive(self):
+    def receive(self, max_wait=30):
         """Receive messages until getting `END`."""
 
-        g = super(Producer, self).receive()
+        g = super(Producer, self).receive(max_wait=max_wait)
         first = True
         for message in g:
             if first:
