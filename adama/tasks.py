@@ -169,6 +169,41 @@ class QueueConnection(AbstractQueueConnection):
         callback(body, responder)
 
 
+class EmptyQueue(Exception): pass
+
+
+class SimpleProducer(QueueConnection):
+    """A client that sends a message to a channel and can receive a response.
+
+    Use as::
+
+     client = SimpleProducer(host, port, channel)
+     client.send(...)  # async
+     client.receive()
+
+    """
+
+    POLL_INTERVAL = 0.1  # seconds
+
+    def send(self, message):
+        """Send a dictionary as message."""
+
+        super(SimpleProducer, self).send(json.dumps(message))
+
+    def receive(self, timeout=None):
+        """Receive only one message."""
+
+        start = time.time()
+        while True:
+            (ok, props, message) = self.channel.basic_get(
+                queue=self.result_queue, no_ack=True)
+            if ok is not None:
+                return json.loads(message)
+            if timeout is not None and time.time() - start > timeout:
+                raise EmptyQueue
+            time.sleep(self.POLL_INTERVAL)
+
+
 class Producer(QueueConnection):
     """Send messages to the queue exchange and receive answers.
 
