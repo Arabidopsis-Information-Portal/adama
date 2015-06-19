@@ -20,6 +20,11 @@ logging.basicConfig()
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+def touch(fname):
+    with open(fname, 'a'):
+        os.utime(fname, None)
+
+
 class QueryWorker(QueueConnection):
 
     def callback(self, message, responder):
@@ -27,6 +32,7 @@ class QueryWorker(QueueConnection):
         _prov = None
         with Results(responder):
             try:
+                touch('/busy')
                 adama = self.operation(message, responder=responder)
                 _time = adama._time
                 _prov = adama._prov
@@ -37,6 +43,7 @@ class QueryWorker(QueueConnection):
                     'traceback': traceback.format_exc()
                 }))
             finally:
+                os.unlink('/busy')
                 print('END')
                 responder(json.dumps({'time_in_main': _time,
                                       'prov': _prov}))
@@ -94,6 +101,7 @@ class GenericWorker(QueueConnection):
 
     def callback(self, message, responder):
         try:
+            touch('/busy')
             content_type, body = self.operation(message, responder)
             responder(json.dumps({
                 'content_type': content_type,
@@ -105,6 +113,7 @@ class GenericWorker(QueueConnection):
                 'traceback': traceback.format_exc()
             }))
         finally:
+            os.unlink('/busy')
             responder('END')
             responder(json.dumps({}))
 
@@ -117,6 +126,7 @@ class ProcessWorker(QueueConnection):
 
     def callback(self, message, responder):
         try:
+            touch('/busy')
             d = json.loads(message)
             adama = Adama(d.get('_token'), d.get('_url'),
                           d.get('_queue_host'), d.get('_queue_port'),
@@ -137,6 +147,7 @@ class ProcessWorker(QueueConnection):
                 'traceback': traceback.format_exc()
             }))
         finally:
+            os.unlink('/busy')
             responder('END')
             responder(json.dumps({}))
 
