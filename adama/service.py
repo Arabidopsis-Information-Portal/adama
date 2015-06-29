@@ -112,6 +112,7 @@ class AbstractService(object):
         ('icon', False, ''),
         ('tags', False, []),
         ('metadata', False, METADATA_DEFAULT),
+        ('timeout', False, 30),
         # private fields (not to be displayed)
         ('_icon', False, None)
     ]
@@ -393,7 +394,8 @@ class Service(AbstractService):
         args['_queue_name'] = queue
         client = Producer(queue_host=qh, queue_port=qp, queue_name=queue)
         client.send(args)
-        gen = itertools.imap(json.dumps, client.receive())
+        gen = itertools.imap(json.dumps,
+                             client.receive(max_wait=self.timeout))
         header = next(gen)
         key = uuid.uuid4().hex
         header_json = json.loads(header)
@@ -484,7 +486,7 @@ class Service(AbstractService):
                           queue_port=Config.getint('queue', 'port'),
                           queue_name=queue)
         client.send(args)
-        result = client.receive()
+        result = client.receive(max_wait=self.timeout)
         header = next(result)
         print('header', header)
         response = list(result)
@@ -1022,7 +1024,7 @@ def process_by_client(service, results, headers):
         result['_store_host'] = Config.get('store', 'host')
         result['_store_port'] = Config.getint('store', 'port')
         client.send(result)
-        response = client.receive()
+        response = client.receive(max_wait=service.timeout)
         header = next(response)
         print('header', header)
         for obj in response:
