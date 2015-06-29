@@ -1,6 +1,7 @@
 import subprocess
 import textwrap
 import traceback
+import uuid
 
 from flask import url_for
 from flask.ext import restful
@@ -8,6 +9,7 @@ from adama.swagger import swagger
 
 from . import __version__, app
 from .config import Config
+from .stores import debug_store
 
 
 class APIException(Exception):
@@ -64,9 +66,14 @@ class MyApi(restful.Api):
                  'message': str(message)}, exc)
 
     def with_traceback(self, data, exc, code=500):
-        data['traceback'] = traceback.format_exc()
         data['exception'] = exc.__class__.__name__
-        return self.make_response(error(data), code)
+        response = self.make_response(error(data), code)
+        key = uuid.uuid4().hex
+        debug_store[key] = {'traceback': traceback.format_exc(),
+                            'exception': data['exception']}
+        response.headers['Link'] = '{}; rel="debug"'.format(
+            api_url_for('debug', uuid=key))
+        return response
 
 
 def ok(obj):
