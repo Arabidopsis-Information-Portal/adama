@@ -27,6 +27,7 @@ from .status import StatusResource
 from .stores import token_store
 from .tools import location_of, get_token
 from .provenance import ProvResource
+from .debug import DebugResource
 
 
 PREFIX = Config.get('server', 'prefix')
@@ -80,6 +81,9 @@ api.add_resource(IconResource,
 api.add_resource(StatsResource,
                  url('/<string:namespace>/<string:service>/stats'),
                  endpoint='stats')
+api.add_resource(DebugResource,
+                 url('/debug/<string:uuid>'),
+                 endpoint='debug')
 
 
 @app.route('/home')
