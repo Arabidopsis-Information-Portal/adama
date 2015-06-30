@@ -19,7 +19,7 @@ from .namespaces import NamespacesResource
 from .namespace import NamespaceResource
 from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
-                      ServiceListResource, ServiceHealthResource,
+                      ServiceListResource,
                       IconResource, StatsResource)
 from .passthrough import PassthroughServiceResource
 from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
@@ -28,6 +28,7 @@ from .stores import token_store
 from .tools import location_of, get_token
 from .provenance import ProvResource
 from .debug import DebugResource
+from .health import ServiceHealthResource
 
 
 PREFIX = Config.get('server', 'prefix')
@@ -62,7 +63,7 @@ api.add_resource(PassthroughServiceResource,
                      '<path:path>'),
                  endpoint='access')
 api.add_resource(ServiceHealthResource,
-                 url('/<string:namespace>/<string:service>/_health'),
+                 url('/<string:namespace>/<string:service>/health'),
                  endpoint='health')
 api.add_resource(ServiceDocsResource,
                  url('/<string:namespace>/<string:service>/docs'),
