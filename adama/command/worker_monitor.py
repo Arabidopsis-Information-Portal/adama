@@ -9,7 +9,7 @@ def is_up(cid):
     :type cid: str
     :rtype: bool
     """
-    client = docker.Client()
+    client = docker.Client(version='auto')
     try:
         info = client.inspect_container(cid)
     except docker.errors.APIError:
@@ -27,7 +27,7 @@ def is_ready(cid):
     """
     if not is_up(cid):
         return False
-    client = docker.Client()
+    client = docker.Client(version='auto')
     cat = client.exec_create(
         cid, ['cat', '/busy'], stdout=True, stderr=True)
     client.exec_start(cat['Id'])
