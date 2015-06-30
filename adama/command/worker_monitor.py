@@ -1,6 +1,8 @@
 import docker
 
+from ..config import Config
 from .tools import workers_of
+from ..tasks import QueueConnection
 
 
 def is_up(cid):
@@ -54,3 +56,16 @@ def workers_total(service_name):
     :rtype: int
     """
     return len(filter(is_up, workers_of(service_name)))
+
+
+def queue_size(service_name):
+    """Approximate size of queued messages directed to a service.
+
+    :type service_name: str
+    :rtype: int
+    """
+    queue = QueueConnection(
+        Config.get('queue', 'host'),
+        Config.getint('queue', 'port'),
+        service_name)
+    return queue.size()
