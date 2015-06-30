@@ -13,7 +13,7 @@ def tick(service, req, **kwargs):
 
     x_fwd = req.headers.get('X-Forwarded-For', None)
     remote_addr = req.remote_addr
-    user = g.user
+    user = getattr(g, 'user', 'anonymous')
     extra = kwargs
 
     val = stats_store.get(service.iden, [])
