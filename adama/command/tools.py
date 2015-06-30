@@ -19,6 +19,16 @@ def service(name):
     return srv_slot['service']
 
 
+def workers_of(name):
+    """Return the workers for service `name`.
+
+    :type name: str
+    :rtype: List[str]
+    """
+    srv = service(name)
+    return srv.workers
+
+
 def save_service(srv):
     srv_slot = service_store[srv.iden]
     srv_slot['service'] = srv
