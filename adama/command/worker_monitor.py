@@ -31,7 +31,7 @@ def workers_ready_for(service_name):
 
      `srv` is the full service name (namespace + service + version).
 
-    :type service: str
+    :type service_name: str
     :rtype: int
     """
     return len(filter(is_ready, workers_of(service_name)))
