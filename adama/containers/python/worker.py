@@ -21,8 +21,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def touch(fname):
-    with open(fname, 'a'):
-        os.utime(fname, None)
+    """Create a file `fname` with the local timestamp as content.
+
+    *Warning*: this is executed in a container, so make sure the timezone
+    correspond to the one of the host.
+
+    :type fname: str
+    :rtype: None
+    """
+    with open(fname, 'a') as f:
+        f.write(str(time.time()))
 
 
 class QueryWorker(QueueConnection):
