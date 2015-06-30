@@ -101,6 +101,17 @@ class QueueConnection(AbstractQueueConnection):
                     raise
                 time.sleep(0.5)
 
+    def size(self):
+        """Approximate size of the queue.
+
+        :rtype: int
+        """
+        result = self.channel.queue_declare(
+            queue=self.queue_name,
+            durable=True,
+            passive=True)
+        return result.method.message_count
+
     def send(self, message):
         """Send a message to the queue.
 
