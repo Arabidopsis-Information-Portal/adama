@@ -89,11 +89,52 @@ DOCS = {
                 }
             }
         }
+    },
+    '/health': {
+        'get': {
+            'summary': 'Service health',
+            'description': ('Get an estimation of the health of a service '
+                            'by counting available workers to process '
+                            'requests'),
+            'responses': {
+                '200': {
+                    'description': 'successful response',
+                    'schema': {
+                        '$ref': '#/definitions/Health'
+                    }
+                }
+            }
+        }
     }
 }
 
 
 DEFS = {
+    'Health': {
+        'properties': {
+            'status': {
+                'type': 'string',
+                'enum': ['success', 'error'],
+                'description': 'Status of response'
+            },
+            'total_workers': {
+                'type': 'integer',
+                'description': ('Total number of workers assigned to this '
+                                'service (higher is better)')
+            },
+            'workers_free': {
+                'type': 'integer',
+                'description': ('Number of workers ready to process requests '
+                                'for this service (higher is better)')
+            },
+            'queue_size': {
+                'type': 'integer',
+                'description': ('Number of queued requests for this service '
+                                'that have not been processed yet (lower '
+                                'is better)')
+            }
+        }
+    },
     'Stats': {
         'properties': {
             'status': {
