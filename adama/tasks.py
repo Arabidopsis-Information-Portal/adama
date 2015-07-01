@@ -145,7 +145,7 @@ class QueueConnection(AbstractQueueConnection):
         start = time.time()
         while True:
             (ok, props, message) = self.channel.basic_get(
-                self.result_queue, no_ack=True)
+                self.result_queue, no_ack=False)
             if ok is not None:
                 start = time.time()
                 is_done = yield message
@@ -165,7 +165,7 @@ class QueueConnection(AbstractQueueConnection):
                 self.channel.basic_qos(prefetch_count=1)
                 self.channel.basic_consume(partial(self.on_consume, callback),
                                            queue=self.queue_name,
-                                           no_ack=True,
+                                           no_ack=False,
                                            **kwargs)
                 self.channel.start_consuming()
             except pika.exceptions.ChannelClosed:
@@ -187,7 +187,10 @@ class QueueConnection(AbstractQueueConnection):
                              routing_key=props.reply_to,
                              body=result)
 
-        callback(body, responder)
+        try:
+            callback(body, responder)
+        finally:
+            ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
 class TimeoutException(Exception):
@@ -222,7 +225,7 @@ class SimpleProducer(QueueConnection):
         start = time.time()
         while True:
             (ok, props, message) = self.channel.basic_get(
-                queue=self.result_queue, no_ack=True)
+                queue=self.result_queue, no_ack=False)
             if ok is not None:
                 return json.loads(message)
             if timeout is not None and time.time() - start > timeout:
