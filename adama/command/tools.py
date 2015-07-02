@@ -101,7 +101,10 @@ def backup_code(destination):
     """Backup code for all the adapters in the service store"""
 
     for name in service_store:
-        srv = service(name)
+        try:
+            srv = service(name)
+        except KeyError:
+            continue
         if srv.type != 'passthrough':
             _backup_code(srv, destination)
 
