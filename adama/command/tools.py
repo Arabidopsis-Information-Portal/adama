@@ -16,7 +16,10 @@ def rebuild_service(name):
 
 def service(name):
     srv_slot = service_store[name]
-    return srv_slot['service']
+    srv = srv_slot['service']
+    if srv is None:
+        raise KeyError('service {} not found'.format(name))
+    return srv
 
 
 def workers_of(name):
