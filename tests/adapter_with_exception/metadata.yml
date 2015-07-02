@@ -1,0 +1,4 @@
+---
+name: adapter_with_exception
+type: query
+main_module: tests/adapter_with_exception/main.py
