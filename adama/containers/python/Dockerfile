@@ -2,7 +2,7 @@ FROM common
 
 RUN apt-get update
 RUN apt-get install -y python python-dev python-pip ipython
-RUN pip install pika redis
+RUN pip install pika redis pyzmq
 
 ADD worker.py /root/worker.py
 ADD tasks.py /root/tasks.py
