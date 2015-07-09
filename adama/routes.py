@@ -28,7 +28,7 @@ from .stores import token_store
 from .tools import location_of, get_token
 from .provenance import ProvResource
 from .debug import DebugResource
-from .health import ServiceHealthResource
+from .health import ServiceHealthResource, GeneralHealthResource
 
 
 PREFIX = Config.get('server', 'prefix')
@@ -45,6 +45,8 @@ api.add_resource(NamespacesResource, url('/namespaces'),
                  endpoint='namespaces')
 api.add_resource(StatusResource, url('/status'),
                  endpoint='status')
+api.add_resource(GeneralHealthResource, url('/health'),
+                 endpoint='general_health')
 api.add_resource(NamespaceResource, url('/<string:namespace>'),
                  endpoint='namespace')
 api.add_resource(ServicesResource, url('/<string:namespace>/services'),
