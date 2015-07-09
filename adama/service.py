@@ -70,7 +70,7 @@ ZIPS = ['.zip']
 
 # Timeout to wait for output of containers at start up, before
 # declaring them dead
-TIMEOUT = 3  # second
+TIMEOUT = 10  # second
 
 # Timout to wait while stopping workers
 STOP_TIMEOUT = 5
