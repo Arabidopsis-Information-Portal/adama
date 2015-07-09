@@ -10,9 +10,12 @@ import logging
 logging.basicConfig()
 
 import pika
+import zmq
 
 pika_logger = logging.getLogger('pika.adapters')
 pika_logger.setLevel(logging.CRITICAL)
+
+ctx = zmq.Context()
 
 
 class AbstractQueueConnection(object):
@@ -74,10 +77,13 @@ class AbstractQueueConnection(object):
 
 class QueueConnection(AbstractQueueConnection):
 
-    def __init__(self, queue_host, queue_port, queue_name):
+    def __init__(self,
+                 queue_host, queue_port, queue_name,
+                 result_ip='172.17.42.1'):
         self.queue_host = queue_host
         self.queue_port = queue_port
         self.queue_name = queue_name
+        self.result_ip = result_ip
         self.connect()
 
     def delete(self):
@@ -118,16 +124,18 @@ class QueueConnection(AbstractQueueConnection):
         Return immediately. Use `receive` to get the result.
 
         """
-        self.response = None
-        self.result = self.channel.queue_declare(exclusive=True)
-        self.result_queue = self.result.method.queue
+
+        self.socket = ctx.socket(zmq.PULL)
+        self.socket.bind('tcp://{}:*'.format(self.result_ip))
+        self.data_port = self.socket.getsockopt(zmq.LAST_ENDPOINT)
+
         self.channel.basic_publish(exchange='',
                                    routing_key=self.queue_name,
                                    body=message,
                                    properties=pika.BasicProperties(
                                        # make message persistent
                                        delivery_mode=2,
-                                       reply_to=self.result_queue))
+                                       reply_to=self.data_port))
 
     def receive(self, max_wait=30):
         """Receive results from the queue.
@@ -142,22 +150,19 @@ class QueueConnection(AbstractQueueConnection):
 
         :type max_wait: int
         """
-        start = time.time()
-        while True:
-            (ok, props, message) = self.channel.basic_get(
-                self.result_queue, no_ack=False)
-            if ok is not None:
-                start = time.time()
+
+        self.socket.setsockopt(zmq.RCVTIMEO, max_wait*1000)
+        try:
+            while True:
+                message = self.socket.recv()
                 is_done = yield message
                 if is_done:
+                    self.socket.close()
                     return
-            else:
-                if time.time() - start > max_wait:
-                    raise TimeoutException(
-                        'result channel {} has been idle for more than '
-                        '{} seconds'.format(self.result_queue, max_wait))
-
-                time.sleep(0.1)
+        except zmq.error.Again:
+            raise TimeoutException(
+                'result channel {} has been idle for more than '
+                '{} seconds'.format(self.data_port, max_wait))
 
     def consume_forever(self, callback, **kwargs):
         while True:
@@ -182,10 +187,11 @@ class QueueConnection(AbstractQueueConnection):
 
     def on_consume(self, callback, ch, method, props, body):
 
+        socket = ctx.socket(zmq.PUSH)
+        socket.connect(props.reply_to)
+
         def responder(result):
-            ch.basic_publish(exchange='',
-                             routing_key=props.reply_to,
-                             body=result)
+            socket.send(result)
 
         try:
             callback(body, responder)
