@@ -4,15 +4,15 @@ from flask import g
 from flask.ext import restful
 from werkzeug.datastructures import FileStorage
 
-from .stores import service_store
 from .requestparser import RequestParser
 from .tools import namespace_of
 from .service import (ServiceModel, register_code,
                       register_git_repository, post_notifier)
-from .stores import namespace_store
+from .stores import namespace_store, service_store
 from .api import APIException, ok, api_url_for
 from .swagger import swagger
 from .entity import get_permissions
+from .command.tools import service
 
 
 @swagger.model
@@ -312,3 +312,18 @@ class ServicesResource(restful.Resource):
                   if namespace_of(name) == namespace and
                   srv['service'] is not None]
         return ok({'result': result})
+
+
+def all_services():
+    """A generator returning all services.
+
+    :rtype: Generator[Service]
+
+    """
+    for name in service_store:
+        try:
+            yield service(name)
+        except KeyError:
+            pass
+
+
