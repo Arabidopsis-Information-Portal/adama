@@ -24,22 +24,22 @@ the following fields:
    formats are supported.
 
 ``sponsor_organization_name:``
-   Sponsor organization
+   (mandatory) Sponsor organization
 
 ``sponsor_uri:``
    (optional) Sponsor URI
 
 ``provider_name:``
-   Provider name
+   (mandatory) Provider name
 
 ``provider_email:``
-   Provider email
+   (optional) Provider email
 
 ``uri:``
-   Agent URI
+   (optional) Agent URI
 
 ``license:``
-   License
+   (optional) License
 
 ``sources:``
    (optional)  A list of nested sources containing the above fields (recursively
