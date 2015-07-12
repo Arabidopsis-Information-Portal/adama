@@ -1,7 +1,12 @@
 import json
+import time
 import uuid
 
 import rabbitpy
+
+
+class TimeoutException(Exception):
+    pass
 
 
 class Connection(object):
@@ -33,21 +38,31 @@ class Connection(object):
 
 class ChanIn(Connection):
 
+    POLL_FREQUENCY = 0.1  # seconds
+
     def __init__(self, uri=None, name=None):
         super(ChanIn, self).__init__(uri, name)
 
-    def get(self):
-        msg = self._queue.get()
-        if msg is not None:
-            msg.ack()
-            headers = msg.properties.get('headers') or {}
-            ch = headers.get('_channel')
-            if ch is None:
-                return json.loads(msg.body)
-            else:
-                uri = headers.get('_uri')
-                chan_type = headers.get('_chan_type', 'in')
-                return self._type(chan_type)(uri=uri, name=ch)
+    def get(self, timeout=float('inf')):
+        start = time.time()
+        while True:
+            msg = self._queue.get()
+            if msg is not None:
+                return self._process(msg)
+            if time.time() - start > timeout:
+                raise TimeoutException()
+            time.sleep(self.POLL_FREQUENCY)
+
+    def _process(self, msg):
+        msg.ack()
+        headers = msg.properties.get('headers') or {}
+        ch = headers.get('_channel')
+        if ch is None:
+            return json.loads(msg.body)
+        else:
+            uri = headers.get('_uri')
+            chan_type = headers.get('_chan_type', 'in')
+            return self._type(chan_type)(uri=uri, name=ch)
 
 
 class ChanOut(Connection):
