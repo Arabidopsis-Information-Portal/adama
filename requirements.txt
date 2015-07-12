@@ -60,6 +60,7 @@ pytest==2.5.2
 python-dateutil==2.2
 pytz==2015.2
 pyzmq==14.3.0
+rabbitpy==0.26.2
 redis==2.10.1
 requests==2.3.0
 serf-master==0.4
