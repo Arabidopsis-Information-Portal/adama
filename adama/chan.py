@@ -49,6 +49,10 @@ class AbstractConnection(object):
         """
         pass
 
+    def delete(self):
+        """Delete the queue in the broker. """
+        pass
+
     def get(self):
         """
         :rtype: Optional[Message[T]]
@@ -80,6 +84,12 @@ class RabbitConnection(AbstractConnection):
         self._queue = rabbitpy.Queue(self._ch, name)
         self._queue.durable = True
         self._queue.declare()
+
+    def close(self):
+        self._conn.close()
+
+    def delete(self):
+        self._queue.delete()
 
     def get(self):
         msg = self._queue.get()
@@ -145,6 +155,8 @@ class Channel(object):
         else:
             self._conn.put(Message({}, json.dumps(value)))
 
+    def close(self):
+        self._conn.delete()
 
 
 def test(a, b, c):
@@ -163,7 +175,6 @@ def test(a, b, c):
 
     c.put({'a': x, 'b': y})
 
-    d = Channel(a)
+    d = Channel(uri=a.uri)
     d.put(5)
     return d
-
