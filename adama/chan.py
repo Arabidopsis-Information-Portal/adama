@@ -82,6 +82,24 @@ class RabbitConnection(AbstractConnection):
         _msg.publish('', self._name)
 
 
+class ChannelEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, Channel):
+            return {
+                '__channel__': True,
+                'name': obj._name,
+                'uri': obj.uri
+            }
+        return super(ChannelEncoder, self).default(obj)
+
+
+def as_channel(dct):
+    if '__channel__' in dct:
+        return Channel(dct['name'], dct['uri'])
+    return dct
+
+
 class Channel(object):
 
     POLL_FREQUENCY = 0.1  # seconds
@@ -116,23 +134,11 @@ class Channel(object):
             time.sleep(self.POLL_FREQUENCY)
 
     def _process(self, msg):
-        ch = msg.headers.get('_channel')
-        if ch is None:
-            return json.loads(msg.body)
-        else:
-            uri = msg.headers.get('_uri')
-            return Channel(name=ch, uri=uri)
+        return json.loads(msg, object_hook=as_channel)
 
     def put(self, value):
         self._conn.connect()
-        if isinstance(value, Channel):
-            headers = {
-                '_channel': value._name,
-                '_uri': value._conn._uri
-            }
-            self._conn.put(Message(headers, ''))
-        else:
-            self._conn.put(Message({}, json.dumps(value)))
+        self._conn.put(json.dumps(value, cls=ChannelEncoder))
 
     def close(self):
         self._conn.delete()
