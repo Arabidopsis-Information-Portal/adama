@@ -14,9 +14,13 @@ class Connection(object):
     def __init__(self, uri, name):
         self._uri = uri
         self._name = name or uuid.uuid4().hex
+        self._conn = None
         self._connect()
 
     def _connect(self):
+        if self._conn is not None and self._conn._io.isAlive():
+            return
+
         self._conn = rabbitpy.Connection(self._uri)
         self._ch = self._conn.channel()
         self._queue = rabbitpy.Queue(self._ch, self._name)
@@ -44,6 +48,7 @@ class ChanIn(Connection):
         super(ChanIn, self).__init__(uri, name)
 
     def get(self, timeout=float('inf')):
+        self._connect()
         start = time.time()
         while True:
             msg = self._queue.get()
@@ -71,6 +76,7 @@ class ChanOut(Connection):
         super(ChanOut, self).__init__(uri, name)
 
     def put(self, value):
+        self._connect()
         if isinstance(value, (ChanIn, ChanOut)):
             headers = {
                 '_channel': value._name,
