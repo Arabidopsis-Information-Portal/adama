@@ -47,16 +47,18 @@ class AbstractConnection(object):
 
 class RabbitConnection(AbstractConnection):
 
+    _conn = None
+
     def __init__(self, uri):
         self._uri = uri or 'ampq://127.0.0.1:5672'
-        self._conn = None
+        self._ch = None
 
     def connect(self):
-        if self._conn is not None and self._conn._io.is_alive():
-            return
+        if self._conn is None or not self._conn._io.is_alive():
+            RabbitConnection._conn = rabbitpy.Connection(self._uri)
 
-        self._conn = rabbitpy.Connection(self._uri)
-        self._ch = self._conn.channel()
+        if self._ch is None or self._ch.closed:
+            self._ch = self._conn.channel()
 
     def setup(self, name):
         self._name = name
@@ -65,7 +67,7 @@ class RabbitConnection(AbstractConnection):
         self._queue.declare()
 
     def close(self):
-        self._conn.close()
+        self._ch.close()
 
     def delete(self):
         self._queue.delete()
