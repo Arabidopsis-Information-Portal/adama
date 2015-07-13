@@ -146,12 +146,6 @@ class Channel(object):
             self._conn.put(Message({}, json.dumps(value)))
 
 
-class RabbitChannel(Channel):
-
-    def __init__(self, name=None, uri=None):
-        conn = RabbitConnection(uri)
-        super(RabbitChannel, self).__init__(name, conn)
-
 
 def test(a, b, c):
     """
