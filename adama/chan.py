@@ -9,40 +9,117 @@ class TimeoutException(Exception):
     pass
 
 
-class Channel(object):
+class Message(object):
 
-    POLL_FREQUENCY = 0.1  # seconds
+    def __init__(self, headers, body):
+        self._headers = headers
+        self._body = body
 
-    def __init__(self, uri=None, name=None):
-        if isinstance(uri, Channel):
-            self._uri = uri._uri
-        else:
-            self._uri = uri or 'ampq://127.0.0.1:5672'
-        self._name = name or uuid.uuid4().hex
+    @property
+    def body(self):
+        """
+        :rtype: T
+        """
+        return self._body
+
+    @property
+    def headers(self):
+        """
+        :rtype: Dict[str, Any]
+        """
+        return self._headers
+
+
+class AbstractConnection(object):
+
+    def connect(self):
+        """Connect to the message broker.
+
+        This method should be idempotent.
+        """
+        pass
+
+    def close(self):
+        pass
+
+    def setup(self, name):
+        """Setup a queue ``name`` in the broker.
+
+        :type name: str
+        """
+        pass
+
+    def get(self):
+        """
+        :rtype: Optional[Message[T]]
+        """
+        pass
+
+    def put(self, msg):
+        """
+        :type msg: Message[T]
+        """
+        pass
+
+
+class RabbitConnection(AbstractConnection):
+
+    def __init__(self, uri):
+        self._uri = uri or 'ampq://127.0.0.1:5672'
         self._conn = None
-        self._connect()
 
-    def _connect(self):
-        if self._conn is not None and self._conn._io.isAlive():
+    def connect(self):
+        if self._conn is not None and self._conn._io.is_alive():
             return
 
         self._conn = rabbitpy.Connection(self._uri)
         self._ch = self._conn.channel()
-        self._queue = rabbitpy.Queue(self._ch, self._name)
+
+    def setup(self, name):
+        self._name = name
+        self._queue = rabbitpy.Queue(self._ch, name)
         self._queue.durable = True
         self._queue.declare()
+
+    def get(self):
+        msg = self._queue.get()
+        if msg is None:
+            return None
+        msg.ack()
+        return Message(msg.properties['headers'] or {}, msg.body)
+
+    def put(self, msg):
+        _msg = rabbitpy.Message(self._ch, msg.body, {'headers': msg.headers})
+        _msg.publish('', self._name)
+
+
+class Channel(object):
+
+    POLL_FREQUENCY = 0.1  # seconds
+
+    def __init__(self, name=None, connection=None):
+        if isinstance(name, Channel):
+            # if name is another Channel, reuse its connection
+            self._conn = name._conn
+        else:
+            self._conn = connection
+
+        self._name = name or uuid.uuid4().hex
+        self._conn.connect()
+        self._conn.setup(self._name)
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        del exc_type, exc_val, exc_tb
         self._conn.close()
 
     def get(self, timeout=float('inf')):
-        self._connect()
+        self._conn.connect()
         start = time.time()
         while True:
-            msg = self._queue.get()
+            msg = self._conn.get()
             if msg is not None:
                 return self._process(msg)
             if time.time() - start > timeout:
@@ -50,26 +127,31 @@ class Channel(object):
             time.sleep(self.POLL_FREQUENCY)
 
     def _process(self, msg):
-        msg.ack()
-        headers = msg.properties.get('headers') or {}
-        ch = headers.get('_channel')
+        ch = msg.headers.get('_channel')
         if ch is None:
             return json.loads(msg.body)
         else:
-            uri = headers.get('_uri')
-            return Channel(uri=uri, name=ch)
+            uri = msg.headers.get('_uri')
+            conn = RabbitConnection(uri)
+            return Channel(name=ch, connection=conn)
 
     def put(self, value):
-        self._connect()
+        self._conn.connect()
         if isinstance(value, Channel):
             headers = {
                 '_channel': value._name,
-                '_uri': value._uri
+                '_uri': value._conn._uri
             }
-            msg = rabbitpy.Message(self._ch, '', {'headers': headers})
+            self._conn.put(Message(headers, ''))
         else:
-            msg = rabbitpy.Message(self._ch, json.dumps(value), {})
-        msg.publish('', self._name)
+            self._conn.put(Message({}, json.dumps(value)))
+
+
+class RabbitChannel(Channel):
+
+    def __init__(self, name=None, uri=None):
+        conn = RabbitConnection(uri)
+        super(RabbitChannel, self).__init__(name, conn)
 
 
 def test(a, b, c):
