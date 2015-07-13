@@ -9,10 +9,15 @@ class TimeoutException(Exception):
     pass
 
 
-class Connection(object):
+class Channel(object):
 
-    def __init__(self, uri, name):
-        self._uri = uri
+    POLL_FREQUENCY = 0.1  # seconds
+
+    def __init__(self, uri=None, name=None):
+        if isinstance(uri, Channel):
+            self._uri = uri._uri
+        else:
+            self._uri = uri or 'ampq://127.0.0.1:5672'
         self._name = name or uuid.uuid4().hex
         self._conn = None
         self._connect()
@@ -27,25 +32,11 @@ class Connection(object):
         self._queue.durable = True
         self._queue.declare()
 
-    def _type(self, ch_type):
-        return {
-            'in': ChanIn,
-            'out': ChanOut
-        }[ch_type]
-
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._conn.close()
-
-
-class ChanIn(Connection):
-
-    POLL_FREQUENCY = 0.1  # seconds
-
-    def __init__(self, uri=None, name=None):
-        super(ChanIn, self).__init__(uri, name)
 
     def get(self, timeout=float('inf')):
         self._connect()
@@ -66,22 +57,14 @@ class ChanIn(Connection):
             return json.loads(msg.body)
         else:
             uri = headers.get('_uri')
-            chan_type = headers.get('_chan_type', 'in')
-            return self._type(chan_type)(uri=uri, name=ch)
-
-
-class ChanOut(Connection):
-
-    def __init__(self, uri=None, name=None):
-        super(ChanOut, self).__init__(uri, name)
+            return Channel(uri=uri, name=ch)
 
     def put(self, value):
         self._connect()
-        if isinstance(value, (ChanIn, ChanOut)):
+        if isinstance(value, Channel):
             headers = {
                 '_channel': value._name,
-                '_uri': value._uri,
-                '_chan_type': 'in' if isinstance(value, ChanIn) else 'out'
+                '_uri': value._uri
             }
             msg = rabbitpy.Message(self._ch, '', {'headers': headers})
         else:
@@ -101,11 +84,11 @@ def test(a, b, c):
     assert isinstance(x, int)
 
     y = b.get()
-    assert isinstance(y, str)
+    assert isinstance(y, basestring)
 
     c.put({'a': x, 'b': y})
 
-    d = ChanOut()
+    d = Channel(a)
     d.put(5)
     return d
 
