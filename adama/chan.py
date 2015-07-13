@@ -97,14 +97,14 @@ class Channel(object):
 
     POLL_FREQUENCY = 0.1  # seconds
 
-    def __init__(self, name=None, connection=None):
-        if isinstance(name, Channel):
-            # if name is another Channel, reuse its connection
-            self._conn = name._conn
-        else:
-            self._conn = connection
-
+    def __init__(self, name=None, uri=None):
+        """
+        :type name: str
+        :type uri: str
+        """
+        self.uri = uri
         self._name = name or uuid.uuid4().hex
+        self._conn = RabbitConnection(uri)
         self._conn.connect()
         self._conn.setup(self._name)
 
@@ -132,8 +132,7 @@ class Channel(object):
             return json.loads(msg.body)
         else:
             uri = msg.headers.get('_uri')
-            conn = RabbitConnection(uri)
-            return Channel(name=ch, connection=conn)
+            return Channel(name=ch, uri=uri)
 
     def put(self, value):
         self._conn.connect()
