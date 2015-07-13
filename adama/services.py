@@ -6,8 +6,7 @@ from werkzeug.datastructures import FileStorage
 
 from .requestparser import RequestParser
 from .tools import namespace_of
-from .service import (ServiceModel, register_code,
-                      register_git_repository, post_notifier)
+from .service import ServiceModel, start_registration
 from .stores import namespace_store, service_store
 from .api import APIException, ok, api_url_for
 from .swagger import swagger
@@ -230,30 +229,39 @@ class ServicesResource(restful.Resource):
                 'cannot have code and git repository at '
                 'the same time')
 
-        if 'code' in args or args.get('type') == 'passthrough':
-            service = register_code(args, namespace, post_notifier)
-        elif 'git_repository' in args:
-            service = register_git_repository(args, namespace, post_notifier)
-        else:
-            raise APIException(
-                'no code or git repository specified')
-
-        result = {
-            'state_url': api_url_for(
-                'service',
-                namespace=service.namespace,
-                service=service.adapter_name),
-            'notification': service.notify
-        }
-        for endpoint in service.endpoint_names():
-            result[endpoint+'_url'] = api_url_for(
-                endpoint,
-                namespace=service.namespace,
-                service=service.adapter_name)
+        reg_id = start_registration(args, namespace)
         return ok({
             'message': 'registration started',
-            'result': result
+            'state': api_url_for(
+                'registration_state',
+                namespace=namespace,
+                reg_id=reg_id)
         })
+
+        # if 'code' in args or args.get('type') == 'passthrough':
+        #     service = register_code(args, namespace, post_notifier)
+        # elif 'git_repository' in args:
+        #     service = register_git_repository(args, namespace, post_notifier)
+        # else:
+        #     raise APIException(
+        #         'no code or git repository specified')
+        #
+        # result = {
+        #     'state_url': api_url_for(
+        #         'service',
+        #         namespace=service.namespace,
+        #         service=service.adapter_name),
+        #     'notification': service.notify
+        # }
+        # for endpoint in service.endpoint_names():
+        #     result[endpoint+'_url'] = api_url_for(
+        #         endpoint,
+        #         namespace=service.namespace,
+        #         service=service.adapter_name)
+        # return ok({
+        #     'message': 'registration started',
+        #     'result': result
+        # })
 
     @staticmethod
     def validate_post():

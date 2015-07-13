@@ -47,6 +47,7 @@ from .tools import chdir, get_token
 from .entity import get_permissions
 from .parameters import fix_metadata, metadata_to_swagger
 from .stats import tick, get_total_access, get_unique_access, get_users
+from .channel import AChannel, TimeoutException
 
 
 LANGUAGES = {
@@ -1310,6 +1311,31 @@ def _register(service, notifier=None):
 
     if service.notify and notifier is not None:
         notifier(service.notify, result, data)
+
+
+def start_registration(args, namespace, timeout=10):
+    """Send a message to the image builder.
+
+    Return an id to request status of the registration procedure.
+
+    :type args: Dict[str, Any]
+    :type namespace: str
+    :rtype: str
+    """
+    c = AChannel(name='image_builder')
+    result = AChannel()
+    c.put({
+        'args': args,
+        'namespace': namespace,
+        'reply_to': result
+    })
+    try:
+        return result.get(timeout=timeout)
+    except TimeoutException:
+        raise APIException(
+            "couldn't start registration procedure after {} seconds"
+            .format(timeout),
+            code=500)
 
 
 def post_notifier(url, result, data):
