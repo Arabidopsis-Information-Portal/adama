@@ -9,27 +9,6 @@ class TimeoutException(Exception):
     pass
 
 
-class Message(object):
-
-    def __init__(self, headers, body):
-        self._headers = headers
-        self._body = body
-
-    @property
-    def body(self):
-        """
-        :rtype: T
-        """
-        return self._body
-
-    @property
-    def headers(self):
-        """
-        :rtype: Dict[str, Any]
-        """
-        return self._headers
-
-
 class AbstractConnection(object):
 
     def connect(self):
@@ -55,13 +34,13 @@ class AbstractConnection(object):
 
     def get(self):
         """
-        :rtype: Optional[Message[T]]
+        :rtype: Optional[T]
         """
         pass
 
     def put(self, msg):
         """
-        :type msg: Message[T]
+        :type msg: T
         """
         pass
 
@@ -96,10 +75,10 @@ class RabbitConnection(AbstractConnection):
         if msg is None:
             return None
         msg.ack()
-        return Message(msg.properties['headers'] or {}, msg.body)
+        return msg.body
 
     def put(self, msg):
-        _msg = rabbitpy.Message(self._ch, msg.body, {'headers': msg.headers})
+        _msg = rabbitpy.Message(self._ch, msg, {})
         _msg.publish('', self._name)
 
 
