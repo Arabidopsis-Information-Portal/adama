@@ -1,5 +1,5 @@
 from .config import Config
-from .chan import Channel, TimeoutException
+from channelpy import Channel
 
 
 class AChannel(Channel):
