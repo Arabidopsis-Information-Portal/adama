@@ -30,6 +30,7 @@ from werkzeug.datastructures import FileStorage
 import pyswagger
 import pyswagger.getter
 from PIL import Image
+from channelpy import ChannelTimeoutException
 
 from . import app
 from .requestparser import RequestParser
@@ -47,7 +48,7 @@ from .tools import chdir, get_token
 from .entity import get_permissions
 from .parameters import fix_metadata, metadata_to_swagger
 from .stats import tick, get_total_access, get_unique_access, get_users
-from .channel import AChannel, TimeoutException
+from .channel import AChannel
 
 
 LANGUAGES = {
@@ -1331,7 +1332,7 @@ def start_registration(args, namespace, timeout=10):
     })
     try:
         return result.get(timeout=timeout)
-    except TimeoutException:
+    except ChannelTimeoutException:
         raise APIException(
             "couldn't start registration procedure after {} seconds"
             .format(timeout),
