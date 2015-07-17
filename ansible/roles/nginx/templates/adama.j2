@@ -1,6 +1,7 @@
 server {
         listen 80;
         server_name {{ nginx_server_name }};
+        client_max_body_size 200M;
         location {{ swagger_ui_location }} {
             proxy_pass http://localhost:9000/;
         }
@@ -16,6 +17,7 @@ server {
 server {
         listen 443;
         server_name {{ nginx_server_name }};
+        client_max_body_size 200M;
 
         ssl on;
         ssl_certificate /etc/nginx/certs/server.crt;
