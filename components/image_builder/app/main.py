@@ -2,7 +2,7 @@
 
 import os
 
-from channelpy import Channel
+from channelpy import Channel, RabbitConnection
 
 
 URI = 'amqp://rabbit:5672'
@@ -16,7 +16,9 @@ def error(msg, ch):
 
 
 def main():
-    with Channel(name='image_builder', uri=URI, persist=True) as listen:
+    with Channel(name='image_builder', persist=True,
+                 connection_type=RabbitConnection,
+                 uri=URI) as listen:
         while True:
             job = listen.get()
 
