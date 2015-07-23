@@ -1324,14 +1324,12 @@ def start_registration(args, namespace, timeout=10):
     :rtype: str
     """
     c = AChannel(name='image_builder')
-    result = AChannel()
-    c.put({
-        'args': args,
-        'namespace': namespace,
-        'reply_to': result
-    })
     try:
-        return result.get(timeout=timeout)
+        response = c.put_sync({
+            'args': args,
+            'namespace': namespace,
+        })
+        if response['status']
     except ChannelTimeoutException:
         raise APIException(
             "couldn't start registration procedure after {} seconds"
