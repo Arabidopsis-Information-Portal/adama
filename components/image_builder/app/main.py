@@ -9,6 +9,11 @@ URI = 'amqp://rabbit:5672'
 
 
 def error(msg, code, ch):
+    """
+    :type msg: Any
+    :type code: int
+    :type ch: Channel
+    """
     ch.put({
         'status': 'error',
         'message': msg,
@@ -24,8 +29,8 @@ def main():
             job = listen.get()
             with job['reply_to'] as reply_to:
                 try:
-                    args = job['args']
-                    namespace = job['namespace']
+                    args = job['value']['args']
+                    namespace = job['value']['namespace']
                 except KeyError:
                     error("missing 'args' and/or 'namespace': {}".format(job),
                           400, reply_to)
