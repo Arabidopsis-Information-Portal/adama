@@ -3,9 +3,17 @@ imagebuilder:
   dockerfile: docker/image_builder/Dockerfile
   links:
     - rabbit
+    - redis
+  command: python image_builder.py
 
 rabbit:
   image: rabbitmq:3-management
   ports:
-    - "5672:5672"
-    - "15672:15672"
+    - "5673:5672"
+    - "15673:15672"
+
+redis:
+  image: redis
+  ports:
+    - "6379:6379"
+  command: redis-server --appendonly yes

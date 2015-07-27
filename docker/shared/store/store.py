@@ -1,5 +1,5 @@
 import collections
-import cPickle
+import json
 
 import redis
 
@@ -13,11 +13,11 @@ class Store(collections.MutableMapping):
         obj = self._db.get(key)
         if obj is None:
             raise KeyError('"{}" not found'.format(key))
-        return cPickle.loads(obj)
+        return json.loads(obj.decode('utf-8'))
 
     def __setitem__(self, key, value):
-        obj = cPickle.dumps(value)
-        self._db.set(key, obj)
+        obj = json.dumps(value)
+        self._db.set(key, obj.encode('utf-8'))
 
     def __delitem__(self, key):
         self._db.delete(key)

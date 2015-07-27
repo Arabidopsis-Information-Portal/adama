@@ -1,4 +1,4 @@
-import adama.stores as s
+import store as s
 
 
 def main():
