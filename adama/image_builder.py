@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 import os
+import uuid
 
 from channelpy import Channel, RabbitConnection
+
+from adama.stores import registration_store
 
 
 URI = 'amqp://rabbit:5672'
@@ -21,6 +24,18 @@ def error(msg, code, ch):
     })
 
 
+def handle(guid, args, namespace):
+    """
+    :type guid: str
+    :type args: Dict
+    :type namespace: str
+    """
+    registration_store[guid] = {
+        'status': 'starting'
+    }
+    spawn()
+
+
 def main():
     with Channel(name='image_builder', persist=False,
                  connection_type=RabbitConnection,
@@ -36,9 +51,13 @@ def main():
                           400, reply_to)
                     continue
 
-                reply_to.put(
-                    '[{}] will process {} and {}'
-                        .format(os.getpid(), args, namespace))
+                guid = uuid.uuid4().hex
+                handle(guid, args, namespace)
+
+                reply_to.put({
+                    'message': guid,
+                    'status': 'ok'
+                })
 
 
 if __name__ == '__main__':

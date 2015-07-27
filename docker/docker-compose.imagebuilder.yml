@@ -1,5 +1,6 @@
 imagebuilder:
-  build: .
+  build: ..
+  dockerfile: docker/Dockerfile.imagebuilder
   links:
     - rabbit
 

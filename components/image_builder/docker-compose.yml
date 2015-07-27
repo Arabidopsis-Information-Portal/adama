@@ -1,4 +1,0 @@
-imagebuilder:
-  build: .
-  extra_hosts:
-    - "rabbit:192.168.35.10"
