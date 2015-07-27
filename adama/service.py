@@ -1329,7 +1329,10 @@ def start_registration(args, namespace, timeout=10):
             'args': args,
             'namespace': namespace,
         })
-        if response['status']
+        if response['status'] != 'ok':
+            raise APIException(response['message'],
+                               response['code'])
+        return response['message']
     except ChannelTimeoutException:
         raise APIException(
             "couldn't start registration procedure after {} seconds"
