@@ -274,7 +274,7 @@ class Service(AbstractService):
             return EXTENSIONS[ext]
         except KeyError:
             raise APIException('unknown extension {0}'.format(ext), 400)
-
+    
     def validate_whitelist(self):
         """Make sure ip's and domain name can be resolved."""
 

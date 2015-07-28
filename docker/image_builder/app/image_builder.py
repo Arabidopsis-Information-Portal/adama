@@ -74,6 +74,23 @@ def do_register(args, namespace):
     return service
 
 
+def register_code(args, namespace):
+    """
+    :type args: Dict
+    :type namespace: str
+    """
+    user_code = None
+    if args.get('code', None):
+        filename = args['code']['filename']
+        code = args['code']['file']
+        tempdir = tempfile.mkdtemp()
+        user_code = extract(filename, args.code, tempdir)
+    return register(Service, args, namespace, user_code, notifier)
+
+    
+    
+
+
 def main():
     with Channel(name='image_builder', persist=False,
                  connection_type=RabbitConnection,

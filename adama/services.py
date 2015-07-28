@@ -290,6 +290,14 @@ class ServicesResource(restful.Resource):
             if value is None:
                 del args[key]
 
+        if 'code' in args:
+            filename = args.code.filename
+            code = args.code.stream.read()
+            args['code'] = {
+                'file': code,
+                'filename': filename
+            }
+            
         return args
 
     @swagger.operation(
