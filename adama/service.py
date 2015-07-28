@@ -1441,10 +1441,17 @@ def multi_to_dict(md, parameters):
     for k, v in md:
         if param_dict[k].type == 'array':
             d.setdefault(k, []).append(v)
+        elif param_dict[k].type == 'boolean':
+            d[k] = v == 'True'
         else:
             d[k] = v
     return d
 
+def to_bool(arg):
+    if arg.lower() in ('true', 'yes'):
+        return True
+    else:
+        return ''
 
 def validate_swagger_request(srv, endpoint, req):
     sw = get_swagger(srv)
@@ -1459,6 +1466,8 @@ def validate_swagger_request(srv, endpoint, req):
         if param.type != 'array':
             try:
                 args[param.name] = args[param.name][0]
+                if param.type == 'boolean':
+                    args[param.name] = to_bool(args[param.name])
             except (KeyError, IndexError):
                 pass
     try:
