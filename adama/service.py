@@ -1325,6 +1325,10 @@ def start_registration(args, namespace, timeout=10):
     """
     c = AChannel(name='image_builder')
     try:
+        args['user'] = g.user
+    except RuntimeError:
+        args['user'] = 'anonymous'
+    try:
         response = c.put_sync({
             'args': args,
             'namespace': namespace,

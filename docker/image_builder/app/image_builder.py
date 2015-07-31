@@ -4,6 +4,8 @@ import os
 import uuid
 import threading
 from traceback import format_exc
+import zipfile
+import tarfile
 
 from channelpy import Channel, RabbitConnection
 
@@ -70,7 +72,7 @@ def do_register(args, namespace):
     elif 'git_repository' in args:
         service = register_git_repository(args, namespace)
     else:
-        raise APIException('no code or git repository specified')
+        raise Exception('no code or git repository specified')
     return service
 
 
@@ -84,13 +86,62 @@ def register_code(args, namespace):
         filename = args['code']['filename']
         code = args['code']['file']
         tempdir = tempfile.mkdtemp()
-        user_code = extract(filename, args.code, tempdir)
-    return register(Service, args, namespace, user_code, notifier)
+        user_code = extract(filename, code, tempdir)
+    return register(args, namespace, user_code)
 
     
+def register(args, namespace, user_code):
+    """
+    :type args: Dict
+    :type namespace: str
+    :type user_code: 
+    """
+
+def extract(filename, code, into):
+    """Extract code from string ``code``.
+
+    ``filename`` is the name of the uploaded file.  Extract the code
+    in directory ``into``.
+
+    Return the directory where the user code is extracted (may differ from
+    the original ``into``).
+
+    """
+
+    _, ext = os.path.splitext(filename)
+    user_code_dir = os.path.join(into, 'user_code')
+    os.mkdir(user_code_dir)
+    contents = code
+
+    if ext in ZIPS:
+        # it's a zip file
+        zip_file = os.path.join(into, 'contents.zip')
+        with open(zip_file, 'w') as f:
+            f.write(contents)
+        zipball = zipfile.ZipFile(zip_file)
+        zipball.extractall(user_code_dir)
+
+    elif ext in TARBALLS:
+        # it's a tarball
+        tarball = os.path.join(into, 'contents.tgz')
+        with open(tarball, 'w') as f:
+            f.write(contents)
+        tar = tarfile.open(tarball)
+        tar.extractall(user_code_dir)
+
+    elif ext in EXTENSIONS.keys():
+        # it's a module
+        module = os.path.join(user_code_dir, filename)
+        with open(module, 'w') as f:
+            f.write(contents)
+
+    else:
+        raise Exception(
+            'unknown extension: {0}'.format(filename), 400)
+
+    return user_code_dir
+
     
-
-
 def main():
     with Channel(name='image_builder', persist=False,
                  connection_type=RabbitConnection,
