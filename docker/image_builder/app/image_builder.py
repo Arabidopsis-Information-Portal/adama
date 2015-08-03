@@ -6,6 +6,7 @@ import threading
 from traceback import format_exc
 import zipfile
 import tarfile
+import tempfile
 
 from channelpy import Channel, RabbitConnection
 
@@ -17,10 +18,24 @@ REGISTRATION_STORE = Store(
     port=int(os.environ.get('REDIS_PORT_6379_TCP_PORT', 6379)),
     db=9
 )
+SERVICE_STORE = Store(
+    host=os.environ.get('REDIS_PORT_6379_TCP_ADDR', '172.17.42.1'),
+    port=int(os.environ.get('REDIS_PORT_6379_TCP_PORT', 6379)),
+    db=2
+)
 RABBIT_URI = 'amqp://{}:{}'.format(
     os.environ.get('RABBIT_PORT_5672_TCP_ADDR', '172.17.42.1'),
     os.environ.get('RABBIT_PORT_5672_TCP_PORT', 5672)
 )
+EXTENSIONS = {
+    '.py': 'python',
+    '.js': 'javascript',
+    '.rb': 'ruby',
+    '.jar': 'java',
+    '.lua': 'lua'
+}
+TARBALLS = ['.tar', '.gz', '.tgz']
+ZIPS = ['.zip']
 
 
 def error(msg, code, ch):
@@ -96,6 +111,7 @@ def register(args, namespace, user_code):
     :type namespace: str
     :type user_code: 
     """
+    
 
 def extract(filename, code, into):
     """Extract code from string ``code``.
@@ -110,13 +126,13 @@ def extract(filename, code, into):
 
     _, ext = os.path.splitext(filename)
     user_code_dir = os.path.join(into, 'user_code')
-    os.mkdir(user_code_dir)
+    os.makedirs(user_code_dir, exist_ok=True)
     contents = code
 
     if ext in ZIPS:
         # it's a zip file
         zip_file = os.path.join(into, 'contents.zip')
-        with open(zip_file, 'w') as f:
+        with open(zip_file, 'wb') as f:
             f.write(contents)
         zipball = zipfile.ZipFile(zip_file)
         zipball.extractall(user_code_dir)
@@ -124,7 +140,7 @@ def extract(filename, code, into):
     elif ext in TARBALLS:
         # it's a tarball
         tarball = os.path.join(into, 'contents.tgz')
-        with open(tarball, 'w') as f:
+        with open(tarball, 'wb') as f:
             f.write(contents)
         tar = tarfile.open(tarball)
         tar.extractall(user_code_dir)

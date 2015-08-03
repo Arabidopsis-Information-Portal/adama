@@ -298,6 +298,7 @@ class ServicesResource(restful.Resource):
                 'filename': filename
             }
             
+        args['user'] = g.user
         return args
 
     @swagger.operation(
