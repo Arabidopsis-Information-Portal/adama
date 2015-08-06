@@ -267,23 +267,14 @@ class ServicesResource(restful.Resource):
     @staticmethod
     def validate_post():
         parser = RequestParser()
-        parser.add_argument('name', type=str)
-        parser.add_argument('type', type=str)
-        parser.add_argument('version', type=str)
-        parser.add_argument('url', type=str)
-        parser.add_argument('whitelist', type=str, action='append')
-        parser.add_argument('description', type=str)
-        parser.add_argument('requirements', type=str, action='append')
-        parser.add_argument('notify', type=str)
-        parser.add_argument('json_path', type=str)
-        parser.add_argument('main_module', type=str)
-        # The following two options are exclusive
-        parser.add_argument('code', type=FileStorage, location='files')
-        parser.add_argument('git_repository', type=str),
-        parser.add_argument('git_branch', type=str),
-        parser.add_argument('icon', type=str),
-        parser.add_argument('validate_request', type=bool),
-        parser.add_argument('metadata', type=str)
+        parser.add_argument('name', type=str, required=True)
+        parser.add_argument('version', type=str, required=False)
+        parser.add_argument('notify', type=str, required=False)
+        parser.add_argument('code', type=FileStorage, location='files',
+                            required=False)
+        parser.add_argument('git_repository', type=str, required=False),
+        parser.add_argument('git_branch', type=str, required=False),
+        parser.add_argument('metadata_directory', type=str, required=False)
 
         args = parser.parse_args()
 
