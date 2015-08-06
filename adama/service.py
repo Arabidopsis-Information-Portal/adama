@@ -1333,7 +1333,7 @@ def start_registration(args, namespace, timeout=10):
             'args': args,
             'namespace': namespace,
         })
-        if response['status'] != 'ok':
+        if response['status'] != 'success':
             raise APIException(response['message'],
                                response['code'])
         return response['message']

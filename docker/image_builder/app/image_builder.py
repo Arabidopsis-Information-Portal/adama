@@ -184,7 +184,7 @@ def process(job):
         guid = uuid.uuid4().hex
         reply_to.put({
             'message': guid,
-            'status': 'ok'
+            'status': 'success'
         })
         start_registration(guid, args, namespace)
 
