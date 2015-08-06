@@ -4,9 +4,9 @@ imagebuilder:
   links:
     - rabbit
     - redis
-  command: sh -c "ipython notebook --no-browser --port 8888 --ip=*"
+  command: /adama/docker/image_builder/app/notebook.sh
   volumes:
-    - ".:/local"
+    - "..:/local"
   ports:
     - "9999:8888"
   working_dir: /local
