@@ -1314,7 +1314,7 @@ def _register(service, notifier=None):
         notifier(service.notify, result, data)
 
 
-def start_registration(args, namespace, timeout=10):
+def start_registration(args, timeout=10):
     """Send a message to the image builder.
 
     Return an id to request status of the registration procedure.
@@ -1323,25 +1323,24 @@ def start_registration(args, namespace, timeout=10):
     :type namespace: str
     :rtype: str
     """
-    c = AChannel(name='image_builder')
-    try:
-        args['user'] = g.user
-    except RuntimeError:
-        args['user'] = 'anonymous'
-    try:
-        response = c.put_sync({
-            'args': args,
-            'namespace': namespace,
-        })
-        if response['status'] != 'success':
-            raise APIException(response['message'],
-                               response['code'])
-        return response['message']
-    except ChannelTimeoutException:
-        raise APIException(
-            "couldn't start registration procedure after {} seconds"
-            .format(timeout),
-            code=500)
+    with AChannel(name='image_builder') as c:
+        try:
+            args['registration_user'] = g.user
+        except RuntimeError:
+            args['registration_user'] = 'anonymous'
+        try:
+            response = c.put_sync({
+                'args': args,
+            }, timeout=timeout)
+            if response['status'] != 'success':
+                raise APIException(response['message'],
+                                   response['code'])
+            return response['message']
+        except ChannelTimeoutException:
+            raise APIException(
+                "couldn't start registration procedure after {} seconds"
+                .format(timeout),
+                code=500)
 
 
 def post_notifier(url, result, data):
