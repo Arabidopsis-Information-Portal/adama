@@ -11,18 +11,10 @@ import tempfile
 from channelpy import Channel, RabbitConnection
 
 from store import Store
+import stores
+import tools
 
 
-REGISTRATION_STORE = Store(
-    host=os.environ.get('REDIS_PORT_6379_TCP_ADDR', '172.17.42.1'),
-    port=int(os.environ.get('REDIS_PORT_6379_TCP_PORT', 6379)),
-    db=9
-)
-SERVICE_STORE = Store(
-    host=os.environ.get('REDIS_PORT_6379_TCP_ADDR', '172.17.42.1'),
-    port=int(os.environ.get('REDIS_PORT_6379_TCP_PORT', 6379)),
-    db=2
-)
 RABBIT_URI = 'amqp://{}:{}'.format(
     os.environ.get('RABBIT_PORT_5672_TCP_ADDR', '172.17.42.1'),
     os.environ.get('RABBIT_PORT_5672_TCP_PORT', 5672)
@@ -51,50 +43,47 @@ def error(msg, code, ch):
     })
 
 
-def start_registration(guid, args, namespace):
+def start_registration(guid, args):
     """
     :type guid: str
     :type args: Dict
-    :type namespace: str
     """
-    REGISTRATION_STORE[guid] = {
+    stores.registration_store[guid] = {
         'status': 'starting'
     }
     try:
-        service = do_register(args, namespace)
-        REGISTRATION_STORE[guid] = {
+        service = do_register(args)
+        stores.registration_store[guid] = {
             'status': 'success',
             'service': service.iden
         }
         # notify success
     except Exception as exc:
-        REGISTRATION_STORE[guid] = {
-            'status': 'failed',
+        stores.registration_store[guid] = {
+            'status': 'error',
             'message': str(exc),
             'traceback': format_exc()
         }
         # notify failure
+    
 
-
-def do_register(args, namespace):
+def do_register(args):
     """
     :type args: Dict
-    :type namespace: str
     :rtype: Service
     """
     if 'code' in args or args.get('type') == 'passthrough':
-        service = register_code(args, namespace)
+        service = register_code(args)
     elif 'git_repository' in args:
-        service = register_git_repository(args, namespace)
+        service = register_git_repository(args)
     else:
         raise Exception('no code or git repository specified')
     return service
 
 
-def register_code(args, namespace):
+def register_code(args):
     """
     :type args: Dict
-    :type namespace: str
     """
     user_code = None
     if args.get('code', None):
@@ -102,16 +91,25 @@ def register_code(args, namespace):
         code = args['code']['file']
         tempdir = tempfile.mkdtemp()
         user_code = extract(filename, code, tempdir)
-    return register(args, namespace, user_code)
+    return register(args, user_code)
 
     
-def register(args, namespace, user_code):
+def register(args, user_code):
     """
     :type args: Dict
-    :type namespace: str
     :type user_code: 
     """
-    
+    iden = tools.identifier(
+        args['namespace'], args['name'], args['version'])
+    make_image(iden, args, user_code)
+    process_icon()
+    stores.service_store[iden] = args
+
+
+def make_image(iden, args, user_code):
+    if args['type'] == 'passthrough':
+        return
+
 
 def extract(filename, code, into):
     """Extract code from string ``code``.
@@ -164,6 +162,8 @@ def main():
                  uri=RABBIT_URI) as listen:
         while True:
             job = listen.get()
+            print('will process job:', flush=True)
+            print(job, flush=True)
             t = threading.Thread(target=process, args=(job,))
             t.start()
 
@@ -175,10 +175,28 @@ def process(job):
     with job['reply_to'] as reply_to:
         try:
             args = job['value']['args']
-            namespace = job['value']['namespace']
         except KeyError:
             error("missing 'args' and/or 'namespace': {}".format(job),
                   400, reply_to)
+            return
+
+        args.setdefault('version', '0.1')
+        iden = tools.identifier(
+            args['namespace'], args['name'], args['version'])
+        if iden in stores.service_store:
+            reply_to.put({
+                'message': 'service {} already registered'.format(iden),
+                'status': 'error'
+            })
+            return
+        try:
+            stores.registration_store.mutex_acquire(iden)
+        except StoreMutexException:
+            reply_to.put({
+                'message': ('service "{}" is in process of registration'
+                            .format(iden)),
+                'status': 'error'
+            })
             return
 
         guid = uuid.uuid4().hex
@@ -186,7 +204,10 @@ def process(job):
             'message': guid,
             'status': 'success'
         })
-        start_registration(guid, args, namespace)
+        try:
+            start_registration(guid, args)
+        finally:
+            stores.registration_store.mutex_release(iden)
 
 
 if __name__ == '__main__':

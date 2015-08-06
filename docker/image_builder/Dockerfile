@@ -5,6 +5,10 @@ WORKDIR /adama/docker/shared/store
 RUN pip install -r requirements.txt
 ENV PYTHONPATH $PYTHONPATH:/adama/docker/shared/store
 
+WORKDIR /adama/docker/shared/tools
+RUN pip install -r requirements.txt
+ENV PYTHONPATH $PYTHONPATH:/adama/docker/shared/tools
+
 WORKDIR /adama/docker/image_builder/app
 RUN pip install -r requirements.txt
 
