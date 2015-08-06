@@ -1,5 +1,5 @@
 from .config import Config
-from channelpy import Channel
+from channelpy import Channel, RabbitConnection
 
 
 class AChannel(Channel):
@@ -8,6 +8,9 @@ class AChannel(Channel):
         uri = 'amqp://{}:{}'.format(
             Config.get('queue', 'host'),
             Config.getint('queue', 'port'))
-        super(AChannel, self).__init__(name=name, uri=uri)
+        super(AChannel, self).__init__(
+            name=name,
+            connection_type=RabbitConnection,
+            uri=uri)
 
 
