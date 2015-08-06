@@ -229,7 +229,8 @@ class ServicesResource(restful.Resource):
                 'cannot have code and git repository at '
                 'the same time')
 
-        reg_id = start_registration(args, namespace)
+        args['namespace'] = namespace
+        reg_id = start_registration(args)
         return ok({
             'message': 'registration started',
             'state': api_url_for(
