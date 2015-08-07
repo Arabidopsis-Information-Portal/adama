@@ -224,11 +224,6 @@ class ServicesResource(restful.Resource):
                 'namespace {}'.format(g.user, namespace))
 
         args = self.validate_post()
-        if 'code' in args and 'git_repository' in args:
-            raise APIException(
-                'cannot have code and git repository at '
-                'the same time')
-
         args['namespace'] = namespace
         reg_id = start_registration(args)
         return ok({
@@ -268,29 +263,41 @@ class ServicesResource(restful.Resource):
     def validate_post():
         parser = RequestParser()
         parser.add_argument('name', type=str, required=True)
-        parser.add_argument('version', type=str, required=False)
-        parser.add_argument('notify', type=str, required=False)
+        parser.add_argument('version', type=str, required=True)
+        parser.add_argument('notify', type=str, required=False,
+                            default='')
         parser.add_argument('code', type=FileStorage, location='files',
                             required=False)
-        parser.add_argument('git_repository', type=str, required=False),
-        parser.add_argument('git_branch', type=str, required=False),
-        parser.add_argument('metadata_directory', type=str, required=False)
+        parser.add_argument('git_repository', type=str, required=False,
+                            default=''),
+        parser.add_argument('git_branch', type=str, required=False,
+                            default='master'),
+        parser.add_argument('metadata_directory', type=str, required=False,
+                            default='')
 
+        import ipdb; ipdb.set_trace()
         args = parser.parse_args()
 
         for key, value in args.items():
             if value is None:
                 del args[key]
 
+        if 'code' in args and args['git_repository']:
+            raise APIException(
+                'cannot have code and git repository at '
+                'the same time')
+
         if 'code' in args:
             filename = args.code.filename
             code = args.code.stream.read()
-            args['code'] = {
-                'file': code,
-                'filename': filename
-            }
+            args['code_content'] = code
+            args['code_filename'] = filename
+
+        try:
+            args['user'] = g.user
+        except RuntimeError:
+            args['user'] = 'anonymous'
             
-        args['user'] = g.user
         return args
 
     @swagger.operation(

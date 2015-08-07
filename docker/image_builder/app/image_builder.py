@@ -7,6 +7,7 @@ from traceback import format_exc
 import zipfile
 import tarfile
 import tempfile
+import subprocess
 
 from channelpy import Channel, RabbitConnection
 
@@ -43,72 +44,19 @@ def error(msg, code, ch):
     })
 
 
-def start_registration(guid, args):
-    """
-    :type guid: str
-    :type args: Dict
-    """
-    stores.registration_store[guid] = {
-        'status': 'starting'
-    }
-    try:
-        service = do_register(args)
-        stores.registration_store[guid] = {
-            'status': 'success',
-            'service': service.iden
-        }
-        # notify success
-    except Exception as exc:
-        stores.registration_store[guid] = {
-            'status': 'error',
-            'message': str(exc),
-            'traceback': format_exc()
-        }
-        # notify failure
-    
-
-def do_register(args):
-    """
-    :type args: Dict
-    :rtype: Service
-    """
-    if 'code' in args or args.get('type') == 'passthrough':
-        service = register_code(args)
-    elif 'git_repository' in args:
-        service = register_git_repository(args)
-    else:
-        raise Exception('no code or git repository specified')
-    return service
-
-
-def register_code(args):
-    """
-    :type args: Dict
-    """
-    user_code = None
-    if args.get('code', None):
-        filename = args['code']['filename']
-        code = args['code']['file']
-        tempdir = tempfile.mkdtemp()
-        user_code = extract(filename, code, tempdir)
-    return register(args, user_code)
-
-    
 def register(args, user_code):
-    """
+    """``user_code`` is a path to the extracted code.
+
     :type args: Dict
-    :type user_code: 
+    :type user_code: Optional[str]
     """
     iden = tools.identifier(
         args['namespace'], args['name'], args['version'])
+    metadata = get_metadata_from(user_code, args.get('metadata_location', ''))
+    args.update(metadata)
     make_image(iden, args, user_code)
     process_icon()
     stores.service_store[iden] = args
-
-
-def make_image(iden, args, user_code):
-    if args['type'] == 'passthrough':
-        return
 
 
 def extract(filename, code, into):
@@ -155,6 +103,95 @@ def extract(filename, code, into):
 
     return user_code_dir
 
+
+class StoreMutexException(Exception):
+    pass
+
+
+class ServiceException(Exception):
+
+    def __init__(self, message):
+        super().__init__()
+        self.message = message
+        
+
+class Service(object):
+
+    PARAMETERS = [
+        # parameter, mandatory?, [default]
+        ('name', True),
+        ('namespace', True),
+        ('version', False, '0.1'),
+        ('notify', False, ''),
+        ('code_content', False, ''),
+        ('code_filename', False, ''),
+        ('git_repository', False, None),
+        ('git_branch', False, 'master'),
+        ('metadata_location', False, ''),
+        ('user', False, 'anonymous')
+    ]
+    
+    def __init__(self, guid, **kwargs):
+        self.guid = guid
+        self.identity = dict(self._validate_args(kwargs))
+
+    def _validate_args(self, args):
+        for parameter in self.PARAMETERS:
+            try:
+                yield parameter[0], args[parameter[0]]
+            except KeyError:
+                if parameter[1]:
+                    raise
+                yield parameter[0], parameter[2]
+
+    @property
+    def identifier(self):
+        return tools.identifier(self.identity['namespace'],
+                                self.identity['name'],
+                                self.identity['version'])
+
+    def register(self):
+        stores.registration_store[self.guid] = {
+            'status': 'starting'
+        }
+        try:
+            self._do_register()
+            stores.registration_store[self.guid] = {
+                'status': 'success',
+            }
+            # notify success
+        except Exception as exc:
+            stores.registration_store[self.guid] = {
+                'status': 'error',
+                'message': str(exc),
+                'traceback': format_exc()
+            }
+            # notify failure
+
+    def _do_register(self):
+        if self.identity['git_repository']:
+            code = self._get_git_repository()
+        else:
+            code = self._get_code()
+        self._register(code)
+
+    def _get_git_repository(self):
+        tempdir = tempfile.mkdtemp()
+        with tools.chdir(tempdir):
+            cmd = ['git', 'clone', '-b', self.identity['git_branch'],
+                   self.identity['git_repository'], 'user_code']
+            subprocess.check_call(cmd)
+        return os.path.join(tempdir, 'user_code')
+
+    def _get_code(self):
+        tempdir = tempfile.mkdtemp()
+        return extract(self.identity['code_filename'],
+                       self.identity['code_content'],
+                       tempdir)
+        
+    def _register(self, code_location):
+        print(code_location)
+
     
 def main():
     with Channel(name='image_builder', persist=False,
@@ -172,6 +209,7 @@ def process(job):
     """
     :type job: Dict
     """
+
     with job['reply_to'] as reply_to:
         try:
             args = job['value']['args']
@@ -180,32 +218,29 @@ def process(job):
                   400, reply_to)
             return
 
-        args.setdefault('version', '0.1')
-        iden = tools.identifier(
-            args['namespace'], args['name'], args['version'])
-        if iden in stores.service_store:
+        guid = uuid.uuid4().hex
+        try:
+            srv = Service(guid, **args)
+            if srv.identifier in stores.service_store:
+                raise ServiceException('service {} already registered'
+                                       .format(srv.identifier))
+            stores.registration_store.mutex_acquire(srv.identifier)
             reply_to.put({
-                'message': 'service {} already registered'.format(iden),
+                'message': guid,
+                'status': 'success'
+            })
+            srv.register()
+        except ServiceException as exc:
+            reply_to.put({
+                'message': exc.message,
                 'status': 'error'
             })
-            return
-        try:
-            stores.registration_store.mutex_acquire(iden)
         except StoreMutexException:
             reply_to.put({
                 'message': ('service "{}" is in process of registration'
-                            .format(iden)),
+                            .format(srv.identifier)),
                 'status': 'error'
             })
-            return
-
-        guid = uuid.uuid4().hex
-        reply_to.put({
-            'message': guid,
-            'status': 'success'
-        })
-        try:
-            start_registration(guid, args)
         finally:
             stores.registration_store.mutex_release(iden)
 
