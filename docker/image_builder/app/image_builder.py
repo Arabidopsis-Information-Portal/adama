@@ -44,21 +44,6 @@ def error(msg, code, ch):
     })
 
 
-def register(args, user_code):
-    """``user_code`` is a path to the extracted code.
-
-    :type args: Dict
-    :type user_code: Optional[str]
-    """
-    iden = tools.identifier(
-        args['namespace'], args['name'], args['version'])
-    metadata = get_metadata_from(user_code, args.get('metadata_location', ''))
-    args.update(metadata)
-    make_image(iden, args, user_code)
-    process_icon()
-    stores.service_store[iden] = args
-
-
 def extract(filename, code, into):
     """Extract code from string ``code``.
 
@@ -102,6 +87,38 @@ def extract(filename, code, into):
             'unknown extension: {0}'.format(filename), 400)
 
     return user_code_dir
+
+
+def get_metadata(directory):
+    """Return a dictionary from the metadata file in ``directory``.
+
+    Try to read the file ``metadata.yml`` or ``metadata.json`` at the root
+    of the directory.
+
+    Concatenate files ``foo.yml`` into a field ``foo:``.
+
+    Return an empty dict if no file is found.
+
+    :type directory: str
+    :rtype: Dict[str, Any]
+
+    """
+    md = {}
+    exts = ['yml', 'yaml', 'json']
+    for filename in ['metadata.{}'.format(ext) for ext in exts]:
+        try:
+            f = open(os.path.join(directory, filename))
+        except IOError:
+            continue
+        md.update(yaml.load(f))
+    for extra in os.listdir(directory):
+        if extra.startswith('metadata'):
+            continue
+        if any(extra.endswith(ext) for ext in exts):
+            f = open(os.path.join(directory, extra))
+            key, _ = os.path.splitext(extra)
+            md[key] = yaml.load(f)
+    return md
 
 
 class StoreMutexException(Exception):
@@ -188,9 +205,28 @@ class Service(object):
         return extract(self.identity['code_filename'],
                        self.identity['code_content'],
                        tempdir)
-        
+
+    def _make_image(self, directory):
+        pass
+
+    def _process_icon(self, directory):
+        pass
+    
     def _register(self, code_location):
-        print(code_location)
+        """``code_location`` is a path to the extracted code."""
+
+        metadata = get_metadata(code_location)
+        # for backwards compatibility, check that any intersection
+        # between identity and metadata coincides
+        for field, value in self.identity.items():
+            if value != metadata.get(field, value):
+                raise ServiceException('metadata differs from POST parameters')
+            
+        self._make_image(code_location)
+        self._process_icon(code_location)
+        stores.service_store[self.identifier] = {
+            'identity': self.identity, 'metadata': metadata
+        }
 
     
 def main():
