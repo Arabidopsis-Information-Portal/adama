@@ -10,6 +10,7 @@ import tempfile
 import subprocess
 
 from channelpy import Channel, RabbitConnection
+import yaml
 
 from store import Store
 import stores
@@ -126,10 +127,7 @@ class StoreMutexException(Exception):
 
 
 class ServiceException(Exception):
-
-    def __init__(self, message):
-        super().__init__()
-        self.message = message
+    pass
         
 
 class Service(object):
@@ -184,6 +182,7 @@ class Service(object):
                 'traceback': format_exc()
             }
             # notify failure
+            raise
 
     def _do_register(self):
         if self.identity['git_repository']:
@@ -220,12 +219,16 @@ class Service(object):
         # between identity and metadata coincides
         for field, value in self.identity.items():
             if value != metadata.get(field, value):
-                raise ServiceException('metadata differs from POST parameters')
+                raise ServiceException('metadata differs from POST '
+                                       'parameters: {}'.format(field))
             
         self._make_image(code_location)
         self._process_icon(code_location)
+
+        identity = dict(self.identity)
+        del identity['code_content']
         stores.service_store[self.identifier] = {
-            'identity': self.identity, 'metadata': metadata
+            'identity': identity, 'metadata': metadata
         }
 
     
@@ -268,7 +271,7 @@ def process(job):
             srv.register()
         except ServiceException as exc:
             reply_to.put({
-                'message': exc.message,
+                'message': str(exc),
                 'status': 'error'
             })
         except StoreMutexException:
