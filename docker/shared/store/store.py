@@ -96,5 +96,7 @@ class Store(AbstractStore):
     def getset(self, key, value):
         "Atomically: ``self[key] = value`` and return previous ``self[key]``."
 
-        return self._db.getset(key, value)
+        value = self._db.getset(key, json.dumps(value).encode('utf-8'))
+        if value is not None:
+            return json.loads(value.decode('utf-8'))
     
