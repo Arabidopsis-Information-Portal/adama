@@ -1,3 +1,4 @@
+from base64 import b64encode
 import textwrap
 
 from flask import g
@@ -290,7 +291,7 @@ class ServicesResource(restful.Resource):
         if 'code' in args:
             filename = args.code.filename
             code = args.code.stream.read()
-            args['code_content'] = code
+            args['code_content'] = b64encode(code)
             args['code_filename'] = filename
 
         try:

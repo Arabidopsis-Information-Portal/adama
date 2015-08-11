@@ -10,13 +10,15 @@ import zipfile
 import tarfile
 import tempfile
 import subprocess
+import json
+from base64 import b64decode
 
 from channelpy import Channel, RabbitConnection
 import yaml
 import jinja2
 import docker
 
-from store import Store
+from store import Store, StoreMutexException
 import stores
 import tools
 
@@ -53,7 +55,7 @@ def error(msg, code, ch):
     })
 
 
-def extract(filename, code, into):
+def extract(filename: str, code: str, into: str):
     """Extract code from string ``code``.
 
     ``filename`` is the name of the uploaded file.  Extract the code
@@ -67,7 +69,7 @@ def extract(filename, code, into):
     _, ext = os.path.splitext(filename)
     user_code_dir = os.path.join(into, 'user_code')
     os.makedirs(user_code_dir, exist_ok=True)
-    contents = code
+    contents = b64decode(code.encode('ascii'))
 
     if ext in ZIPS:
         # it's a zip file
@@ -142,10 +144,6 @@ def get_metadata(directory, location):
             md[key] = yaml.load(f)
     validate_metadata(md)
     return md
-
-
-class StoreMutexException(Exception):
-    pass
 
 
 class ServiceException(Exception):
@@ -250,7 +248,7 @@ class Service(object):
             g = DOCKER.build(path='.', tag=self.identifier)
             for stream in g:
                 line = json.loads(stream.decode('utf-8'))
-                error = line.get('error', None):
+                error = line.get('error', None)
                 if error:
                     raise ServiceException(error)
 
@@ -306,7 +304,7 @@ def process(job):
         try:
             args = job['value']['args']
         except KeyError:
-            error("missing 'args' and/or 'namespace': {}".format(job),
+            error("missing 'args': {}".format(job),
                   400, reply_to)
             return
 
@@ -334,7 +332,7 @@ def process(job):
                 'status': 'error'
             })
         finally:
-            stores.registration_store.mutex_release(iden)
+            stores.registration_store.mutex_release(srv.identifier)
 
 
 if __name__ == '__main__':
