@@ -34,6 +34,7 @@ EXTENSIONS = {
 TARBALLS = ['.tar', '.gz', '.tgz']
 ZIPS = ['.zip']
 
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 def error(msg, code, ch):
     """
@@ -229,7 +230,7 @@ class Service(object):
         else:
             return ''
         
-    def _render(self):
+    def _render(self, directory):
         template = jinja2.Template(
             open(os.path.join(HERE, 'Dockerfile.adapter')).read())
         dockerfile = template.render(
@@ -237,13 +238,16 @@ class Service(object):
             main_module_name=self.metadata['main_module'],
             language=self.metadata['language'],
             requirement_cmds=self._requirements())
-        with open(os.path.join(into, 'Dockerfile'), 'w') as f:
-            f.write(dockerfile.encode('utf-8'))
+        with open(os.path.join(directory, 'Dockerfile'), 'w') as f:
+            f.write(dockerfile)
+
+    def _build(self, directory):
+        pass
 
     def _make_image(self, directory):
         if self.metadata['type'] == 'passthrough':
             return
-        self._render()
+        self._render(directory)
         self._build()
 
     def _process_icon(self, directory):
