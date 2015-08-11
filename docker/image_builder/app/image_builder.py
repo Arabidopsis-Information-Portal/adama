@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from typing import Dict, Any
+
 import os
 import uuid
 import threading
@@ -11,6 +13,7 @@ import subprocess
 
 from channelpy import Channel, RabbitConnection
 import yaml
+import jinja2
 
 from store import Store
 import stores
@@ -90,7 +93,19 @@ def extract(filename, code, into):
     return user_code_dir
 
 
-def get_metadata(directory):
+def validate_metadata(metadata: Dict[str, Any]):
+    defaults = {
+        'type': 'fetch',
+        'requirements': [],
+        'main_module': 'main',
+        'main_module_path': '',
+        'language': 'python'
+    }
+    for k, v in defaults.items():
+        metadata.setdefault(k, v)
+    
+
+def get_metadata(directory, location):
     """Return a dictionary from the metadata file in ``directory``.
 
     Try to read the file ``metadata.yml`` or ``metadata.json`` at the root
@@ -106,6 +121,7 @@ def get_metadata(directory):
     """
     md = {}
     exts = ['yml', 'yaml', 'json']
+    directory = os.path.join(directory, location)
     for filename in ['metadata.{}'.format(ext) for ext in exts]:
         try:
             f = open(os.path.join(directory, filename))
@@ -119,6 +135,7 @@ def get_metadata(directory):
             f = open(os.path.join(directory, extra))
             key, _ = os.path.splitext(extra)
             md[key] = yaml.load(f)
+    validate_metadata(md)
     return md
 
 
@@ -142,7 +159,7 @@ class Service(object):
         ('code_filename', False, ''),
         ('git_repository', False, None),
         ('git_branch', False, 'master'),
-        ('metadata_location', False, ''),
+        ('metadata_path', False, ''),
         ('user', False, 'anonymous')
     ]
     
@@ -205,8 +222,29 @@ class Service(object):
                        self.identity['code_content'],
                        tempdir)
 
+    def _requirements(self):
+        if self.metadata['requirements']:
+            return 'RUN pip install {}'.format(
+                ' '.join(self.metadata['requirements']))
+        else:
+            return ''
+        
+    def _render(self):
+        template = jinja2.Template(
+            open(os.path.join(HERE, 'Dockerfile.adapter')).read())
+        dockerfile = template.render(
+            main_module_path=self.metadata['main_module_path'],
+            main_module_name=self.metadata['main_module'],
+            language=self.metadata['language'],
+            requirement_cmds=self._requirements())
+        with open(os.path.join(into, 'Dockerfile'), 'w') as f:
+            f.write(dockerfile.encode('utf-8'))
+
     def _make_image(self, directory):
-        pass
+        if self.metadata['type'] == 'passthrough':
+            return
+        self._render()
+        self._build()
 
     def _process_icon(self, directory):
         pass
@@ -214,11 +252,12 @@ class Service(object):
     def _register(self, code_location):
         """``code_location`` is a path to the extracted code."""
 
-        metadata = get_metadata(code_location)
+        self.metadata = get_metadata(code_location,
+                                     self.identity['metadata_path'])
         # for backwards compatibility, check that any intersection
         # between identity and metadata coincides
         for field, value in self.identity.items():
-            if value != metadata.get(field, value):
+            if value != self.metadata.get(field, value):
                 raise ServiceException('metadata differs from POST '
                                        'parameters: {}'.format(field))
             
@@ -228,7 +267,7 @@ class Service(object):
         identity = dict(self.identity)
         del identity['code_content']
         stores.service_store[self.identifier] = {
-            'identity': identity, 'metadata': metadata
+            'identity': identity, 'metadata': self.metadata
         }
 
     
