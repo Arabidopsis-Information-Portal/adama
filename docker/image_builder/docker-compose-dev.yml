@@ -6,6 +6,7 @@ imagebuilder:
     - redis
   command: /adama/docker/image_builder/app/notebook.sh
   volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
     - "..:/local"
   ports:
     - "9999:8888"

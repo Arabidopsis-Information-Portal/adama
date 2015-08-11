@@ -14,6 +14,7 @@ import subprocess
 from channelpy import Channel, RabbitConnection
 import yaml
 import jinja2
+import docker
 
 from store import Store
 import stores
@@ -34,7 +35,10 @@ EXTENSIONS = {
 TARBALLS = ['.tar', '.gz', '.tgz']
 ZIPS = ['.zip']
 
+DOCKER = docker.Client(base_url='unix://var/run/docker.sock', version='auto')
+
 HERE = os.path.dirname(os.path.abspath(__file__))
+
 
 def error(msg, code, ch):
     """
@@ -242,13 +246,19 @@ class Service(object):
             f.write(dockerfile)
 
     def _build(self, directory):
-        pass
+        with tools.chdir(directory):
+            g = DOCKER.build(path='.', tag=self.identifier)
+            for stream in g:
+                line = json.loads(stream.decode('utf-8'))
+                error = line.get('error', None):
+                if error:
+                    raise ServiceException(error)
 
     def _make_image(self, directory):
         if self.metadata['type'] == 'passthrough':
             return
         self._render(directory)
-        self._build()
+        self._build(directory)
 
     def _process_icon(self, directory):
         pass
