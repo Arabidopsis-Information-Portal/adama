@@ -1020,7 +1020,6 @@ class RegistrationStateResource(restful.Resource):
 
     def get(self, namespace, reg_id):
         try:
-            import ipdb; ipdb.set_trace()
             return registration_store[reg_id]
         except KeyError:
             raise APIException('registration id {} not found'.format(reg_id))
