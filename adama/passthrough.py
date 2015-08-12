@@ -5,6 +5,7 @@ from .tools import service_iden
 from .api import APIException
 from .stores import service_store
 from .swagger import swagger
+from .service import Service
 
 
 class PassthroughServiceResource(restful.Resource):
@@ -40,7 +41,7 @@ class PassthroughServiceResource(restful.Resource):
     def _pass_request(self, namespace, service, path):
         try:
             iden = service_iden(namespace, service)
-            srv = service_store[iden]['service']
+            srv = Service._from_json(service_store[iden]['service'])
         except KeyError:
             raise APIException('service not found: {}'
                                .format(service_iden(namespace, service)),

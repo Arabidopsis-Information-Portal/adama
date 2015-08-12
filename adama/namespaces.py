@@ -84,7 +84,7 @@ class NamespacesResource(restful.Resource):
         ns = Namespace(name=name, url=url,
                        description=description,
                        users={g.user: ['POST', 'PUT', 'DELETE']})
-        namespace_store[name] = ns
+        namespace_store[name] = ns.to_json()
         return ok({
             'result': api_url_for('namespace', namespace=name)
         })
@@ -116,5 +116,5 @@ class NamespacesResource(restful.Resource):
     def get(self):
         """Get list of namespaces"""
 
-        result = [ns.to_json() for (name, ns) in namespace_store.items()]
+        result = [ns for (name, ns) in namespace_store.items()]
         return ok({'result': result})

@@ -11,6 +11,7 @@ import prov.dot
 from .stores import prov_store, service_store
 from .tools import service_iden
 from .api import api_url_for, APIException
+from .service import Service
 
 
 class ProvResource(restful.Resource):
@@ -70,7 +71,7 @@ def to_prov(obj, namespace, service):
     g.wasGeneratedBy(adama_platform, vaughn)
 
     iden = service_iden(namespace, service)
-    srv = service_store[iden]['service']
+    srv = Service._from_json(service_store[iden]['service'])
     adama_microservice = g.agent(
         ap[iden],
         {'dcterms:title': srv.name.title(),

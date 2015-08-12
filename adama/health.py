@@ -24,10 +24,11 @@ class GeneralHealthResource(restful.Resource):
 
 def check_all():
     for srv in all_services():
-        stats = health(srv)
-        if not healthy(stats):
-            stats['service'] = srv.iden
-            yield stats
+        if srv.type != 'passthrough':
+            stats = health(srv)
+            if not healthy(stats):
+                stats['service'] = srv.iden
+                yield stats
 
 
 def healthy(stats):

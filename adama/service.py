@@ -150,6 +150,19 @@ class AbstractService(object):
         return {key[0]: getattr(self, key[0], key[-1])
                 for key in self.PARAMS if not key[0].startswith('_')}
 
+    def _to_json(self):
+        return {key[0]: getattr(self, key[0], key[-1]) for key in self.PARAMS}
+
+    @classmethod
+    def _from_json(cls, obj):
+        if obj is None:
+            return None
+        try:
+            del obj['code_dir']
+        except KeyError:
+            pass
+        return cls(**obj)
+
     def make_image(self):
         raise NotImplementedError
 
@@ -192,10 +205,12 @@ class Service(AbstractService):
         self.whitelist = list(set(self.whitelist))
         self.validate_whitelist()
 
-        self.main_module_path = self.find_main_module()
-        self.language = self.detect_language(self.main_module_path)
+        if 'main_module_path' not in kwargs:
+            self.main_module_path = self.find_main_module()
+            self.language = self.detect_language(self.main_module_path)
         self.state = None
-        self.workers = []
+        if 'workers' not in kwargs:
+            self.workers = []
 
     def to_json(self):
         obj = super(Service, self).to_json()
@@ -208,6 +223,13 @@ class Service(AbstractService):
         except RuntimeError:
             # no app context, ignore 'self' field
             pass
+        return obj
+
+    def _to_json(self):
+        obj = super(Service, self)._to_json()
+        obj['main_module_path'] = self.main_module_path
+        obj['language'] = self.language
+        obj['workers'] = self.workers
         return obj
 
     def endpoint_names(self):
@@ -565,7 +587,7 @@ class ServiceQueryResource(restful.Resource):
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
-            srv = service_store[iden]['service']
+            srv = Service._from_json(service_store[iden]['service'])
         except KeyError:
             raise APIException('service not found: {}'
                                .format(service_iden(namespace, service)),
@@ -598,7 +620,7 @@ class ServiceListResource(restful.Resource):
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
-            srv = service_store[iden]['service']
+            srv = Service._from_json(service_store[iden]['service'])
         except KeyError:
             raise APIException('service not found: {}'
                                .format(service_iden(namespace, service)),
@@ -698,7 +720,7 @@ class ServiceResource(restful.Resource):
             if srv['slot'] == 'ready':
                 return ok({
                     'result': {
-                        'service': srv['service'].to_json()
+                        'service': srv['service']
                     }
                 })
             else:
@@ -742,7 +764,7 @@ class ServiceResource(restful.Resource):
 
         name = service_iden(namespace, service)
         try:
-            srv = service_store[name]['service']
+            srv = Service._from_json(service_store[name]['service'])
             if (srv is not None and
                     'DELETE' not in get_permissions(srv.users, g.user)):
                 raise APIException(
@@ -891,7 +913,7 @@ class ServiceResource(restful.Resource):
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
 
-        old_srv = slot['service']
+        old_srv = Service._from_json(slot['service'])
         if 'PUT' not in get_permissions(old_srv.users, g.user):
             raise APIException(
                 'user {} does not have permissions to PUT to '
@@ -950,7 +972,7 @@ class ServiceHealthResource(restful.Resource):
             slot = service_store[name]
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
-        srv = slot['service']
+        srv = Service._from_json(slot['service'])
         workers_alive = len([worker for worker in srv.workers
                              if self._is_running(worker)])
         should_have = int(request.args.get('workers', 1))
@@ -967,7 +989,7 @@ class IconResource(restful.Resource):
             slot = service_store[name]
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
-        srv = slot['service']
+        srv = Service._from_json(slot['service'])
         if getattr(srv, '_icon', None):
             return Response(srv._icon, content_type='image/png')
         else:
@@ -1307,7 +1329,8 @@ def _register(service, notifier=None):
         slot['msg'] = 'Service ready'
         slot['stage'] = 6
         slot['slot'] = 'ready'
-        slot['service'] = service
+        print('service', service)
+        slot['service'] = service._to_json()
         service_store[full_name] = slot
 
         result = ok
@@ -1441,7 +1464,7 @@ def get_service(namespace, service):
     name = service_iden(namespace, service)
     try:
         slot = service_store[name]
-        srv = slot['service']
+        srv = Service._from_json(slot['service'])
         if srv is None:
             raise APIException('service is not ready: {}'.format(name), 400)
         return srv
@@ -1478,10 +1501,17 @@ def multi_to_dict(md, parameters):
     for k, v in md:
         if param_dict[k].type == 'array':
             d.setdefault(k, []).append(v)
+        elif param_dict[k].type == 'boolean':
+            d[k] = v == 'True'
         else:
             d[k] = v
     return d
 
+def to_bool(arg):
+    if arg.lower() in ('true', 'yes'):
+        return True
+    else:
+        return ''
 
 def validate_swagger_request(srv, endpoint, req):
     sw = get_swagger(srv)
@@ -1496,6 +1526,8 @@ def validate_swagger_request(srv, endpoint, req):
         if param.type != 'array':
             try:
                 args[param.name] = args[param.name][0]
+                if param.type == 'boolean':
+                    args[param.name] = to_bool(args[param.name])
             except (KeyError, IndexError):
                 pass
     try:

@@ -65,6 +65,11 @@ class Namespace(object):
                 "Allowed characters: [a-z0-9_-]"
                 .format(self.name))
 
+    @classmethod
+    def from_json(cls, obj):
+        return cls(obj['name'], obj['url'], obj['description'],
+                   users=obj.get('users', None))
+
     def to_json(self):
         obj = {
             'name': self.name,
@@ -101,7 +106,7 @@ class NamespaceResource(restful.Resource):
         """Get information about a namespace"""
 
         try:
-            ns = namespace_store[namespace]
+            ns = Namespace.from_json(namespace_store[namespace])
             return ok({'result': ns.to_json()})
         except KeyError:
             raise APIException(
@@ -127,7 +132,7 @@ class NamespaceResource(restful.Resource):
         """Delete a namespace"""
 
         try:
-            ns = namespace_store[namespace]
+            ns = Namespace.from_json(namespace_store[namespace])
             if 'DELETE' in tuple(get_permissions(ns.users, g.user)):
                 del namespace_store[namespace]
             else:

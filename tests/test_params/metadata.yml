@@ -25,6 +25,11 @@ endpoints:
         items:
           type: number
           format: double
+      - name: b
+        description: Parameter B
+        type: boolean
+        required: false
+        default: true
       - name: w
         description: Parameter W
         type: string

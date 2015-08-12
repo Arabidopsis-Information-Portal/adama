@@ -7,12 +7,15 @@ from werkzeug.datastructures import FileStorage
 
 from .requestparser import RequestParser
 from .tools import namespace_of
-from .service import ServiceModel, start_registration
+from .service import (ServiceModel, register_code, Service,
+                      start_registration,
+                      register_git_repository, post_notifier)
 from .stores import namespace_store, service_store
 from .api import APIException, ok, api_url_for
 from .swagger import swagger
 from .entity import get_permissions
 from .command.tools import service
+from .namespace import Namespace
 
 
 @swagger.model
@@ -218,7 +221,7 @@ class ServicesResource(restful.Resource):
             raise APIException(
                 "namespace not found: {}".format(namespace), 404)
 
-        ns = namespace_store[namespace]
+        ns = Namespace.from_json(namespace_store[namespace])
         if 'POST' not in get_permissions(ns.users, g.user):
             raise APIException(
                 'user {} does not have permissions to POST to '
@@ -323,7 +326,7 @@ class ServicesResource(restful.Resource):
             raise APIException(
                 "namespace not found: {}".format(namespace), 404)
 
-        result = [srv['service'].to_json()
+        result = [Service._from_json(srv['service']).to_json()
                   for name, srv in service_store.items()
                   if namespace_of(name) == namespace and
                   srv['service'] is not None]

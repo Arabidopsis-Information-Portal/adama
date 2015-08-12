@@ -38,6 +38,15 @@
     - Rebuild containers
     - Reload adama server
 
+- name: Get adamalib
+  git:
+    repo: https://github.com/Arabidopsis-Information-Portal/adamalib.git
+    dest: /home/adama/adamalib
+    update: yes
+  sudo: yes
+  register: got_adamalib
+  sudo_user: adama
+
 - name: Ensure netns directory
   file:
     path: /var/run/netns
@@ -56,6 +65,13 @@
   args:
     chdir: /home/adama/adama
   when: got_adama|changed
+  sudo: yes
+
+- name: Install adamalib
+  command: python setup.py develop
+  args:
+    chdir: /home/adama/adamalib
+  when: got_adamalib|changed
   sudo: yes
 
 - name: Patch swagger ui

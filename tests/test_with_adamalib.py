@@ -128,9 +128,19 @@ def test_with_parameter_validation(with_parameter_validation):
     assert res1[1] == 'y = None'
     assert res1[2] == 'z = [3.0, 4.0]'
     assert res1[3] == 'w = Spam'
+    assert res1[4] == 'b = True'
 
     res2 = with_parameter_validation.search(x='foo', z=[3,4], w='Spam', y=1)
     assert res2[1] == 'y = 1'
+
+    res3 = with_parameter_validation.search(x='foo', z=[3,4], w='Spam', y=1, b='no')
+    assert res3[4] == 'b = False'
+
+    res3 = with_parameter_validation.search(x='foo', z=[3,4], w='Spam', y=1, b='yes')
+    assert res3[4] == 'b = True'
+    
+    res3 = with_parameter_validation.search(x='foo', z=[3,4], w='Spam', y=1, b=False)
+    assert res3[4] == 'b = False'
 
     with pytest.raises(Exception):
         with_parameter_validation.search(

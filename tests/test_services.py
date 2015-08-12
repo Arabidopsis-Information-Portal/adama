@@ -69,8 +69,9 @@ def test_register():
 
         slot = service_store['foo_ns.post_v0.4']
         assert slot['slot'] == 'ready'
-        assert slot['service'].adapter_name == 'post_v0.4'
-        assert slot['service'].to_json()['name'] == 'post'
+        srv = Service._from_json(slot['service'])
+        assert srv.adapter_name == 'post_v0.4'
+        assert srv.to_json()['name'] == 'post'
 
         adama.service.register(
             Service,
@@ -89,13 +90,13 @@ def test_register():
     except Queue.Empty:
         assert False
     finally:
-        srv = service_store['foo_ns.post_v0.4']['service']
+        srv = Service._from_json(service_store['foo_ns.post_v0.4']['service'])
         if srv is not None:
             srv.stop_workers()
 
         del service_store['foo_ns.post_v0.4']
 
-        srv = service_store['foo_ns.pass_v0.1']['service']
+        srv = Service._from_json(service_store['foo_ns.pass_v0.1']['service'])
         if srv is not None:
             srv.stop_workers()
 
