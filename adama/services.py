@@ -6,7 +6,7 @@ from werkzeug.datastructures import FileStorage
 
 from .requestparser import RequestParser
 from .tools import namespace_of
-from .service import (ServiceModel, register_code,
+from .service import (ServiceModel, register_code, Service,
                       register_git_repository, post_notifier)
 from .stores import namespace_store, service_store
 from .api import APIException, ok, api_url_for
@@ -308,7 +308,7 @@ class ServicesResource(restful.Resource):
             raise APIException(
                 "namespace not found: {}".format(namespace), 404)
 
-        result = [srv['service'].to_json()
+        result = [Service._from_json(srv['service']).to_json()
                   for name, srv in service_store.items()
                   if namespace_of(name) == namespace and
                   srv['service'] is not None]

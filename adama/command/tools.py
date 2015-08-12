@@ -7,16 +7,17 @@ import tempfile
 
 from ..stores import service_store
 from ..docker import safe_docker
+from ..service import Service
 
 
 def rebuild_service(name):
-    srv = service_store[name]['service']
+    srv = Service._from_json(service_store[name]['service'])
     srv.make_image()
 
 
 def service(name):
     srv_slot = service_store[name]
-    srv = srv_slot['service']
+    srv = Service._from_json(srv_slot['service'])
     if srv is None:
         raise KeyError('service {} not found'.format(name))
     return srv
@@ -34,7 +35,7 @@ def workers_of(name):
 
 def save_service(srv):
     srv_slot = service_store[srv.iden]
-    srv_slot['service'] = srv
+    srv_slot['service'] = srv._to_json()
     service_store[srv.iden] = srv_slot
 
 

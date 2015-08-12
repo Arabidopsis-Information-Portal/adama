@@ -585,7 +585,7 @@ class ServiceQueryResource(restful.Resource):
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
-            srv = service_store[iden]['service']
+            srv = Service._from_json(service_store[iden]['service'])
         except KeyError:
             raise APIException('service not found: {}'
                                .format(service_iden(namespace, service)),
@@ -618,7 +618,7 @@ class ServiceListResource(restful.Resource):
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
-            srv = service_store[iden]['service']
+            srv = Service._from_json(service_store[iden]['service'])
         except KeyError:
             raise APIException('service not found: {}'
                                .format(service_iden(namespace, service)),
@@ -718,7 +718,7 @@ class ServiceResource(restful.Resource):
             if srv['slot'] == 'ready':
                 return ok({
                     'result': {
-                        'service': srv['service'].to_json()
+                        'service': srv['service']
                     }
                 })
             else:
@@ -762,7 +762,7 @@ class ServiceResource(restful.Resource):
 
         name = service_iden(namespace, service)
         try:
-            srv = service_store[name]['service']
+            srv = Service._from_json(service_store[name]['service'])
             if (srv is not None and
                     'DELETE' not in get_permissions(srv.users, g.user)):
                 raise APIException(
@@ -911,7 +911,7 @@ class ServiceResource(restful.Resource):
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
 
-        old_srv = slot['service']
+        old_srv = Service._from_json(slot['service'])
         if 'PUT' not in get_permissions(old_srv.users, g.user):
             raise APIException(
                 'user {} does not have permissions to PUT to '
@@ -970,7 +970,7 @@ class ServiceHealthResource(restful.Resource):
             slot = service_store[name]
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
-        srv = slot['service']
+        srv = Service._from_json(slot['service'])
         workers_alive = len([worker for worker in srv.workers
                              if self._is_running(worker)])
         should_have = int(request.args.get('workers', 1))
@@ -987,7 +987,7 @@ class IconResource(restful.Resource):
             slot = service_store[name]
         except KeyError:
             raise APIException('service not found: {}'.format(name), 404)
-        srv = slot['service']
+        srv = Service._from_json(slot['service'])
         if getattr(srv, '_icon', None):
             return Response(srv._icon, content_type='image/png')
         else:
@@ -1317,7 +1317,8 @@ def _register(service, notifier=None):
         slot['msg'] = 'Service ready'
         slot['stage'] = 6
         slot['slot'] = 'ready'
-        slot['service'] = service
+        print('service', service)
+        slot['service'] = service._to_json()
         service_store[full_name] = slot
 
         result = ok
@@ -1426,7 +1427,7 @@ def get_service(namespace, service):
     name = service_iden(namespace, service)
     try:
         slot = service_store[name]
-        srv = slot['service']
+        srv = Service._from_json(slot['service'])
         if srv is None:
             raise APIException('service is not ready: {}'.format(name), 400)
         return srv
