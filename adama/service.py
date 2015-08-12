@@ -203,10 +203,12 @@ class Service(AbstractService):
         self.whitelist = list(set(self.whitelist))
         self.validate_whitelist()
 
-        self.main_module_path = self.find_main_module()
-        self.language = self.detect_language(self.main_module_path)
+        if 'main_module_path' not in kwargs:
+            self.main_module_path = self.find_main_module()
+            self.language = self.detect_language(self.main_module_path)
         self.state = None
-        self.workers = []
+        if 'workers' not in kwargs:
+            self.workers = []
 
     def to_json(self):
         obj = super(Service, self).to_json()
@@ -219,6 +221,13 @@ class Service(AbstractService):
         except RuntimeError:
             # no app context, ignore 'self' field
             pass
+        return obj
+
+    def _to_json(self):
+        obj = super(Service, self)._to_json()
+        obj['main_module_path'] = self.main_module_path
+        obj['language'] = self.language
+        obj['workers'] = self.workers
         return obj
 
     def endpoint_names(self):
