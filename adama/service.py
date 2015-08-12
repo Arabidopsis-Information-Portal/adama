@@ -41,7 +41,7 @@ from .firewall import allow, get_nameservers
 from .tools import (location_of, identifier, service_iden,
                     adapter_iden, interleave)
 from .tasks import Producer
-from .stores import service_store, prov_store, stats_store
+from .stores import service_store, prov_store, stats_store, registration_store
 from .swagger import swagger
 from .namespace import DeleteResponseModel
 from .tools import chdir, get_token
@@ -992,6 +992,16 @@ class StatsResource(restful.Resource):
             'unique_access': unique_access,
             'users': users
         })
+
+
+class RegistrationStateResource(restful.Resource):
+
+    def get(self, namespace, reg_id):
+        try:
+            import ipdb; ipdb.set_trace()
+            return registration_store[reg_id]
+        except KeyError:
+            raise APIException('registration id {} not found'.format(reg_id))
 
 
 class FileLikeWrapper(object):

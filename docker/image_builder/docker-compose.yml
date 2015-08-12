@@ -7,7 +7,7 @@ imagebuilder:
   command: python /adama/docker/image_builder/app/image_builder.py
   volumes:
     - "/var/run/docker.sock:/var/run/docker.sock"
-
+    
 rabbit:
   image: rabbitmq:3-management
   ports:

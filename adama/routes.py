@@ -19,7 +19,7 @@ from .namespaces import NamespacesResource
 from .namespace import NamespaceResource
 from .services import ServicesResource
 from .service import (ServiceResource, ServiceQueryResource,
-                      ServiceListResource,
+                      ServiceListResource, RegistrationStateResource,
                       IconResource, StatsResource)
 from .passthrough import PassthroughServiceResource
 from .servicedocs import ServiceDocsResource, ServiceDocsUIResource
@@ -51,6 +51,9 @@ api.add_resource(NamespaceResource, url('/<string:namespace>'),
                  endpoint='namespace')
 api.add_resource(ServicesResource, url('/<string:namespace>/services'),
                  endpoint='services')
+api.add_resource(RegistrationStateResource,
+                 url('/<string:namespace>/services/<string:reg_id>'),
+                 endpoint='registration_state')
 api.add_resource(ServiceResource, url('/<string:namespace>/<string:service>'),
                  endpoint='service')
 api.add_resource(ServiceQueryResource,

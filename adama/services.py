@@ -276,7 +276,6 @@ class ServicesResource(restful.Resource):
         parser.add_argument('metadata_directory', type=str, required=False,
                             default='')
 
-        import ipdb; ipdb.set_trace()
         args = parser.parse_args()
 
         for key, value in args.items():
