@@ -13,6 +13,7 @@ from .api import APIException, ok, api_url_for
 from .swagger import swagger
 from .entity import get_permissions
 from .command.tools import service
+from .namespace import Namespace
 
 
 @swagger.model
@@ -218,7 +219,7 @@ class ServicesResource(restful.Resource):
             raise APIException(
                 "namespace not found: {}".format(namespace), 404)
 
-        ns = namespace_store[namespace]
+        ns = Namespace.from_json(namespace_store[namespace])
         if 'POST' not in get_permissions(ns.users, g.user):
             raise APIException(
                 'user {} does not have permissions to POST to '

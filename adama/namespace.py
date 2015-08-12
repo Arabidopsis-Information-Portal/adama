@@ -106,7 +106,7 @@ class NamespaceResource(restful.Resource):
         """Get information about a namespace"""
 
         try:
-            ns = namespace_store[namespace]
+            ns = Namespace.from_json(namespace_store[namespace])
             return ok({'result': ns.to_json()})
         except KeyError:
             raise APIException(
@@ -132,7 +132,7 @@ class NamespaceResource(restful.Resource):
         """Delete a namespace"""
 
         try:
-            ns = namespace_store[namespace]
+            ns = Namespace.from_json(namespace_store[namespace])
             if 'DELETE' in tuple(get_permissions(ns.users, g.user)):
                 del namespace_store[namespace]
             else:
