@@ -65,6 +65,11 @@ class Namespace(object):
                 "Allowed characters: [a-z0-9_-]"
                 .format(self.name))
 
+    @classmethod
+    def from_json(cls, obj):
+        return cls(obj['name'], obj['url'], obj['description'],
+                   users=obj.get('users', None))
+
     def to_json(self):
         obj = {
             'name': self.name,
