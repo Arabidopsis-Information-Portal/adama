@@ -148,6 +148,19 @@ class AbstractService(object):
         return {key[0]: getattr(self, key[0], key[-1])
                 for key in self.PARAMS if not key[0].startswith('_')}
 
+    def _to_json(self):
+        return {key[0]: getattr(self, key[0], key[-1]) for key in self.PARAMS}
+
+    @classmethod
+    def _from_json(cls, obj):
+        if obj is None:
+            return None
+        try:
+            del obj['code_dir']
+        except KeyError:
+            pass
+        return cls(**obj)
+
     def make_image(self):
         raise NotImplementedError
 
