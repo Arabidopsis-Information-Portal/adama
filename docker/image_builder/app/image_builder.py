@@ -284,7 +284,7 @@ class Service(object):
 
     
 def main():
-    with Channel(name='image_builder', persist=False,
+    with Channel(name='image_builder',
                  connection_type=RabbitConnection,
                  uri=RABBIT_URI) as listen:
         while True:
