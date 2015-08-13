@@ -1,0 +1,25 @@
+imagebuilder:
+  build: ../../
+  dockerfile: docker/image_builder/Dockerfile
+  links:
+    - rabbit
+    - redis
+  command: /adama/docker/image_builder/app/notebook.sh
+  volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
+    - "..:/local"
+  ports:
+    - "9999:8888"
+  working_dir: /local
+
+rabbit:
+  image: rabbitmq:3-management
+  ports:
+    - "5673:5672"
+    - "15673:15672"
+
+redis:
+  image: redis
+  ports:
+    - "6379:6379"
+  command: redis-server --appendonly yes
