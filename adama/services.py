@@ -276,7 +276,7 @@ class ServicesResource(restful.Resource):
                             default=''),
         parser.add_argument('git_branch', type=str, required=False,
                             default='master'),
-        parser.add_argument('metadata_directory', type=str, required=False,
+        parser.add_argument('metadata_path', type=str, required=False,
                             default='')
 
         args = parser.parse_args()
