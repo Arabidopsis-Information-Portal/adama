@@ -91,10 +91,9 @@ class ServicesResource(restful.Resource):
             raise APIException(
                 "namespace not found: {}".format(namespace), 404)
 
-        result = [Service._from_json(srv['service']).to_json()
+        result = [srv
                   for name, srv in service_store.items()
-                  if namespace_of(name) == namespace and
-                  srv['service'] is not None]
+                  if namespace_of(name) == namespace]
         return ok({'result': result})
 
 
