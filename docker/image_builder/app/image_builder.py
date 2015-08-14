@@ -1,4 +1,29 @@
 #!/usr/bin/env python
+"""Image Builder
+
+Interface:
+
+  value:
+     args:
+        name           True
+        namespace      True
+        version        False  '0.1'
+        notify         False  ''
+        code_content   False  ''
+        code_filename  False  ''
+        git_repository False  None
+        git_branch     False  'master'
+        metadata_path  False  ''
+        user           False  'anonymous'
+  reply_to: channel
+
+Returns:
+
+  message:
+  status:
+  code:
+
+"""
 
 from typing import Dict, Any
 
