@@ -326,13 +326,15 @@ def process(job):
         except ServiceException as exc:
             reply_to.put({
                 'message': str(exc),
-                'status': 'error'
+                'status': 'error',
+                'code': 400
             })
         except StoreMutexException:
             reply_to.put({
                 'message': ('service "{}" is in process of registration'
                             .format(srv.identifier)),
-                'status': 'error'
+                'status': 'error',
+                'code': 400
             })
         finally:
             stores.registration_store.mutex_release(srv.identifier)
