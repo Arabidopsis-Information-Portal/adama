@@ -320,7 +320,8 @@ def process(job):
             }
             reply_to.put({
                 'message': guid,
-                'status': 'success'
+                'status': 'success',
+                'code': 200
             })
             srv.register()
         except ServiceException as exc:
