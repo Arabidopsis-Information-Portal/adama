@@ -315,6 +315,9 @@ def process(job):
                 raise ServiceException('service {} already registered'
                                        .format(srv.identifier))
             stores.registration_store.mutex_acquire(srv.identifier)
+            stores.registration_store[guid] = {
+                'status': 'submitted'
+            }
             reply_to.put({
                 'message': guid,
                 'status': 'success'
