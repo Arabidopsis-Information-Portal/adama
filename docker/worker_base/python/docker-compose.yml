@@ -1,0 +1,3 @@
+python_base:
+  build: ../../../
+  dockerfile: docker/worker_base/python/Dockerfile

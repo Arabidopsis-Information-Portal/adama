@@ -3,7 +3,7 @@
 .PHONY: clean
 
 build: Dockerfile
-	$(DOCKER) build --no-cache=$(NO_CACHE) -t common .
+	$(DOCKER) build --no-cache=$(NO_CACHE) -t adama/common_base .
 	touch build
 	touch .
 

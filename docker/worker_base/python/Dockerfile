@@ -1,16 +1,19 @@
-FROM common
+FROM python:3.4.3
 
-RUN apt-get update
-RUN apt-get install -y python python-dev python-pip ipython
-RUN pip install pika redis pyzmq
+# The build context is the whole Adama source code
 
-ADD worker.py /root/worker.py
-ADD tasks.py /root/tasks.py
-ADD adamalib.py /root/adamalib.py
-ADD store.py /root/store.py
-ADD service.py /root/service.py
+ADD . /adama
+WORKDIR /adama/docker/shared/store
+RUN pip install -r requirements.txt
+ENV PYTHONPATH $PYTHONPATH:/adama/docker/shared/store
 
-EXPOSE 22
+WORKDIR /adama/docker/shared/tools
+RUN pip install -r requirements.txt
+ENV PYTHONPATH $PYTHONPATH:/adama/docker/shared/tools
 
-CMD []
-ENTRYPOINT ["python", "/root/worker.py"]
+WORKDIR /adama/docker/worker_base/python/app
+RUN pip install -r requirements.txt
+
+WORKDIR /
+
+CMD ["python", "main.py"]

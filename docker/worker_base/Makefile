@@ -1,9 +1,7 @@
 # Master makefile to build all containers
 
 CONTAINERS=common \
-	python \
-	ruby \
-	javascript
+	python 
 
 .PHONY: build
 build:

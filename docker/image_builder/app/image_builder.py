@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# encoding: utf-8
+
 """Image Builder
 
 Interface:
@@ -295,8 +297,11 @@ class Service(object):
         # between identity and metadata coincides
         for field, value in self.identity.items():
             if value != self.metadata.get(field, value):
-                raise ServiceException('metadata differs from POST '
-                                       'parameters: {}'.format(field))
+                raise ServiceException(
+                    'metadata differs from POST parameters: {}\n'
+                    '{} ≠ {}'.format(field,
+                                     repr(value),
+                                     repr(self.metadata.get(field, value))))
             
         self._make_image(code_location)
         self._process_icon(code_location)
