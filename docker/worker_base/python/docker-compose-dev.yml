@@ -1,0 +1,10 @@
+base:
+  build: ../../../
+  dockerfile: docker/worker_base/python/Dockerfile
+  volumes:
+    - ".:/adama_local"
+  environment:
+    CHANNELPY_CONNECTION_TYPE: RabbitConnection
+    CHANNELPY_URI: amqp://192.168.99.100:5673
+    MAIN_MODULE: main
+    MAIN_MODULE_PATH: 

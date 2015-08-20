@@ -14,6 +14,3 @@ ENV PYTHONPATH $PYTHONPATH:/adama/docker/shared/tools
 WORKDIR /adama/docker/worker_base/python/app
 RUN pip install -r requirements.txt
 
-WORKDIR /
-
-CMD ["python", "main.py"]
