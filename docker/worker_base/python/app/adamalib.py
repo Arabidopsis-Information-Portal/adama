@@ -2,8 +2,6 @@ import sys
 import json
 
 import requests
-from tasks import Producer
-from store import Store
 
 import service
 sys.modules['adama.service'] = service
@@ -37,6 +35,9 @@ class Adama(object):
         self._prov = None
         self._time = None
 
+    def _get_metadata(self):
+        return {'foo': 4}
+    
     @property
     def utils(self):
         return Utils(self)

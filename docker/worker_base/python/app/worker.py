@@ -7,7 +7,9 @@ import json
 
 import zmq
 
-from channelpy import server, Channel
+from channelpy import Channel
+from channelpy.server import server
+from adamalib import Adama
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -23,54 +25,97 @@ def find_main_module():
 
 class FetchWorker(object):
     """
-    {
-      data_port: str
-      args: {
-        _endpoint: str
-        _headers: Dict
-        _token: str
-        _url: str
-        _service_name: str
-        ... user parameters ...
-      }
-    }
+
+    Receives:
+
+        {
+          data_port: str
+          args: {
+            _endpoint: str
+            _headers: Dict
+            _token: str
+            _url: str
+            _service_name: str
+            ... user parameters ...
+          }
+        }
+
+    Responds (a stream of):
+
+        {
+          type: error | metadata | data | END
+          value: ...
+        }
+
     """
 
 
-    def _send_back(self, obj, address):
+    def _send_back(self, job, obj):
         socket = ctx.socket(zmq.PUSH)
-        socket.connect(address)
+        socket.connect(job['value']['data_port'])
         socket.send(json.dumps(obj))
 
-    def _error(self, message, job):
-        self._send_back(job['data_port'],
-                        {'status': 'error',
-                         'message': message})
+    def _error(self, job, message):
+        self._send_back(job,
+                        {'type': 'error',
+                         'value': {
+                             'message': message
+                         }})
 
     def handle(self, job):
         try:
-            args = job['args']
+            args = job['value']['args']
             endpoint = getattr(self.module, args['_endpoint'])
             adama = Adama(token=args['_token'],
                           url=args['_url'],
                           headers=args['_headers'],
-                          responder=job['data_port'])
+                          responder=job['value']['data_port'])
             if inspect.isgeneratorfunction(endpoint):
                 self._run_generator(endpoint, adama, job)
             else:
                 self._run_function(endpoint, adama, job)
         except Exception as exc:
-            self._error(traceback.format_exc(), job)
+            self._error(job, traceback.format_exc())
             
     def _run_generator(self, endpoint, adama, job):
-        g = endpoint(job['args'], adama)
+        self._send_back(job,
+                        {'type': 'metadata',
+                         'value': {
+                             'type': 'generator'
+                         }})
+        g = endpoint(job['value']['args'], adama)
+        first = True
+        for elt in g:
+            if first:
+                # Before sending the first object but after the
+                # generator is primed, send any metadata gathered from
+                # the adama object.
+                first = False
+                self._send_back(job,
+                                {'type': 'metadata',
+                                 'value': {
+                                     'object_metadata': adama._get_metadata()
+                                 }})
+            self._send_back(job, {'type': 'data', 'value': elt})
+        self._send_back(job, {'type': 'END'})
 
     def _run_function(self, endpoint, adama, job):
-        pass
+        self._send_back(job,
+                        {'type': 'metadata',
+                         'value': {
+                             'type': 'function'
+                         }})
+        result = endpoint(job['value']['args'], adama)
+        self._send_back(job,
+                        {'type': 'metadata',
+                         'value': {
+                             'object_metadata': adama._get_metadata()
+                         }})
+        self._send_back(job, {'type': 'END'})
 
     def run(self):
         self.module = find_main_module()
-        with Channel(name=SERVICE_NAME) as listen:
+        with Channel(name=os.environ['SERVICE_NAME']) as listen:
             server(listen, self.handle)
 
 

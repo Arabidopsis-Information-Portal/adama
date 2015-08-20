@@ -1,3 +1,4 @@
 -e git://github.com/TACC/channelpy.git#egg=channelpy
 mypy-lang
-
+pyzmq
+requests
