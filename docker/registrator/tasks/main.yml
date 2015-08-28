@@ -1,0 +1,54 @@
+---
+# tasks file for registrator
+
+- name: Get dependencies from shared
+  local_action:
+    module: copy
+    src: "{{ shared_modules_local_path }}/{{ item }}"
+    dest: "{{ role_path }}/files/registrator/modules"
+  with_items:
+    - store
+    - tools
+
+- name: Render Dockerfile
+  local_action:
+    module: template
+    src: Dockerfile.j2
+    dest: "{{ role_path }}/files/registrator/Dockerfile"
+
+- name: Copy sources to remote
+  copy:
+    src: registrator
+    dest: /root
+  sudo: yes
+
+- name: Ensure there is pip
+  apt:
+    name: python-pip
+    state: present
+  sudo: yes
+
+- name: Ensure docker-py is installed
+  pip:
+    name: docker-py
+    version: 1.2.3
+    state: present
+  sudo: yes
+
+- name: Build image
+  docker_image:
+    name: adama/registrator
+    path: /root/registrator
+    state: present
+  sudo: yes
+
+- name: Run the container
+  docker:
+    image: adama/registrator
+    name: registrator_1
+    state: started
+    command: sleep infinity
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/root/registrator:/local/registrator"
+  sudo: yes

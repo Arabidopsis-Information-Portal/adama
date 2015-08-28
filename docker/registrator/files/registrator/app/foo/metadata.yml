@@ -1,0 +1,21 @@
+---
+
+name: spam
+type: query
+main_module: src.main
+version: 12 
+url: 'http://example.com'
+whitelist: []
+description: ''
+requirements: []
+json_path: ''
+endpoints:
+  /search:
+     parameters:
+       - name: foo
+         type: string
+         description: A foo parameter
+     response:
+       type: integer
+       description: just an integer
+

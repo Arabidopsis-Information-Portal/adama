@@ -1,0 +1,19 @@
+FROM python:3.4.3
+
+# Needs:
+# - rabbit (a RabbitMQ instance)
+# - redis  (a Redis instance)
+
+
+ADD . /
+
+{% for module in modules %}
+WORKDIR /modules/{{ module }}
+RUN pip install -r requirements.txt
+ENV PYTHONPATH $PYTHONPATH:/modules/{{ module }}
+
+{% endfor %}
+
+WORKDIR /app
+RUN pip install -r requirements.txt
+

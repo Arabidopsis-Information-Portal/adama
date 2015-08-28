@@ -1,0 +1,7 @@
+---
+
+- hosts: all
+  vars:
+    - shared_modules_local_path: "./shared"
+  roles:
+    - registrator

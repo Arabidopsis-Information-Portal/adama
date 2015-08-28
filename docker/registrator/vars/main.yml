@@ -1,0 +1,7 @@
+---
+# vars file for registrator
+
+modules:
+  - store
+  - tools
+  

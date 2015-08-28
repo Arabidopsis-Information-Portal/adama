@@ -1,0 +1,11 @@
+FROM adama/{{ language }}_base
+
+ADD . /root/user_code
+{% if main_module_path %}
+ENV MAIN_MODULE_PATH {{ main_module_path }}
+{% endif %}
+{% if main_module_name %}
+ENV MAIN_MODULE_NAME {{ main_module_name }}
+{% endif %}
+
+{{ requirement_cmds }}

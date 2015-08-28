@@ -1,0 +1,4 @@
+-e git://github.com/TACC/channelpy.git#egg=channelpy
+ipython[notebook]
+mypy-lang
+docker-py
