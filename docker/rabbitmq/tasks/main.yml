@@ -1,0 +1,25 @@
+---
+# tasks file for rabbitmq
+
+- name: Ensure there is pip
+  apt:
+    name: python-pip
+    state: present
+  sudo: yes
+
+- name: Ensure docker-py is installed
+  pip:
+    name: docker-py
+    version: 1.2.3
+    state: present
+  sudo: yes
+
+- name: Run RabbitMQ
+  docker:
+    image: rabbitmq:3-management
+    name: rabbit_1
+    state: started
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+  sudo: yes

@@ -10,8 +10,8 @@ galaxy_info:
         - trusty
         - utopic
         - vivid
-dependencies: []
-#  - rabbit
-#  - redis
+dependencies:
+  - rabbitmq
+  - redis
 
   
