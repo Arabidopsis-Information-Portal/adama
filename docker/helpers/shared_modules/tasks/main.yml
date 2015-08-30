@@ -3,7 +3,7 @@
 
 - name: Get dependencies from shared
   copy:
-    src: "{{ shared_modules_local_path }}/{{ item }}"
+    src: "{{ item }}"
     dest: "{{ install_path }}/modules"
   with_items: "{{ modules }}"
   sudo: yes

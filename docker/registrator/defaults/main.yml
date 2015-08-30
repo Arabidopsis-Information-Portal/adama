@@ -1,5 +1,4 @@
 ---
 # defaults file for registrator
 
-shared_modules_path: "{{ role_path }}/../shared/files"
 
