@@ -1,15 +1,15 @@
 ---
 galaxy_info:
   author: Walter Moreira
-  description: Run RabbitMQ
+  description: Ensure docker-py
   license: MIT
   min_ansible_version: 1.2
   platforms:
     - name: Ubuntu
       versions:
-        - trusty
-        - utopic
-        - vivid
+         - trusty
+         - utopic
+         - vivid
 dependencies:
-  - docker_py
+  - pip
   

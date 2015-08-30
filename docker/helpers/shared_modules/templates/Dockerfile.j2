@@ -1,10 +1,5 @@
 FROM python:3.4.3
 
-# Needs:
-# - rabbit (a RabbitMQ instance)
-# - redis  (a Redis instance)
-
-
 ADD . /
 
 {% for module in modules %}

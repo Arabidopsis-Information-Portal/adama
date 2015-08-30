@@ -1,0 +1,16 @@
+---
+# tasks file for shared_modules
+
+- name: Get dependencies from shared
+  copy:
+    src: "{{ shared_modules_local_path }}/{{ item }}"
+    dest: "{{ install_path }}/modules"
+  with_items: "{{ modules }}"
+  sudo: yes
+
+- name: Render Dockerfile
+  template:
+    src: Dockerfile.j2
+    dest: "{{ install_path }}/Dockerfile"
+  sudo: yes
+

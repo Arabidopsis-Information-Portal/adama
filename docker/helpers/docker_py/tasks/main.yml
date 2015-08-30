@@ -1,0 +1,10 @@
+---
+# tasks file for docker_py
+
+- name: Ensure docker-py is installed
+  pip:
+    name: docker-py
+    version: 1.2.3
+    state: present
+  sudo: yes
+

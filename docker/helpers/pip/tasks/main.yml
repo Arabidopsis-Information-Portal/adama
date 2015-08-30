@@ -1,0 +1,9 @@
+---
+# tasks file for pip
+
+- name: Ensure there is pip
+  apt:
+    name: python-pip
+    state: present
+  sudo: yes
+
