@@ -1,0 +1,7 @@
+[defaults]
+
+# Add here extra paths for additional roles
+roles_path = .:./helpers:extra/path
+
+inventory = ./hosts
+nocows = 1

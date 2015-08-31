@@ -1,0 +1,7 @@
+---
+
+- hosts: all
+  roles:
+    - some_role
+    - role: registrator
+      local_sources: ""  # absolute directory to sources

@@ -1,0 +1,10 @@
+Variables to configure for deploying:
+=====================================
+
+- ``hosts``:  add your host
+- ``ansible.cfg``:  add extra paths to ``roles_path`` for additional roles
+- ``playbook.yml``:  add/remove roles, and set its parameters
+
+Run::
+
+    ansible-playbook playbook.yml
