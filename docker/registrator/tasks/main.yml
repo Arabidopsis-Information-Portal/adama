@@ -35,5 +35,5 @@
       - rabbit_1:rabbit
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/root/registrator:/local/registrator"
+      - "{{ local_sources }}:/local/registrator"
   sudo: yes
