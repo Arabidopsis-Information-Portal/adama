@@ -1,0 +1,10 @@
+---
+# tasks file for elasticsearch
+
+- name: Container is running
+  docker:
+    image: elasticsearch
+    name: elasticsearch_1
+    ports:
+      - "9200:9200"
+  sudo: yes

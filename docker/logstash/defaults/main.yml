@@ -1,0 +1,9 @@
+---
+# defaults file for logstash
+
+conf_dir: /root/data/logstash/config
+
+directories:
+  - /root/data
+  - /root/data/logstash
+  - "{{ conf_dir }}"

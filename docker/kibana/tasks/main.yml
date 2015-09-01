@@ -1,0 +1,14 @@
+---
+# tasks file for kibana
+
+- name: Container is running
+  docker:
+    image: kibana
+    name: kibana_1
+    expose:
+      - 5601
+    ports:
+      - "5601:5601"
+    links:
+      - elasticsearch_1:db
+  sudo: yes

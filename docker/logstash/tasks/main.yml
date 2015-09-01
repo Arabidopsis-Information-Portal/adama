@@ -1,0 +1,31 @@
+---
+# tasks file for logstash
+
+- name: Directories are present
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items: directories
+  sudo: yes
+
+- name: Config file is present
+  copy:
+    src: syslog.conf
+    dest: "{{ conf_dir }}/syslog.conf"
+  sudo: yes
+
+- name: Container is running
+  docker:
+    image: logstash
+    name: logstash_1
+    volumes:
+      - "{{ conf_dir }}:/conf"
+    expose:
+      - 25826
+    ports:
+      - 25826:25826
+      - 25826:25826/udp
+    links:
+      - elasticsearch_1:db
+    command: "logstash -f /conf/syslog.conf"
+  sudo: yes

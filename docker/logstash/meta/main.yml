@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Walter Moreira
+  description: Run logstash
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+    - name: Ubuntu
+      versions:
+         - trusty
+         - utopic
+         - vivid
+dependencies:
+  - rsyslog
+  - docker_py
+  - elasticsearch

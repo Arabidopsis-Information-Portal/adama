@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Walter Moreira
+  description: Run Kibana
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+    - name: Ubuntu
+      versions:
+         - trusty
+         - utopic
+         - vivid
+dependencies:
+  - docker_py
+  - logstash
+  - elasticsearch
