@@ -1,4 +1,4 @@
 ---
 # defaults file for rsyslog
 
-elk_ip: 127.0.0.1
+rsyslog_ip: 127.0.0.1
