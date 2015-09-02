@@ -1,6 +1,6 @@
 ---
 # handlers file for rsyslog
 
-- name: Service is restarted
+- name: Restart rsyslog
   shell: service rsyslog restart
   sudo: yes
