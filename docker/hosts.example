@@ -1,2 +1,5 @@
-[all]
-localhost ansible_connection=local
+[registration]
+host1
+
+[elk]
+host2

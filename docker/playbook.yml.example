@@ -1,7 +1,22 @@
 ---
 
 - hosts: all
+  vars:
+    syslog_ip: 127.0.0.1
   roles:
-    - some_role
+    - role: rsyslog
+      rsyslog_ip: "{{ syslog_ip }}"
+    - docker
+    - git
+    - tmux
+
+- hosts: registration
+  roles:
     - role: registrator
-      local_sources: ""  # absolute directory to sources
+      local_sources: /home/user/files/registrator
+
+- hosts: elk
+  roles:
+    - elasticsearch
+    - logstash
+    - kibana
