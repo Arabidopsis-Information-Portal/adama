@@ -11,6 +11,7 @@ galaxy_info:
          - utopic
          - vivid
 dependencies:
-  - rsyslog
+  - role: rsyslog
+    rsyslog_ip: "{{ syslog_ip }}"
   - docker_py
   - elasticsearch

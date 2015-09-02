@@ -7,3 +7,5 @@ directories:
   - /root/data
   - /root/data/logstash
   - "{{ conf_dir }}"
+
+syslog_ip: 127.0.0.1
