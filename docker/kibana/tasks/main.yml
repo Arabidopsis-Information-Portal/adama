@@ -10,5 +10,5 @@
     ports:
       - "5601:5601"
     links:
-      - elasticsearch_1:db
+      - elasticsearch_1:elasticsearch
   sudo: yes
