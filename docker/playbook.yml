@@ -1,19 +1,16 @@
 ---
 
 - hosts: all
-  vars:
-    syslog_ip: 127.0.0.1
   roles:
-    - role: rsyslog
-      rsyslog_ip: "{{ syslog_ip }}"
+    - rsyslog
     - docker
     - git
     - tmux
 
 - hosts: registration
   roles:
-    - role: registrator
-      local_sources: /home/user/files/registrator
+    - registrator
+    - worker
 
 - hosts: elk
   roles:
