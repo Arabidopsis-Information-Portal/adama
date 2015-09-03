@@ -1,0 +1,6 @@
+---
+
+rsyslog_ip: 192.168.36.10
+
+registrator_sources: /host/TACC/adama/docker/registrator/files/registrator
+

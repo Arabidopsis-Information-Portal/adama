@@ -3,7 +3,7 @@
 
 # sources to be mounted for development
 # so editting can be reflected immediately inside the container
-local_sources: ""
+registrator_sources: ""
 
 
   

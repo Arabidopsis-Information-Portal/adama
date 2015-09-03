@@ -8,4 +8,4 @@ directories:
   - /root/data/logstash
   - "{{ conf_dir }}"
 
-syslog_ip: 127.0.0.1
+rsyslog_ip: 127.0.0.1
