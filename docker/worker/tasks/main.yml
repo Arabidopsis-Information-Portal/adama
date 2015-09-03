@@ -1,0 +1,15 @@
+---
+# tasks file for worker_base
+
+- name: Copy sources to remote
+  copy:
+    src: worker_python
+    dest: /root
+  sudo: yes
+
+- name: Build image
+  docker_image:
+    name: adama/python_base
+    path: /root/worker_python
+    state: present
+  sudo: yes
