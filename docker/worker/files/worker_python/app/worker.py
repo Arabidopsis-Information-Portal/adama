@@ -1,3 +1,13 @@
+"""
+
+Needs environment variables:
+
+- MAIN_MODULE_PATH
+- MAIN_MODULE
+- SERVICE_NAME
+
+"""
+
 import traceback
 import importlib
 import inspect
@@ -40,7 +50,7 @@ class FetchWorker(object):
           }
         }
 
-    Responds (a stream of):
+    Responds via ZMQ on data_port (a stream of):
 
         {
           type: error | metadata | data | END
