@@ -1,0 +1,42 @@
+---
+# tasks file for console
+
+- name: Copy sources to remote
+  copy:
+    src: console
+    dest: /root
+  sudo: yes
+  register: sources
+
+- name: Ensure correct mode in notebook.sh
+  file:
+    path: /root/console/app/notebook.sh
+    mode: a+x
+  sudo: yes
+  register: notebook_mode
+
+- name: Build image
+  docker_image:
+    name: adama/console
+    path: /root/console
+    state: build
+  sudo: yes
+  when: sources.changed or notebook_mode.changed
+
+- name: Run the container
+  docker:
+    image: adama/console
+    name: console_1
+    state: started
+    expose:
+      - 8888
+    ports:
+      - "9898:8888"
+    command: /app/notebook.sh
+    links:
+      - redis_1:redis
+      - rabbit_1:rabbit
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "{{ console_sources }}:/local/console"
+  sudo: yes

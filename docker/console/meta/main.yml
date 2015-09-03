@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: Walter Moreira
+  description: Console
+  license: MIT
+  min_ansible_version: 1.2
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+        - utopic
+        - vivid
+dependencies:
+  - rabbitmq
+  - redis
+  - role: shared_modules
+    modules:
+      - tools
+      - store
+    install_path: /root/console
+  
