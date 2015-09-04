@@ -38,7 +38,7 @@ import tarfile
 import tempfile
 import subprocess
 import json
-from base64 import b64decode
+from base64 import b64decode, b64encode
 
 from channelpy import Channel, RabbitConnection
 import yaml
@@ -78,7 +78,13 @@ def error(msg, code, ch):
     })
 
 
-def extract(filename: str, code: str, into: str):
+def user_code_location(parent: str) -> str:
+    user_code_dir = os.path.join(parent, 'user_code')
+    os.makedirs(user_code_dir, exist_ok=True)
+    return user_code_dir
+
+    
+def extract(filename: str, code: str, into: str) -> str:
     """Extract code from string ``code``.
 
     ``filename`` is the name of the uploaded file.  Extract the code
@@ -90,8 +96,7 @@ def extract(filename: str, code: str, into: str):
     """
 
     _, ext = os.path.splitext(filename)
-    user_code_dir = os.path.join(into, 'user_code')
-    os.makedirs(user_code_dir, exist_ok=True)
+    user_code_dir = user_code_location(into)
     contents = b64decode(code.encode('ascii'))
 
     if ext in ZIPS:
@@ -121,6 +126,11 @@ def extract(filename: str, code: str, into: str):
             'unknown extension: {0}'.format(filename), 400)
 
     return user_code_dir
+
+
+def default_code():
+    with open(os.path.join(HERE, 'default.tgz'), 'rb') as default:
+        return b64encode(default.read()).decode('ascii')
 
 
 def validate_metadata(metadata: Dict[str, Any]):
@@ -181,8 +191,8 @@ class Service(object):
         ('namespace', True),
         ('version', False, '0.1'),
         ('notify', False, ''),
-        ('code_content', False, ''),
-        ('code_filename', False, ''),
+        ('code_content', False, default_code()),
+        ('code_filename', False, 'default.tgz'),
         ('git_repository', False, None),
         ('git_branch', False, 'master'),
         ('metadata_path', False, ''),
@@ -244,9 +254,9 @@ class Service(object):
 
     def _get_code(self):
         tempdir = tempfile.mkdtemp()
-        return extract(self.identity['code_filename'],
-                       self.identity['code_content'],
-                       tempdir)
+        code_filename = self.identity['code_filename']
+        code_content = self.identity['code_content']
+        return extract(code_filename, code_content, tempdir)
 
     def _requirements(self):
         if self.metadata['requirements']:
@@ -310,7 +320,7 @@ class Service(object):
 
     
 def main():
-    with Channel(name='image_builder') as listen:
+    with Channel(name='registrator', rm=True) as listen:
         while True:
             job = listen.get()
             print('will process job:', flush=True)
