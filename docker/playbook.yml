@@ -11,7 +11,7 @@
   roles:
     - registrator
     - worker
-    - console
+    - { role: console, tags: ['console'] }
 
 - hosts: elk
   roles:
