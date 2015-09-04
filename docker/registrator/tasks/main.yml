@@ -23,7 +23,8 @@
   sudo: yes
   when: sources.changed or notebook_mode.changed
 
-- name: Run the container
+  
+- name: Run the container in development mode
   docker:
     image: adama/registrator
     name: registrator_1
@@ -32,7 +33,8 @@
       - 8888
     ports:
       - "9999:8888"
-    command: python3 /app/registrator.py
+    command: python3 /local/registrator/app/registrator.py
+    command: sleep infinity
     links:
       - redis_1:redis
       - rabbit_1:rabbit
@@ -40,3 +42,18 @@
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "{{ registrator_sources }}:/local/registrator"
   sudo: yes
+  when: registrator_development
+
+- name: Run the container in production mode
+  docker:
+    image: adama/registrator
+    name: registrator_1
+    state: started
+    command: python3 /app/registrator.py
+    links:
+      - redis_1:redis
+      - rabbit_1:rabbit
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  sudo: yes
+  when: not registrator_development  

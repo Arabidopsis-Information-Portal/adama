@@ -1,6 +1,8 @@
 ---
 # defaults file for registrator
 
+registrator_development: yes
+
 # sources to be mounted for development
 # so editting can be reflected immediately inside the container
 registrator_sources: ""
