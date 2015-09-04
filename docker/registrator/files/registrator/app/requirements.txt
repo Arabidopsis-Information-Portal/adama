@@ -2,3 +2,4 @@
 ipython[notebook]
 mypy-lang
 docker-py
+ipdb
