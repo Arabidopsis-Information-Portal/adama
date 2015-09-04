@@ -9,7 +9,7 @@
 
 - hosts: registration
   roles:
-    - registrator
+    - { role: registrator, tags: ['registrator'] }
     - worker
     - { role: console, tags: ['console'] }
 

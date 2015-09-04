@@ -6,19 +6,22 @@
     src: registrator
     dest: /root
   sudo: yes
+  register: sources
 
 - name: Ensure correct mode in notebook.sh
   file:
     path: /root/registrator/app/notebook.sh
     mode: a+x
   sudo: yes
+  register: notebook_mode
 
 - name: Build image
   docker_image:
     name: adama/registrator
     path: /root/registrator
-    state: present
+    state: build
   sudo: yes
+  when: sources.changed or notebook_mode.changed
 
 - name: Run the container
   docker:
@@ -29,7 +32,7 @@
       - 8888
     ports:
       - "9999:8888"
-    command: /app/notebook.sh
+    command: python3 /app/registrator.py
     links:
       - redis_1:redis
       - rabbit_1:rabbit
