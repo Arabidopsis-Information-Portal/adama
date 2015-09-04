@@ -50,10 +50,6 @@ import stores
 import tools
 
 
-RABBIT_URI = 'amqp://{}:{}'.format(
-    os.environ.get('RABBIT_PORT_5672_TCP_ADDR', '172.17.42.1'),
-    os.environ.get('RABBIT_PORT_5672_TCP_PORT', 5672)
-)
 EXTENSIONS = {
     '.py': 'python',
     '.js': 'javascript',
@@ -314,9 +310,7 @@ class Service(object):
 
     
 def main():
-    with Channel(name='image_builder',
-                 connection_type=RabbitConnection,
-                 uri=RABBIT_URI) as listen:
+    with Channel(name='image_builder') as listen:
         while True:
             job = listen.get()
             print('will process job:', flush=True)
