@@ -184,10 +184,9 @@ class Service(AbstractService):
         """
         super(Service, self).__init__(**kwargs)
 
-        self.whitelist.append(urlparse.urlparse(self.url).hostname)
+        self.whitelist.insert(0, urlparse.urlparse(self.url).hostname)
         self.whitelist.extend(get_nameservers())
         self.whitelist.append('172.17.42.1')
-        self.whitelist = list(set(self.whitelist))
         self.validate_whitelist()
 
         self.main_module_path = self.find_main_module()
@@ -276,13 +275,25 @@ class Service(AbstractService):
     def validate_whitelist(self):
         """Make sure ip's and domain name can be resolved."""
 
+        if isinstance(self.whitelist, dict):
+            # make sure this method is idempotent
+            return
+        
+        policies = {}
         for addr in self.whitelist:
+            if isinstance(addr, dict):
+                addr = normalize_case(addr)
+                policies.update(addr)
+                addr = addr.keys()[0]
+            else:
+                policies[addr] = {}
             try:
                 socket.gethostbyname_ex(addr)
             except:
                 raise APIException(
                     "'{}' does not look like an ip or domain name"
                     .format(addr), 400)
+        self.whitelist = policies
 
     def build(self):
         if self.type == 'passthrough':
@@ -525,7 +536,8 @@ class Service(AbstractService):
         method = getattr(requests, req.method.lower())
         data = req.data if req.data else req.form
         url = _join(self.url, endpoint)
-        response = method(url, params=req.args, data=data)
+        headers = dict(self.filter_headers(url, req))
+        response = method(url, params=req.args, data=data, headers=headers)
         resp = Response(
             response=response.content,
             status=response.status_code,
@@ -543,7 +555,17 @@ class Service(AbstractService):
 
         return resp
 
+    def filter_headers(self, url, req):
+        """Filter headers according to policy for this url. """
 
+        domain = urlparse.urlsplit(url).netloc
+        full_headers = req.headers
+        policy = self.whitelist[domain]
+        for header, value in full_headers.items():
+            if header.lower() in policy.get('forward', []):
+                yield header, value
+
+    
 class ServiceQueryResource(restful.Resource):
 
     @swagger.operation(
@@ -1001,6 +1023,18 @@ class FileLikeWrapper(object):
 
     def read(self, n=512):
         return ''.join(itertools.islice(self.src, 0, n))
+
+
+def normalize_case(obj):
+    """Convert keys and values to lowercase, recursively. """
+
+    if isinstance(obj, basestring):
+        return obj.lower()
+    if isinstance(obj, list):
+        return [normalize_case(elt) for elt in obj]
+    if isinstance(obj, dict):
+        return {k.lower(): normalize_case(v) for k, v in obj.items()}
+    return obj
 
 
 def process_by_client(service, results, headers):
