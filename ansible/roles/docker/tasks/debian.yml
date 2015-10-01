@@ -11,11 +11,29 @@
     state: present
   sudo: yes
 
+- name: Get kernel version number
+  shell: uname -r
+  register: kernel_version
+  changed_when: False
+
+- name: Ensure AUFS kernel extensions are available
+  apt:
+    name: "{{ item }}"
+    state: present
+  sudo: yes
+  with_items:
+    - linux-image-extra-{{ kernel_version.stdout }}
+    - linux-image-extra-virtual
+
 - name: Add docker repository
   apt_repository:
     repo: "deb https://apt.dockerproject.org/repo ubuntu-trusty main"
     state: present
   sudo: yes
+  notify:
+    - Update apt cache
+
+- meta: flush_handlers
 
 - name: Install docker latest
   apt: name=docker-engine
