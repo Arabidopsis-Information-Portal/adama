@@ -1,0 +1,9 @@
+---
+name: passthrough_gzip
+type: passthrough
+url: http://httpbin.org/gzip
+whitelist:
+  - httpbin.org:
+      forward:
+        - Accept-Encoding
+
