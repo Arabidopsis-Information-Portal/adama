@@ -537,9 +537,10 @@ class Service(AbstractService):
         data = req.data if req.data else req.form
         url = _join(self.url, endpoint)
         headers = dict(self.filter_headers(url, req))
-        response = method(url, params=req.args, data=data, headers=headers)
+        response = method(url, params=req.args, data=data, headers=headers,
+                          stream=True)
         resp = Response(
-            response=response.content,
+            response=response.raw.read(),
             status=response.status_code,
             headers=response.headers.items())
 
