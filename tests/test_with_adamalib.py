@@ -71,6 +71,18 @@ def passthrough_service(namespace, request):
 
 
 @pytest.fixture(scope='module')
+def passthrough_gzip_service(namespace, request):
+    import passthrough_gzip
+    srv = namespace.services.add(passthrough_gzip)
+
+    def fin():
+        srv.delete()
+
+    request.addfinalizer(fin)
+    return srv
+
+
+@pytest.fixture(scope='module')
 def query_service(namespace, request):
     import adapter_with_adama_obj.main
     srv = namespace.services.add(adapter_with_adama_obj.main)
@@ -189,6 +201,14 @@ def test_passthrough_with_prov(namespace, passthrough_service):
 def test_tags(multiple_yaml):
     assert multiple_yaml.tags == ['foo', 'bar']
 
+
+def test_passthrough_gzip(adama, namespace, passthrough_gzip_service):
+    resp = requests.get(
+        adama.url + namespace.passthrough_gzip._full_name + '/access',
+        stream=True)
+    content = resp.raw.read()
+    assert content[:2] == '\x1f\x8b'
+    
 
 def test_with_exception(with_exception):
     with pytest.raises(Exception):
