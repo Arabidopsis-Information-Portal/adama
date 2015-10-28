@@ -302,7 +302,7 @@ def fix_summary(item, endpoint):
     """
     verb, descr = item
     new_descr = copy.deepcopy(descr)
-    for field, value in DOCS[endpoint][verb].items():
+    for field, value in DOCS.get(endpoint, {}).get(verb, {}).items():
         new_descr.setdefault(field, value)
     return verb, new_descr
 
