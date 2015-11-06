@@ -393,6 +393,8 @@ class Service(AbstractService):
         """Send ``args`` to ``queue`` in QueryWorker model."""
 
         queue = self.iden
+        args['_namespace'] = self.namespace
+        args['_adapter'] = self.adapter_name
         args['_endpoint'] = endpoint
         args['_headers'] = dict(req.headers)
         args['_token'] = get_token(req.headers)
@@ -482,6 +484,8 @@ class Service(AbstractService):
 
     def exec_worker_generic(self, endpoint, args, req):
         queue = self.iden
+        args['_namespace'] = self.namespace
+        args['_adapter'] = self.adapter_name
         args['_endpoint'] = endpoint
 
         args['_headers'] = dict(req.headers)
