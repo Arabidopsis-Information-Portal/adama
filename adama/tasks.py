@@ -79,7 +79,7 @@ class QueueConnection(AbstractQueueConnection):
 
     def __init__(self,
                  queue_host, queue_port, queue_name,
-                 result_ip='172.17.42.1'):
+                 result_ip='172.17.0.1'):
         self.queue_host = queue_host
         self.queue_port = queue_port
         self.queue_name = queue_name
