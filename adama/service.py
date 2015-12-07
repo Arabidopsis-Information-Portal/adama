@@ -632,7 +632,7 @@ class ServiceListResource(restful.Resource):
         return srv.exec_worker('list', args, request)
 
     def validate_get(self):
-        return dict(request.args)
+        return {key: val[0] for key, val in dict(request.args).items()}
 
 
 @swagger.model
