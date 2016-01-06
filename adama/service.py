@@ -114,7 +114,8 @@ class AbstractService(object):
         ('metadata', False, METADATA_DEFAULT),
         ('timeout', False, 30),
         # private fields (not to be displayed)
-        ('_icon', False, None)
+        ('_icon', False, None),
+        ('_no_firewall', False, None)
     ]
 
     def __init__(self, **kwargs):
@@ -322,7 +323,8 @@ class Service(AbstractService):
             self.iden,
             '--adapter-type',
             self.type)
-        allow(worker, self.whitelist)
+        if not getattr(self, '_no_firewall', False):
+            allow(worker, self.whitelist)
         docker_output('exec', worker, 'touch', '/ready')
         return worker
 
