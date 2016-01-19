@@ -8,6 +8,13 @@
   apt: name=zlib1g-dev state=present
   sudo: yes
 
+- name: Install crypto libraries
+  apt: name="{{ item }}" state=present
+  sudo: yes
+  with_items:
+    - libffi-dev
+    - libssl-dev
+
 - name: Install git in Debian
   apt: name=git state=present
   sudo: yes
