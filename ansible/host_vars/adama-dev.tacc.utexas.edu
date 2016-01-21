@@ -27,7 +27,7 @@ config:
     value: 6379
   - section: queue
     option: host
-    value: 172.17.42.1
+    value: 172.17.0.1
   - section: queue
     option: port
     value: 5672
