@@ -8,7 +8,7 @@ import requests
 
 @pytest.fixture(scope='module')
 def adama():
-    return adamalib.Adama('http://localhost/community/v0.3', token='token')
+    return adamalib.Adama('http://localhost', token='token')
 
 
 @pytest.fixture(scope='module')

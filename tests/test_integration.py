@@ -9,7 +9,7 @@ from adama.docker import docker_output
 from adama.tools import location_of
 HERE = location_of(__file__)
 
-URL = 'http://localhost/community/v0.3'
+URL = 'http://localhost'
 NAMESPACE = 'foox'
 SERVICE = 'spam'
 PORT = 1234
