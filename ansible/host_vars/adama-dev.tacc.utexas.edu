@@ -42,3 +42,4 @@ config:
     value: https://adama-dev.tacc.utexas.edu/swagger-ui
 
 nginx_server_name: adama-dev.tacc.utexas.edu
+self_sign: yes
