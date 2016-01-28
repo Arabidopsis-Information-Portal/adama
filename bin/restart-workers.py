@@ -9,7 +9,11 @@ import adama.services as s
 def main():
     for srv in s.service_store:
         print 'Restarting', srv, '...',
-        t.restart_workers(srv)
+        try:
+            t.restart_workers(srv)
+        except KeyError:
+            print 'failed'
+            continue
         print 'ok'
         time.sleep(0.1)
 
