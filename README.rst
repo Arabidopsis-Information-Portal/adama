@@ -74,7 +74,7 @@ rebuild them with the option ``NO_CACHE=true`` (this is due to the package manag
 License
 -------
 
-Free software: MIT license
+Free software: BSD License
 
 
 .. _architecture: http://rawgit.com/waltermoreira/adama/master/docs/index.html
