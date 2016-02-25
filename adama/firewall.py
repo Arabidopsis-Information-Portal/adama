@@ -13,6 +13,7 @@ def allow(worker, whitelist):
     whitelist.extend(get_nameservers())
     pid = get_pid(worker)
     host_dir = Config.get('server', 'host_dir')
+    print 'vars:', host_dir, ' ... ', pid 
     ensure_namespace_link(host_dir, pid)
     run(pid, 'iptables -A OUTPUT -s 0/0 -d 0/0 -j DROP')
     for ip in whitelist:

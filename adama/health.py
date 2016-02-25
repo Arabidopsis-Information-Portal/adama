@@ -24,6 +24,11 @@ class GeneralHealthResource(restful.Resource):
 
 def check_all():
     for srv in all_services():
+        print(srv.iden)
+        if srv.iden == 'araport.protein_api_v1.0':
+            continue
+        if 'hrgrn_node_info_by_locus' in srv.iden:
+            continue
         if srv.type != 'passthrough':
             stats = health(srv)
             if not healthy(stats):

@@ -21,6 +21,7 @@ def docker(*args, **kwargs):
     cmd = [Config.get('docker', 'command')] + (['-H', host] if host else [])
     stderr = kwargs.get('stderr', subprocess.STDOUT)
     stdout = kwargs.get('stdout', sys.stdout)
+    print('#docker ', cmd, args)
     return subprocess.Popen(
         cmd + list(args), stdout=stdout, stderr=stderr)
 

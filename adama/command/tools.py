@@ -6,6 +6,7 @@ import time
 import tempfile
 
 from ..stores import service_store
+from ..stores import namespace_store
 from ..docker import safe_docker
 
 
@@ -169,5 +170,5 @@ def restore_adapters(directory):
 
     restore_redis(directory)
     # give some time to redis to spin up
-    time.sleep(1)
+    time.sleep(180)
     restore_code(directory)

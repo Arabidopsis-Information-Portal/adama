@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Types of Adapters &mdash; Adapters 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="Adapters 0.1 documentation" href="#"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="#" class="fa fa-home"> Adapters</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <!-- Local TOC -->
+            <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Types of Adapters</a></li>
+</ul>
+</div>
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">Adapters</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>Types of Adapters</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="types-of-adapters">
+<h1>Types of Adapters<a class="headerlink" href="#types-of-adapters" title="Permalink to this headline">¶</a></h1>
+<p>At the fundamental level, Adama is a builder of webservices.  Its task
+is to abstract the infrastructure necessary to publish a webservice,
+such as security, scalability, fault tolerance, monitoring, caching,
+etc.  A developer of an adapter can concentrate just in the source and
+transformations of the data.</p>
+<p>To make it easy to develop webservices, Adama provides several types
+of adapters, trying to minimize the amount of code a developer has to
+write.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>Webservices</strong></p>
+<p>A <em>webservice</em> is a function or process (usually located at some
+URL) that accepts a HTTP request (usually a GET or POST, but in
+general any HTTP verb) and returns a response.  The type of
+response varies wildy: JSON, text, images, HTML, etc.  In Adama
+there are extra features for dealing with the JSON type, since it&#8217;s
+the preferred format for webservices.</p>
+<p>We denote a webservice that returns a response of type <span class="math">\(T\)</span>
+by</p>
+<div class="last math">
+\[\text{WS}_T \equiv \text{Request} \to T\]</div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>Simple webservices</strong></p>
+<p>We call <em>simple webservice</em> to a webservice that restricts the
+request types to just a <tt class="docutils literal"><span class="pre">GET</span></tt> with query parameters.  Such
+requests have the form:</p>
+<div class="highlight-python"><div class="highlight"><pre>GET http://example.com?key1=value1&amp;key2=value2&amp;...
+</pre></div>
+</div>
+<p>In other words, a simple webservice is a service that accepts a set
+of key/values and returns a response of type <span class="math">\(T\)</span>. We denote
+it with the symbol:</p>
+<div class="last math">
+\[\text{SimpleWS}_T \equiv \{\text{key}:\text{value}\} \to T\]</div>
+</div>
+<p>Adama prefers simple webservices that return data as an array of JSON
+objects: <span class="math">\(\text{SimpleWS}_{[\text{JSON}]}\)</span>.</p>
+<p>There are two types of adapters that return a simple webservice of
+type <span class="math">\([JSON]\)</span>:</p>
+<ul>
+<li><p class="first"><strong>query</strong>: a <em>query</em> adapter has the type:</p>
+<div class="math">
+\[\bigl[ \{k:v\} \to \text{Stream}(\text{JSON})
+\bigr] \to \text{SimpleWS}_{[\text{JSON}]}\]</div>
+<p>This means that the developer provides a function that accepts a set
+of key/values and that returns a stream of JSON objects.  Given this
+function, Adama constructs a simple webservice that accepts a
+<tt class="docutils literal"><span class="pre">GET</span></tt> request with query parameters and returns an array of JSON
+objects.</p>
+<p>To return a stream of JSON objects, the developer just has to print
+to standard output, separating each object with the line <tt class="docutils literal"><span class="pre">---</span></tt>.</p>
+</li>
+<li><p class="first"><strong>map_filter</strong>: a <em>map_filter</em> adapter has the type:</p>
+<div class="math">
+\[\bigl[ \text{JSON}\to\text{JSON}, \text{SimpleWS}_{[\text{JSON}]}
+\bigr] \to \text{SimpleWS}_{[\text{JSON}]}\]</div>
+<p>This adapter takes two arguments: a function that transforms JSON
+objects, and an existing simple webservice returning an array of
+JSON objects.  Given those parameters, Adama constructs a simple
+webservice that consists in transforming the output of the original
+webservice via the provided function.</p>
+</li>
+</ul>
+<p>There are two additional adapters that provide extra functionality,
+for the cases when returning JSON objects is not feasible:</p>
+<ul>
+<li><p class="first"><strong>generic</strong>: a <em>generic</em> adapter is similar to a <em>query</em> adapter,
+but the return type is arbitrary:</p>
+<div class="math">
+\[\bigl[ \{k:v\} \to T \bigr] \to \text{SimpleWS}_T\]</div>
+<p>Also, rather than returning an stream via printing to standard
+output, a generic adapter simply returns the object of type
+<span class="math">\(T\)</span>.</p>
+</li>
+<li><p class="first"><strong>passthrough</strong>: a <em>passthrough</em> adapter makes Adama a proxy for an
+arbitrary existing webservice.  The type is:</p>
+<div class="math">
+\[\bigl[ \text{WS}_T \bigr] \to \text{WS}_T\]</div>
+<p>That is, it takes an existing webservice and it constructs the same
+webservice, except by changing the URL and by providing extra
+features such as caching, authentication, etc.</p>
+</li>
+</ul>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Walter Moreira.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

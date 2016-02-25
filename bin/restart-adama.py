@@ -6,7 +6,7 @@ import time
 
 def main():
     subprocess.check_call('supervisorctl stop adama'.split())
-    time.sleep(2)  # give time to clean
+    time.sleep(30)  # give time to clean
     subprocess.check_call('supervisorctl start adama'.split())
     print 'ok'
 

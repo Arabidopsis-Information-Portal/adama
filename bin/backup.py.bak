@@ -41,7 +41,7 @@ def archive(path, directory):
     :type path: str
     :rtype: None
     """
-    subprocess.check_call('scp {} araport@corral.tacc.utexas.edu:/corral-tacc/tacc/bio/araport/users/araport/adama'.format(path).split(),
+    subprocess.check_call('scp {} wmoreira@ranch.tacc.utexas.edu:~/adama'.format(path).split(),
                           stdout=open('/dev/null', 'w'), stderr=subprocess.STDOUT) 
     os.unlink(path)
     shutil.rmtree(directory)
