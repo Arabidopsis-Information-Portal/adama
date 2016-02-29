@@ -83,7 +83,7 @@ class NamespacesResource(restful.Resource):
 
         ns = Namespace(name=name, url=url,
                        description=description,
-                       users={g.user: ['POST', 'PUT', 'DELETE']})
+                       users={g.user: ['POST', 'PUT', 'DELETE'], 'admin': ['POST', 'PUT', 'DELETE']})
         namespace_store[name] = ns
         return ok({
             'result': api_url_for('namespace', namespace=name)

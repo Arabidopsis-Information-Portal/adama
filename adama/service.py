@@ -279,7 +279,7 @@ class Service(AbstractService):
         if isinstance(self.whitelist, dict):
             # make sure this method is idempotent
             return
-        
+
         policies = {}
         for addr in self.whitelist:
             if isinstance(addr, dict):
@@ -572,7 +572,7 @@ class Service(AbstractService):
             if header.lower() in policy.get('forward', []):
                 yield header, value
 
-    
+
 class ServiceQueryResource(restful.Resource):
 
     @swagger.operation(
@@ -621,7 +621,7 @@ class ServiceListResource(restful.Resource):
     )
     def get(self, namespace, service):
         """List all objects using a service"""
-        
+
         args = self.validate_get()
         try:
             iden = service_iden(namespace, service)
@@ -1268,7 +1268,7 @@ def register(service_class, args, namespace, user_code, notifier=None):
         user = 'anonymous'
     service = service_class(
         namespace=namespace, code_dir=user_code,
-        users={user: ['POST', 'PUT', 'DELETE']},
+        users={user: ['POST', 'PUT', 'DELETE'], 'admin': ['POST', 'PUT', 'DELETE']},
         **dict(args))
     try:
         slot = service_store[service.iden]['slot']
