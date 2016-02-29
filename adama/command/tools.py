@@ -5,10 +5,11 @@ import tarfile
 import time
 import tempfile
 
+from ..stores import entity_store
 from ..stores import service_store
 from ..stores import namespace_store
 from ..docker import safe_docker
-
+from ..entity import Entity
 
 def rebuild_service(name):
     srv = service_store[name]['service']
@@ -172,3 +173,48 @@ def restore_adapters(directory):
     # give some time to redis to spin up
     time.sleep(180)
     restore_code(directory)
+
+def add_admins_to_namespace( ns ):
+    """Add a user with GET/POST/PUT/DELETE to a namespace."""
+
+    # It's not obvious till you've coded around a bit but ns is a tuple
+    ns_obj=namespace_store[ ns[1].name ]
+    print 'Adding admin user(s) to ' + ns[1].name + '...'
+    for u in ['vivek', 'eriksf', 'vaughn', 'ibelyaev', 'jmiller']:
+        uname = 'araport/' + u
+        uname_carbon = uname + '@carbon.super'
+        ns_obj.users[uname] = ['POST', 'PUT', 'DELETE']
+        # Hack. Depending on how the JWT is generated, wso2 identifies as either
+        # uname or uname@carbon.super. We will fix this eventually
+        ns_obj.users[uname_carbon] = ['POST', 'PUT', 'DELETE']
+        namespace_store[ ns[1].name ] = ns_obj
+    print 'Done.'
+
+def add_admins_to_all_namespaces():
+    """Utility. Iterate over all namespaces, add admins."""
+
+    for ns in namespace_store.items():
+        add_admins_to_namespace( ns )
+
+def add_admins_to_service( srv ):
+    """Add a user with GET/POST/PUT/DELETE to a service"""
+
+    pass
+
+def add_admins_to_all_services():
+    """Utility. Iterate over ALL services, regardless of namespace. Add admins."""
+
+    pass
+
+
+def manage_admin_group():
+    """Edit the array of Araport usernames and run this subroutine to add users to the administrator group who have edit rights to ADAMA namespaces and services"""
+
+    for u in ['vivek', 'eriksf', 'vaughn', 'ibelyaev', 'jmiller', 'jgentle']:
+        uname = 'araport/' + u
+        ue = Entity(uname, parent='administrator')
+        entity_store[uname] = ue
+        uname_carbon = uname + '@carbon.super'
+        ue = Entity(uname_carbon, parent='administrator')
+        entity_store[uname_carbon] = ue
+
