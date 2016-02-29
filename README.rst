@@ -54,7 +54,7 @@ You can also read the `live docs of the API`_.
 License
 -------
 
-Free software: MIT license
+Free software: BSD License
 
 .. _wiki: https://github.com/Arabidopsis-Information-Portal/adama/wiki
 .. _docs: https://github.com/Arabidopsis-Information-Portal/adama/tree/master/docs
