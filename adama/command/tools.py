@@ -180,7 +180,7 @@ def add_admins_to_namespace( ns ):
     # It's not obvious till you've coded around a bit but ns is a tuple
     ns_obj=namespace_store[ ns[1].name ]
     print 'Adding admin user(s) to ' + ns[1].name + '...'
-    for u in ['vivek', 'eriksf', 'vaughn', 'ibelyaev', 'jmiller']:
+    for u in ['jgentle', 'vivek', 'eriksf', 'vaughn', 'ibelyaev', 'jmiller']:
         uname = 'araport/' + u
         uname_carbon = uname + '@carbon.super'
         ns_obj.users[uname] = ['POST', 'PUT', 'DELETE']
