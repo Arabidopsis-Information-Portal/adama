@@ -174,13 +174,61 @@ def restore_adapters(directory):
     time.sleep(180)
     restore_code(directory)
 
-def add_admins_to_namespace( ns ):
+
+def add_admin_to_all_namespaces():
+    """Iterate over all namespaces, add admin role user."""
+
+    for ns in namespace_store.items():
+        print 'Adding admin to ' + ns[1].name + '...'
+        add_admin_to_namespace( ns )
+        print 'Done.'
+
+def add_admin_to_namespace( ns ):
+    """Add admin group user with GET/POST/PUT/DELETE to a namespace."""
+
+    # It's not obvious till you've coded around a bit but ns is a tuple
+    ns_obj=namespace_store[ ns[1].name ]
+    for u in ['admin']:
+        uname = u
+        ns_obj.users[uname] = ['POST', 'PUT', 'DELETE']
+        namespace_store[ ns[1].name ] = ns_obj
+
+def add_admin_to_all_services():
+    """Utility. Iterate over ALL services, regardless of namespace. Add admins."""
+
+    for name in service_store:
+        try:
+            srv = service(name)
+        except KeyError:
+            continue
+    print 'Adding admin to ' + srv.namespace() + '/' + srv.name()
+    add_admin_to_service( src )
+    print 'Done.'
+
+def add_admin_to_service( srv ):
+    """Add a user with GET/POST/PUT/DELETE to a service"""
+
+    srv.users['admin'] = ['GET', 'POST', 'PUT', 'DELETE']
+    save_service(srv)
+
+def manage_admin_group():
+    """Edit the array of Araport usernames and run this subroutine to add users to the administrator group who have edit rights to ADAMA namespaces and services"""
+
+    for u in ['vivek', 'eriksf', 'vaughn', 'ibelyaev', 'jmiller', 'jgentle']:
+        uname = 'araport/' + u
+        ue = Entity(uname, parent='admin')
+        entity_store[uname] = ue
+        uname_carbon = uname + '@carbon.super'
+        ue = Entity(uname_carbon, parent='admin')
+        entity_store[uname_carbon] = ue
+
+def add_user_to_namespace( ns, user ):
     """Add a user with GET/POST/PUT/DELETE to a namespace."""
 
     # It's not obvious till you've coded around a bit but ns is a tuple
     ns_obj=namespace_store[ ns[1].name ]
-    print 'Adding admin user(s) to ' + ns[1].name + '...'
-    for u in ['jgentle', 'vivek', 'eriksf', 'vaughn', 'ibelyaev', 'jmiller']:
+    print 'Adding admin user ' + uname + ' to ' + ns[1].name + '...'
+    for u in ['user']:
         uname = 'araport/' + u
         uname_carbon = uname + '@carbon.super'
         ns_obj.users[uname] = ['POST', 'PUT', 'DELETE']
@@ -189,32 +237,3 @@ def add_admins_to_namespace( ns ):
         ns_obj.users[uname_carbon] = ['POST', 'PUT', 'DELETE']
         namespace_store[ ns[1].name ] = ns_obj
     print 'Done.'
-
-def add_admins_to_all_namespaces():
-    """Utility. Iterate over all namespaces, add admins."""
-
-    for ns in namespace_store.items():
-        add_admins_to_namespace( ns )
-
-def add_admins_to_service( srv ):
-    """Add a user with GET/POST/PUT/DELETE to a service"""
-
-    pass
-
-def add_admins_to_all_services():
-    """Utility. Iterate over ALL services, regardless of namespace. Add admins."""
-
-    pass
-
-
-def manage_admin_group():
-    """Edit the array of Araport usernames and run this subroutine to add users to the administrator group who have edit rights to ADAMA namespaces and services"""
-
-    for u in ['vivek', 'eriksf', 'vaughn', 'ibelyaev', 'jmiller', 'jgentle']:
-        uname = 'araport/' + u
-        ue = Entity(uname, parent='administrator')
-        entity_store[uname] = ue
-        uname_carbon = uname + '@carbon.super'
-        ue = Entity(uname_carbon, parent='administrator')
-        entity_store[uname_carbon] = ue
-
