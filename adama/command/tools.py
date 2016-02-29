@@ -201,12 +201,12 @@ def add_admin_to_all_services():
             srv = service(name)
         except KeyError:
             continue
-    add_admin_to_service( srv )
+        add_admin_to_service( srv )
 
 def add_admin_to_service( srv ):
     """Add a user with GET/POST/PUT/DELETE to a service"""
 
-    srv.users['admin'] = ['GET', 'POST', 'PUT', 'DELETE']
+    srv.users['admin'] = ['POST', 'PUT', 'DELETE']
     save_service(srv)
 
 def manage_admin_group():
