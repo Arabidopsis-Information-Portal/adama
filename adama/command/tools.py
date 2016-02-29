@@ -201,9 +201,7 @@ def add_admin_to_all_services():
             srv = service(name)
         except KeyError:
             continue
-    print 'Adding admin to ' + srv.namespace() + '/' + srv.name()
-    add_admin_to_service( src )
-    print 'Done.'
+    add_admin_to_service( srv )
 
 def add_admin_to_service( srv ):
     """Add a user with GET/POST/PUT/DELETE to a service"""
