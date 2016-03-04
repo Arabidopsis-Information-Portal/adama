@@ -46,13 +46,17 @@ def stop_workers(name):
     save_service(srv)
 
 
-def restart_workers(name, n=None):
+def restart_workers(name, n=None, ignore_error=False):
     srv = service(name)
-    srv.stop_workers()
-    srv.start_workers(n=n)
-    srv.check_health()
-    save_service(srv)
-
+    try:
+        srv.stop_workers()
+        srv.start_workers(n=n)
+        save_service(srv)
+    except:
+        print 'Error restarting workers for ' + name
+        if not ignore_error:
+            raise
+        pass
 
 def delete_iface(name):
     try:
@@ -156,8 +160,7 @@ def restore_code(directory):
             print('Rebuilding {}'.format(name))
             rebuild_service(name)
             print('  Restarting {}'.format(name))
-            restart_workers(name)
-
+            restart_workers(name, ignore_error=True)
 
 def restore_redis(directory):
     tar = os.path.join(directory, 'redis.tar.bz2')
