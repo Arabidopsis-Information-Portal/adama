@@ -109,10 +109,15 @@
     - Reload adama server
 
 - 
-  name: "Force supervisorctl to start adama"
-  register: adama_started
-  shell: "supervisortcl reread && supervisortcl add adama"
+  name: "Force supervisorctl to reread"
+  shell: /usr/bin/supervisorctl reread
   sudo_user: root
+
+- 
+  name: "Force supervisorctl to start adama"
+  shell: /usr/bin/supervisorctl add adama
+  sudo_user: root
+  register: adama_started
 
 - name: Install crontab for backup job
   cron:
@@ -121,3 +126,11 @@
     user: root
     special_time: daily
   sudo: yes
+
+- name: Build adama common and language base containers
+  shell: make adapters
+  args:
+      chdir: /home/adama/adama
+  sudo_user: adama
+  register: containers_built
+

@@ -37,8 +37,7 @@
 
 # Docker 1.7.1 is the latest version we are positive works
 - name: Install docker 1.7.1
-  apt: name=docker-engine=1.7.1-0~trusty
-  state: present
+  apt: name=docker-engine=1.7.1-0~trusty force=yes
   sudo: yes
 
 - name: Ensure bridge utils are installed
