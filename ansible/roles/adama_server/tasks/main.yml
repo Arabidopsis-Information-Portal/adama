@@ -38,14 +38,11 @@
     - Rebuild containers
     - Reload adama server
 
-- name: Build base containers
+- name: Build containers
   chdir: /home/adama/adama
-  free_form: make adapters
-  sudo: yes
+  shell: make adapters
   sudo_user: adama
-  register: built_images
-  notify:
-      - Base images should be built now. Verify with 'docker images'
+  register: containers_built
 
 - name: Get adamalib
   git:
@@ -111,17 +108,10 @@
     - Force supervisor to reload configs
     - Reload adama server
 
-#- name: Make sure the adama server is started
-#  supervisorctl: name=adama state=started
-#  sudo: yes
-- name: Hack supervisorctl to recognize and start adama
-  chdir: /home/adama/adama
-  free_form: supervisortcl reread && supervisortcl add adama
-  sudo: yes
-  register: adama_supervisorctld
-  notify:
-      - Adama should be under control of supervisorctl now
-
+- name: Force supervisorctl to start adama
+  shell: supervisortcl reread && supervisortcl add adama
+  sudo_user: root
+  register: adama_started
 
 - name: Install crontab for backup job
   cron:
