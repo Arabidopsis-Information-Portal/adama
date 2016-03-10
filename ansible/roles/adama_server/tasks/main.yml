@@ -38,11 +38,11 @@
     - Rebuild containers
     - Reload adama server
 
-- name: Build containers
-  chdir: /home/adama/adama
-  shell: make adapters
-  sudo_user: adama
-  register: containers_built
+#- name: Build containers
+#  chdir: /home/adama/adama
+#  shell: make adapters
+#  sudo_user: adama
+#  register: containers_built
 
 - name: Get adamalib
   git:
@@ -108,10 +108,11 @@
     - Force supervisor to reload configs
     - Reload adama server
 
-- name: Force supervisorctl to start adama
-  shell: supervisortcl reread && supervisortcl add adama
-  sudo_user: root
+- 
+  name: "Force supervisorctl to start adama"
   register: adama_started
+  shell: "supervisortcl reread && supervisortcl add adama"
+  sudo_user: root
 
 - name: Install crontab for backup job
   cron:
