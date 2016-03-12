@@ -99,7 +99,6 @@ monitor:
     option: password
     section: mail
     value: NONSENSE
-#   value: hKHcXk76FQfwYJ
   - 
     option: notify
     section: monitor
