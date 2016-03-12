@@ -31,24 +31,19 @@
     dest: /home/adama/adama
     version: "{{ branch | default(master) }}"
     update: yes
+    force: yes
   sudo: yes
   sudo_user: adama
   register: got_adama
   notify:
-    - Rebuild containers
-    - Reload adama server
-
-#- name: Build containers
-#  chdir: /home/adama/adama
-#  shell: make adapters
-#  sudo_user: adama
-#  register: containers_built
+    - Build base containers
 
 - name: Get adamalib
   git:
     repo: https://github.com/Arabidopsis-Information-Portal/adamalib.git
     dest: /home/adama/adamalib
     update: yes
+    force: yes
   sudo: yes
   register: got_adamalib
   sudo_user: adama
@@ -95,42 +90,57 @@
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
+    backup: yes
   sudo: yes
-  with_items: config
+  with_items: "{{ config }}"
   notify: Document local config file
+
+- name: Setup monitor config file
+  ini_file:
+    dest: /home/adama/adama/bin/monitor.conf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    backup: yes
+  sudo: yes
+  with_items: "{{ monitor }}"
+  notify: Document monitor config file
+
+- name: Setup backup config file
+  ini_file:
+    dest: /home/adama/adama/bin/backup.conf
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    backup: yes
+  sudo: yes
+  with_items: "{{ autobackup }}"
+  notify: Document backup config file
 
 - name: Add adama to supervisor
   template:
     src=adama.ini.j2
     dest={{ supervisord_conf_dir }}/adama.{{ supervisord_conf_ext }}
+    force=yes
   sudo: yes
   notify:
     - Force supervisor to reload configs
     - Reload adama server
-
-- 
-  name: "Force supervisorctl to reread"
-  shell: /usr/bin/supervisorctl reread
-  sudo_user: root
-
-- 
-  name: "Force supervisorctl to start adama"
-  shell: /usr/bin/supervisorctl add adama
-  sudo_user: root
-  register: adama_started
 
 - name: Install crontab for backup job
   cron:
     name: backup
     job: /home/adama/adama/bin/backup.py
     user: root
+    state: present
     special_time: daily
   sudo: yes
 
-- name: Build adama common and language base containers
-  shell: make adapters
-  args:
-      chdir: /home/adama/adama
-  sudo_user: adama
-  register: containers_built
-
+- name: Install crontab for monitor task
+  cron:
+    name: monitor
+    job: "/home/adama/adama/bin/monitor.py > /dev/null 2>&1"
+    user: root
+    minute: 15
+    state: present
+  sudo: yes

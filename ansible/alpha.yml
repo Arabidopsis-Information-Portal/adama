@@ -7,6 +7,6 @@
     - developer_station
     - rabbit_server
     - docker
-    - redis_server
     - { role: adama_server, branch: master }
+    - redis_server
     - nginx
