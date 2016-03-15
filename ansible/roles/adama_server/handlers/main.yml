@@ -1,22 +1,39 @@
 ---
 
-- name: Rebuild containers
+- name: Build base containers
   command: make adapters
   args:
     chdir: /home/adama/adama
   sudo: yes
   sudo_user: adama
+  register: base_containers_built
 
 - name: Document local config file
   lineinfile:
     dest: /etc/adama.conf
     insertbefore: BOF
-    line: "# Managed by ansible\n# See all options in $ADAMA_SRC/adama.conf\n# Tweak automatically configured values in $ADAMA_SRC/ansible/host_vars/<this_host>\n"
+    line: "# Managed by Ansible\n# See all options in $ADAMA_SRC/adama.conf\n# Tweak automatically configured values in $ADAMA_SRC/ansible/host_vars/<this_host>\n"
+    state: present
+  sudo: yes
+
+- name: Document monitor config file
+  lineinfile:
+    dest: /home/adama/adama/bin/monitor.conf
+    insertbefore: BOF
+    line: "# Managed by Ansible\n# See all options in $ADAMA_SRC/bin/monitor.conf\n# Tweak automatically configured values in $ADAMA_SRC/ansible/host_vars/<this_host>\n"
+    state: present
+  sudo: yes
+
+- name: Document backup config file
+  lineinfile:
+    dest: /home/adama/adama/bin/backup.conf
+    insertbefore: BOF
+    line: "# Managed by Ansible\n# See all options in $ADAMA_SRC/bin/backup.conf\n# Tweak automatically configured values in $ADAMA_SRC/ansible/host_vars/<this_host>\n"
     state: present
   sudo: yes
 
 - name: Force supervisor to reload configs
-  command: supervisorctl update
+  command: supervisorctl reread
   sudo: yes
 
 - name: Reload adama server
