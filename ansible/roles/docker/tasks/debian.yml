@@ -35,21 +35,22 @@
 
 - meta: flush_handlers
 
+# This needs to be set up first if we want to force
+# creation of a bridge with a specific CIDR config
+- name: Force docker daemon options
+  copy:
+    content: "DOCKER_OPTS=\"--bip={{ docker0_ip }}/16\""
+    dest: /etc/default/docker
+    owner: root
+    mode: 0644
+  sudo: yes
+
 # Docker 1.8.2 is the latest version we are positive works
 - name: Install docker 1.8.2
   apt: name=docker-engine=1.8.2-0~trusty force=yes
   sudo: yes
-
-- name: Set docker daemon options
-  copy:
-    content: "DOCKER_OPTS=\"--bip=172.17.0.1/16\""
-    dest: /etc/default/docker
-    owner: root
-    group: docker
-    mode: 0644
-  sudo: yes
   notify:
-    - Bounce Docker daemon
+   - Bounce Docker daemon
 
 - name: Ensure bridge utils are installed
   apt: name=bridge-utils state=present
