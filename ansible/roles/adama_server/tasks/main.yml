@@ -5,7 +5,7 @@
     supervisord_conf_dir="/etc/supervisor/conf.d"
     supervisord_conf_ext="conf"
     supervisord_service="supervisor"
-    pip_executable="/usr/bin/pip"
+    pip_executable="/usr/local/bin/pip" 
   when: ansible_os_family == "Debian"
 
 - set_fact:
@@ -15,15 +15,6 @@
     supervisord_service="supervisord"
     pip_executable="/usr/local/bin/pip"
   when: ansible_os_family == "RedHat"
-
-- name: Install support libraries for provenance
-  apt: name={{ item }} state=latest
-  sudo: yes
-  with_items:
-    - libxml2-dev
-    - libxslt1-dev
-    - graphviz
-    - zlib1g-dev
 
 - name: Get adama code
   git:
@@ -54,12 +45,23 @@
     state: directory
   sudo: yes
 
+- name: Install support libraries for provenance
+  apt: name={{ item }} state=latest
+  sudo: yes
+  with_items:
+    - libxml2-dev
+    - libxslt1-dev
+    - graphviz
+    - zlib1g-dev
+
 - name: Install all Python requirements
   pip:
     requirements: /home/adama/adama/requirements.txt
     executable: "{{ pip_executable }}"
+    state: present
   when: got_adama|changed
   sudo: yes
+  ignore_errors: yes
 
 - name: Install adama itself
   command: python setup.py develop
@@ -90,7 +92,6 @@
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
-    backup: yes
   sudo: yes
   with_items: "{{ config }}"
   notify: Document local config file
@@ -101,7 +102,6 @@
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
-    backup: yes
   sudo: yes
   with_items: "{{ monitor }}"
   notify: Document monitor config file
@@ -112,7 +112,6 @@
     section: "{{ item.section }}"
     option: "{{ item.option }}"
     value: "{{ item.value }}"
-    backup: yes
   sudo: yes
   with_items: "{{ autobackup }}"
   notify: Document backup config file

@@ -35,7 +35,6 @@
   lineinfile:
     dest: /etc/redis/redis.conf
     regexp: ^bind
-    line: bind 127.0.0.1 172.17.42.1
+    line: bind 127.0.0.1 {{ docker0_ip }}
     state: present
   sudo: yes
-

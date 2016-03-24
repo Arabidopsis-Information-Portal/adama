@@ -5,7 +5,7 @@
   args:
     chdir: /home/adama/adama
   sudo: yes
-  sudo_user: adama
+  sudo_user: root
   register: base_containers_built
 
 - name: Document local config file

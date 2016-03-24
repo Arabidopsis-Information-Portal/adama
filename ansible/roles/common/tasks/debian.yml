@@ -1,7 +1,8 @@
 ---
 
+
 - name: Update apt cache once a day
-  apt: update_cache=yes cache_valid_time=84600
+  apt: upgrade=dist update_cache=yes cache_valid_time=84600
   sudo: yes
 
 - name: Install zlib
@@ -14,6 +15,8 @@
   with_items:
     - libffi-dev
     - libssl-dev
+    - make
+    - g++
 
 - name: Install git in Debian
   apt: name=git state=present
@@ -30,3 +33,19 @@
 - name: Ensure supervisor is running in Debian
   service: name=supervisor state=started
   sudo: yes
+
+- name: Ensure Python 2.7 installation
+  apt: name={{ item }} state=present
+  sudo: yes
+  with_items:
+    - python
+    - python-dev
+
+- name: Install pip from PyPi bootstrap script
+  shell: curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" && python get-pip.py "pip<8"
+  sudo: yes
+
+- name: Install PyOpenSSL
+  pip: name=pyOpenSSL state=latest
+  sudo: yes
+

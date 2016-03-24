@@ -4,3 +4,10 @@
   apt:
     update_cache: yes
   sudo: yes
+
+- name: Bounce Docker daemon
+  service:
+    name: docker
+    state: reloaded
+    enabled: yes
+  sudo: yes

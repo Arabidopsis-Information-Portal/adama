@@ -4,124 +4,124 @@ ansible_ssh_host: 129.114.6.142
 ansible_ssh_user: rodeo
 ansible_ssh_private_key_file: ~/pems/iplant-rodeo.pem
 
-config: 
-  - 
+config:
+  -
     option: python_instances
     section: workers
-    value: 3
-  - 
+    value: 2
+  -
     option: javascript_instances
     section: workers
     value: 1
-  - 
+  -
     option: ruby_instances
     section: workers
     value: 1
-  - 
+  -
     option: command
     section: docker
     value: docker
-  - 
+  -
     option: host
     section: docker
     value: ""
-  - 
+  -
     option: host
     section: queue
-    value: "{{ hostvars['adama-dev-1']['ansible_docker0']['ipv4']['address'] }}"
-  - 
+    value: 172.17.0.1
+  -
     option: port
     section: queue
     value: 5672
-  - 
+  -
     option: host
     section: store
     value: localhost
-  - 
+  -
     option: port
     section: store
     value: 6379
-  - 
+  -
     option: url
     section: server
-    value: "http://{{ hostvars['adama-dev-1']['ansible_ssh_host'] }}"
-  - 
+    value: http://adama-dev-tacc.mattdotvaughn.org
+  -
     option: bind
     section: server
     value: "0.0.0.0:80"
-  - 
+  -
     option: prefix
     section: server
-    value: /adama
-  - 
+    value: /community/v0.3
+  -
     option: api_prefix
     section: server
-    value: "/community/v{{ lookup('file', '../adama/VERSION') }}"
-  - 
+    value: /community/v0.3
+  -
     option: api_docs
     section: server
     value: https://api.araport.org/community/v0.3
-  - 
+  -
     option: api_url
     section: server
-    value: https://api.araport.org
-  - 
+    value: http://adama-dev-tacc.mattdotvaughn.org
+  -
     option: swagger_ui
     section: server
-    value: "http://{{ hostvars['adama-dev-1']['ansible_ssh_host'] }}:8080/swagger-ui"
-  - 
+    value: http://adama-dev-tacc.mattdotvaughn.org/swagger-ui
+  -
     option: access_control
     section: server
     value: none
-  - 
+  -
     option: tenant_name
     section: server
     value: araport-org
-  - 
+  -
     option: apim_public_key
     section: server
     value: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUp/oV1vWc8/TkQSiAvTousMzOM4asB2iltr2QKozni5aVFu818MpOLZIr8LMnTzWllJvvaA5RAAdpbECb+48FjbBe0hseUdN5HpwvnH/DW8ZccGvk53I6Orq7hLCv1ZHtuOCokghz/ATrhyPq+QktMfXnRS4HrKGJTzxaCcU7OQIDAQAB
 
 monitor:
-  - 
+  -
     option: smarthost
     section: mail
     value: smtp-relay.gmail.com
-  - 
+  -
     option: port
     section: mail
     value: 465
-  - 
+  -
     option: user
     section: mail
     value: AraportUser@gmail.com
-  - 
+  -
     option: password
     section: mail
     value: NONSENSE
-  - 
+  -
     option: notify
     section: monitor
     value: dlaraport-notifications@jcvi.org, jgentle@tacc.utexas.edu
-  - 
+  -
     option: url
     section: api
-    value: https://api.araport.org/community/v0.3
-  - 
+    value: http://adama-dev-tacc.mattdotvaughn.org/community/v0.3
+  -
     option: token
     section: api
     value: a6233e2f48c1b4332e3d42f957c85446
 
-autobackup: 
-  - 
+autobackup:
+  -
     option: login
     section: scp
     value: araport@corral.tacc.utexas.edu
-  - 
+  -
     option: path
     section: scp
     value: /corral-tacc/tacc/bio/araport/users/araport/adama
 
-nginx_server_name: adama-ansible-1
+nginx_server_name: adama-dev-tacc.mattdotvaughn.org
 self_sign: true
 

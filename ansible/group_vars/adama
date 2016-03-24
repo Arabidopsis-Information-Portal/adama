@@ -1,4 +1,3 @@
 ---
 ansible_connection: ssh
 ansible_ssh_user: ubuntu
-docker_bridge_ip: 172.17.42.1
