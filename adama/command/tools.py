@@ -212,11 +212,11 @@ def add_admin_to_service( srv ):
     srv.users['admin'] = ['POST', 'PUT', 'DELETE']
     save_service(srv)
 
-def manage_admin_group():
+def update_admin_group():
     """Edit the array of Araport usernames and run this subroutine to add users to the administrator group who have edit rights to ADAMA namespaces and services"""
 
     for u in ['vivek', 'eriksf', 'vaughn', 'ibelyaev', 'jmiller', 'jgentle']:
-        uname = 'araport/' + u
+        uname = u
         ue = Entity(uname, parent='admin')
         entity_store[uname] = ue
         uname_carbon = uname + '@carbon.super'
@@ -227,14 +227,10 @@ def add_user_to_namespace( ns, user ):
     """Add a user with GET/POST/PUT/DELETE to a namespace."""
 
     # It's not obvious till you've coded around a bit but ns is a tuple
-    ns_obj=namespace_store[ ns[1].name ]
-    print 'Adding admin user ' + uname + ' to ' + ns[1].name + '...'
-    for u in ['user']:
-        uname = 'araport/' + u
-        uname_carbon = uname + '@carbon.super'
-        ns_obj.users[uname] = ['POST', 'PUT', 'DELETE']
-        # Hack. Depending on how the JWT is generated, wso2 identifies as either
-        # uname or uname@carbon.super. We will fix this eventually
-        ns_obj.users[uname_carbon] = ['POST', 'PUT', 'DELETE']
-        namespace_store[ ns[1].name ] = ns_obj
+    ns_obj = namespace_store[ns[1].name]
+    print 'Adding admin user ' + user + ' to ' + ns[1].name + '...'
+    uname = user
+    uname_carbon = uname + '@carbon.super'
+    ns_obj.users[uname_carbon] = ['POST', 'PUT', 'DELETE']
+    namespace_store[ns[1].name] = ns_obj
     print 'Done.'
