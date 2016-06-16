@@ -1,12 +1,12 @@
 ---
 
-- hosts: beta
+- hosts: prod
   roles:
     - common
     - { role: python27, when: ansible_os_family == "RedHat" }
     - developer_station
     - rabbit_server
     - docker
-    - { role: adama_server, branch: development }
+    - { role: adama_server, branch: master }
     - redis_server
     - nginx

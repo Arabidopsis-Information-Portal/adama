@@ -1,5 +1,5 @@
-[alpha]
-# hosts for alpha deployment
+[prod]
+adama-prod-aws.mattdotvaughn.org
 
-[beta]
-# hosts for beta deployment
+[dev]
+adama-dev-tacc.mattdotvaughn.org

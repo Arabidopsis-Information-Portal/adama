@@ -1,6 +1,6 @@
 ---
 
-ansible_ssh_host: 129.114.6.142
+ansible_ssh_host: 129.114.6.164
 ansible_ssh_user: rodeo
 ansible_ssh_private_key_file: ~/pems/iplant-rodeo.pem
 
@@ -8,7 +8,7 @@ config:
   -
     option: python_instances
     section: workers
-    value: 2
+    value: 1
   -
     option: javascript_instances
     section: workers
