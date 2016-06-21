@@ -17,6 +17,23 @@
     - libssl-dev
     - make
     - g++
+    - libncurses5-dev
+    - libxml2-dev
+    - libxslt-dev
+
+- name: Install support for PIL
+  apt: name="{{ item }}" state=present
+  sudo: yes
+  with_items:
+    - libtiff5-dev
+    - libjpeg8-dev
+    - zlib1g-dev
+    - libfreetype6-dev
+    - liblcms2-dev
+    - libwebp-dev
+    - tcl8.6-dev
+    - tk8.6-dev
+    - python-tk
 
 - name: Install git in Debian
   apt: name=git state=present

@@ -77,14 +77,14 @@
   when: got_adamalib|changed
   sudo: yes
 
-- name: Patch swagger ui
-  lineinfile:
-    dest: "{{ swagger_html }}"
-    regexp: "^(.*)docExpansion:(.*)$"
-    line: '\1docExpansion: "full"'
-    state: present
-    backrefs: yes
-  sudo: yes
+# - name: Patch swagger ui
+#   lineinfile:
+#     dest: "{{ swagger_html }}"
+#     regexp: "^(.*)docExpansion:(.*)$"
+#     line: '\1docExpansion: "full"'
+#     state: present
+#     backrefs: yes
+#   sudo: yes
 
 - name: Setup local config file
   ini_file:
