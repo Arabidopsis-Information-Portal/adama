@@ -1,0 +1,9 @@
+FROM ubuntu:trusty
+MAINTAINER Matthew Vaughn
+
+ADD ./requirements-cleanroom.txt ./requirements.txt
+
+RUN apt-get -y update && apt-get -y install libxml2-dev libxslt-dev curl g++ git libffi-dev libssl-dev make python python-dev libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk && rm -rf rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" && python get-pip.py "pip<8" && rm -rf get-pip.py
+RUN pip install -r requirements.txt && rm -rf /root/.cache/pip/* && rm -rf ./requirements.txt
