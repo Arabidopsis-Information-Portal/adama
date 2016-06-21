@@ -58,3 +58,4 @@ zope.interface==4.2.0
 PyJWT==0.2.3
 pyOpenSSL==0.15.1
 uWSGI==2.0.9
+ndg-httpsclient
