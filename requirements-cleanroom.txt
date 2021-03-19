@@ -21,7 +21,7 @@ ijson==2.3
 image==1.5.3
 importlib==1.0.3
 itsdangerous==0.24
-Jinja2==2.8
+Jinja2==2.11.3
 jinja2-time==0.2.0
 jwt==0.3.2
 lockfile==0.12.2
