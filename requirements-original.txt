@@ -58,7 +58,7 @@ pytest==2.5.2
 python-dateutil==2.2
 python3-pika==0.9.14
 pytz==2014.3
-PyYAML==3.11
+PyYAML==5.4
 pyzmq==14.5.0
 rabbitpy==0.26.2
 redis==2.10.1
