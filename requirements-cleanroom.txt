@@ -41,7 +41,7 @@ pyswagger==0.8.4
 python-daemon==2.1.1
 python-dateutil==2.5.3
 pytz==2016.4
-PyYAML==3.11
+PyYAML==5.4
 pyzmq==15.2.0
 redis==2.10.5
 requests==2.10.0
