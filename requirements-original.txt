@@ -44,7 +44,7 @@ numpy==1.8.1
 pamqp==1.6.1
 pep8==1.5.6
 pika==0.9.13
-py==1.4.20
+py==1.10.0
 pyaml==14.5.7
 pyasn1==0.1.9
 pycparser==2.14
