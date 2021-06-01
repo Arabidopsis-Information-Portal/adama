@@ -80,7 +80,7 @@ texttable==0.8.4
 tornado==3.2.1
 tox==1.7.1
 uWSGI==2.0.9
-urllib3==1.7.1
+urllib3==1.26.5
 uwsgitop==0.8
 virtualenv==1.11.6
 websocket-client==0.23.0
