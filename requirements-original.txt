@@ -70,7 +70,7 @@ sphinx-rtd-theme==0.1.6
 texttable==0.8.1
 tornado==3.2.1
 tox==1.7.1
-urllib3==1.7.1
+urllib3==1.26.5
 uWSGI==2.0.9
 virtualenv==1.11.6
 websocket-client==0.23.0
