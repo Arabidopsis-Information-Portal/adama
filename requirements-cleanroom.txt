@@ -32,7 +32,7 @@ multiprocessing==2.6.2.1
 Naked==0.1.31
 networkx==1.11
 pika==0.10.0
-Pillow==3.2.0
+Pillow==9.0.1
 poyo==0.4.0
 prov==1.4.0
 pyaml==15.8.2
