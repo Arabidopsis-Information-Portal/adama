@@ -11,7 +11,7 @@ chardet==2.3.0
 click==3.3
 codetransformer==0.1.1.1
 colorama==0.2.5
-cookiecutter==0.7.2
+cookiecutter==2.1.1
 cryptography==1.2.1
 docker-py==0.5.3
 dockerpty==0.3.2
