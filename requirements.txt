@@ -24,7 +24,7 @@ celery==3.1.11
 cffi==1.5.0
 click==3.3
 cookiecutter==0.7.2
-cryptography==1.2.1
+cryptography==3.3.2
 decorator==3.4.2
 docker-py==1.2.3
 dockerpty==0.3.2
