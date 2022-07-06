@@ -24,7 +24,7 @@ Flask-RESTful==0.2.12
 flask-restful-swagger==0.10
 flexmock==0.9.7
 gnureadline==6.3.3
-html5lib==0.999
+html5lib==0.999999999
 idna==2.0
 ijson==1.1
 importmagic==0.1.3

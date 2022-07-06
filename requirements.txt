@@ -39,7 +39,7 @@ gevent==1.0.1
 gnureadline==6.3.3
 greenlet==0.4.2
 gunicorn==18.0
-html5lib==0.999
+html5lib==0.999999999
 ijson==1.1
 ipdb==0.8
 ipython==2.1.0
