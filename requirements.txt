@@ -84,5 +84,5 @@ urllib3==1.7.1
 uwsgitop==0.8
 virtualenv==1.11.6
 websocket-client==0.23.0
-wheel==0.24.0
+wheel==0.38.1
 wsgiref==0.1.2

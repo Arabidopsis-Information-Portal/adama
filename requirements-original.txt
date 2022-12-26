@@ -75,4 +75,4 @@ uWSGI==2.0.9
 virtualenv==1.11.6
 websocket-client==0.23.0
 Werkzeug==0.9.4
-wheel==0.24.0
+wheel==0.38.1
